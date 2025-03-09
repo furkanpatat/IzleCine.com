@@ -4,9 +4,12 @@
 
 1.Kayıt Olma -->Kullanıcı kaydı için form bileşeni  
 
-2.Giriş Yapma -->Kullanıcı girişi için form bileşeni
+2.Giriş Yapma -->Kullanıcı girişi için form bileşeni  
+
 3.Şifre Sıfırlama  --> Şifre sıfırlama işlemi için form bileşeni
+
 4.Arama Çubuğu --> Film arama çubuğu ve sonuçları
+
 5.Film Detayları --> Film bilgileri (başlık, açıklama, oyuncular, vb.)
 6.Yorum Yapma --> Kullanıcı yorumları için alan
 7.Puanlama --> Film puanlaması (1-5 arası)
