@@ -2,8 +2,9 @@
 
 ** FRONT-END**
 
-1.Kayıt Olma -->Kullanıcı kaydı için form bileşeni \n
-2.Giriş Yapma -->Kullanıcı girişi için form bileşeni\n
+1.Kayıt Olma -->Kullanıcı kaydı için form bileşeni  
+
+2.Giriş Yapma -->Kullanıcı girişi için form bileşeni
 3.Şifre Sıfırlama  --> Şifre sıfırlama işlemi için form bileşeni
 4.Arama Çubuğu --> Film arama çubuğu ve sonuçları
 5.Film Detayları --> Film bilgileri (başlık, açıklama, oyuncular, vb.)
