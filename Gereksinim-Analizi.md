@@ -1,6 +1,6 @@
 #GEREKSİNİMLER
 
-** FRONT-END**
+**FRONT-END GEREKSİNİMLERİ**
 
 1.Kayıt Olma -->Kullanıcı kaydı için form bileşeni  
 
@@ -45,7 +45,7 @@
 21.Yorum Puanlama --> Kullanıcı yorumlarına oylama yapabilme
 
 
-**BACK-END**
+**BACK-END GEREKSİNİMLERİ**
 
 22.Kullanıcı Yönetim Paneli --> Kullanıcı kayıt, giriş, güncelleme, silme işlemleri
 
