@@ -8,7 +8,7 @@
 
 **Uygulama Adresi:**  www.filmelestirisi.com //değiştirilecek
 
-**Grup Adı: ** 5ByTe
+**Grup Adı:** 5ByTe
 
 **Proje Ekibi:**  Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
 
