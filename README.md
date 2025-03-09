@@ -6,11 +6,11 @@
 
 **Referans Uygulama:** [IMDb.com] (IMDb.com)
 
-**Uygulama Adresi:**  www.filmelestirisi.com //değiştirilecek
+**Uygulama Adresi:** www.filmelestirisi.com //değiştirilecek
 
 **Grup Adı:** 5ByTe
 
-**Proje Ekibi:**  Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
+**Proje Ekibi:** Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
 
 1. [Gereksinim Analizi](Gereksinim-Analizi.md)
 2. [Durum Diyagramı](Durum-Diyagramı.md)
