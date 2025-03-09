@@ -4,7 +4,7 @@
 
 **Proje Kategorisi:**  Film Eleştirisi ve Öneri Platformu
 
-**Referans Uygulama:** [IMDb.com] (IMDb.com)
+**Referans Uygulama:** [IMDb.com](IMDb.com)
 
 **Uygulama Adresi:** www.filmelestirisi.com //değiştirilecek
 
