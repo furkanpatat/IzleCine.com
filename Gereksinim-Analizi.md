@@ -8,7 +8,7 @@
 
 3.Şifre Sıfırlama  --> Şifre sıfırlama işlemi için form bileşeni
 
-4.Arama Çubuğu --> Film arama çubuğu ve sonuçları
+4.Arama --> Film arama çubuğu ve sonuçları
 
 5.Film Detayları --> Film bilgileri (başlık, açıklama, oyuncular, vb.)
 
@@ -24,13 +24,13 @@
 
 11.Öneri Botu --> Kullanıcıya önerilen filmler
 
-12.Yönetici Paneli --> Admin paneli arayüzü
+12.Film Silme 
 
 13.Film Ekleme --> Admin film ekleme formu
 
 14.Film Düzenleme --> Admin film düzenleme formu
 
-15.Yorum Yönetimi --> Admin yorumları yönetme
+15.Yorum Yönetimi --> Admin yorumları yönetme // yorum silme veya yorum ekleme 
 
 16.Bildirim --> Kullanıcı bildirimleri gösterme
 
@@ -40,14 +40,11 @@
 
 19.Yeni Filmler --> En yeni çıkan filmleri listeleyen bileşen
 
-20.Kategoriler --> Filmleri türlerine göre kategorize etme
+20.Kategoriler --> Filmleri türlerine göre kategorize etme //Film kategorileri listeleme 
 
 21.Yorum Puanlama --> Kullanıcı yorumlarına oylama yapabilme
 
-
-**BACK-END GEREKSİNİMLERİ**
-
-22.Kullanıcı Yönetim Paneli --> Kullanıcı kayıt, giriş, güncelleme, silme işlemleri
+22.Kullanıcı Yönetim Paneli --> Kullanıcı kayıt, giriş, güncelleme, silme işlemleri // Bu 4 tanesi ayrı yapılacak
 
 23.Film Yönetim --> Filmlerle ilgili CRUD işlemleri
 
@@ -57,10 +54,10 @@
 
 26.Bildirim Gönderme --> Kullanıcılara bildirimler gönderme (RabbitMQ/Kafka ile asenkron)
 
-27.Cache Yönetim --> Redis/Memcache ile film verilerinin önbelleğe alınması
+27.Cache Yönetim --> Redis/Memcache ile film verilerinin önbelleğe alınması 
 
 28.API Entegrasyonu --> IMDb API'sinden film verisi çekme
 
 29.CI/CD Yönetimi --> Sürekli entegrasyon ve dağıtım için pipeline oluşturma
 
-30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.)
+30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.) //Bu olur 
