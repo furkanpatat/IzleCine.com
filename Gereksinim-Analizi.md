@@ -62,7 +62,7 @@
 
 # Gereksinim Dağılımları
 1. [Furkan Patat'ın Gereksinimleri](Furkan-Patat-Gereksinimler.md)
-2. [Burak Sayan'ın Gereksinimleri]()
+2. [Burak Sayan'ın Gereksinimleri](Burak-sayan-gereksinimler.md)
 1. [Ayten Coşkun'un Gereksinimleri]()
 2. [İbrahim Halil Yılmaz'ın Gereksinimleri]()
 1. [Enes Buğra Demirel'in Gereksinimleri]()
