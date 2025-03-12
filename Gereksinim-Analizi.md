@@ -22,13 +22,13 @@
 
 11.Öneri Botu --> Kullanıcıya önerilen filmler
 
-12.Film Silme 
+12.Film Silme --> Bir filmin admin taraflı kaldırılabilmesi
 
 13.Film Ekleme --> Admin film ekleme formu
 
 14.Film Düzenleme --> Admin film düzenleme formu
 
-15.Kullanıcı yorum düzenleme
+15.Kullanıcı yorum düzenleme --> Kullanıcının eski yorumunu değiştirebilmesi.
 
 16.Bildirim --> Kullanıcı bildirimleri gösterme
 
@@ -42,7 +42,7 @@
 
 21.Yorum Puanlama --> Kullanıcı yorumlarına oylama yapabilme
 
-22.Kullanıcı Silme
+22.Kullanıcı Silme --> Bir kullanıcının hesabının admin tarafında silinebilmesi
 
 23.Çoklu Dil Desteği -> Platformun farklı dillerde kullanılabilmesi.
 
@@ -52,11 +52,11 @@
 
 26.Bildirim Gönderme --> Kullanıcılara bildirimler gönderme (RabbitMQ/Kafka ile asenkron)
 
-27.Filmlere fragman ekleme
+27.Filmlere Fragman Ekleme --> Filmlerin detay sayfasına fragman ekleR
 
-28.Kullanıcı güncelleme 
+28.Kullanıcı Güncelleme --> Kullanıcıların ad, e-posta, profil fotoğrafı gibi bilgilerini güncellemesine izin verir.
 
-29.Admin Yorum Silme 
+29.Admin Yorum Silme --> Adminin, kurallara uymayan veya şikayet edilen yorumları silebilmesi.
 
 30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.)
 
