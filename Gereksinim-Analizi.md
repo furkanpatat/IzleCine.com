@@ -58,4 +58,11 @@
 
 29.Admin Yorum Silme 
 
-30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.) //Bu olur 
+30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.)
+
+# Gereksinim Dağılımları
+1. [Furkan Patat'ın Gereksinimleri](Furkan-Patat-Gereksinimler.md)
+2. [Burak Sayan'ın Gereksinimleri]()
+1. [Ayten Coşkun'un Gereksinimleri]()
+2. [İbrahim Halil Yılmaz'ın Gereksinimleri]()
+1. [Enes Buğra Demirel'in Gereksinimleri]()
