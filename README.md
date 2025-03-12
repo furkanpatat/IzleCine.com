@@ -1,14 +1,14 @@
-# İzlesekMi
+# İzleCine.com
 
-**Proje Tanımı:**  İzlesekMi.com, film severler için bir eleştiri ve öneri platformudur. Kullanıcılar, en yeni filmleri keşfederken,kullanıcıların kişilsel yorumlarını görebilir, film önerileri sayesinde izleyecekleri yeni yapımlara karar verebilirler. Sitemizde yer alan detaylı film incelemeleri, kullanıcı yorumları ve puanlama sistemi, ziyaretçilere film seçme konusunda yardımcı olur. Ayrıca, kullanıcılar izledikleri filmleri derecelendirip, kendi yorumlarını paylaşarak topluluğumuza katkıda bulunabilirler. izleseMi.com olarak, kaliteli ve güvenilir içerik sunarak, film severlerin doğru film seçimlerini yapmalarına yardımcı olmayı hedefliyoruz. Filmlerle ilgili güncel haberler ile sinema dünyasına dair her şey bir arada!
+**Proje Tanımı:**  İzleCine.com, film severler için bir eleştiri ve öneri platformudur. Kullanıcılar, en yeni filmleri keşfederken,kullanıcıların kişilsel yorumlarını görebilir, film önerileri sayesinde izleyecekleri yeni yapımlara karar verebilirler. Sitemizde yer alan detaylı film incelemeleri, kullanıcı yorumları ve puanlama sistemi, ziyaretçilere film seçme konusunda yardımcı olur. Ayrıca, kullanıcılar izledikleri filmleri derecelendirip, kendi yorumlarını paylaşarak topluluğumuza katkıda bulunabilirler. izleseMi.com olarak, kaliteli ve güvenilir içerik sunarak, film severlerin doğru film seçimlerini yapmalarına yardımcı olmayı hedefliyoruz. Filmlerle ilgili güncel haberler ile sinema dünyasına dair her şey bir arada!
 
 **Proje Kategorisi:**  Film Eleştirisi ve Öneri Platformu
 
 **Referans Uygulama:** [IMDb](https://www.imdb.com/)
 
-**Uygulama Adresi:** www.filmelestirisi.com //değiştirilecek
+**Uygulama Adresi:** www.izlecine.com 
 
-**Grup Adı:** 5ByTe
+**Grup Adı:** 5ByTeS
 
 **Proje Ekibi:** Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
 
