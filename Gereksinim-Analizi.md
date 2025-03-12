@@ -1,7 +1,5 @@
 # GEREKSİNİMLER
 
-**FRONT-END GEREKSİNİMLERİ**
-
 1.Kayıt Olma -->Kullanıcı kaydı için form bileşeni  
 
 2.Giriş Yapma -->Kullanıcı girişi için form bileşeni  
@@ -30,7 +28,7 @@
 
 14.Film Düzenleme --> Admin film düzenleme formu
 
-15.Yorum Yönetimi --> Admin yorumları yönetme // yorum silme veya yorum ekleme 
+15.Kullanıcı yorum düzenleme
 
 16.Bildirim --> Kullanıcı bildirimleri gösterme
 
@@ -44,20 +42,20 @@
 
 21.Yorum Puanlama --> Kullanıcı yorumlarına oylama yapabilme
 
-22.Kullanıcı Yönetim Paneli --> Kullanıcı kayıt, giriş, güncelleme, silme işlemleri // Bu 4 tanesi ayrı yapılacak
+22.Kullanıcı Silme
 
-23.Film Yönetim --> Filmlerle ilgili CRUD işlemleri
+23.Çoklu Dil Desteği -> Platformun farklı dillerde kullanılabilmesi.
 
-24.Yorum Yönetim Paneli --> Yorumlar için CRUD işlemleri
+24.Yorum Raporlama -> Kötüye kullanım önlemek için yorum filtreleme veya raporlama sistemi 
 
-25.Öneri Motoru --> Kullanıcı tercihleri ve izleme geçmişine göre öneri oluşturma
+25.Tema Seçeneği -> Açık/Koyu mod desteği
 
 26.Bildirim Gönderme --> Kullanıcılara bildirimler gönderme (RabbitMQ/Kafka ile asenkron)
 
-27.Cache Yönetim --> Redis/Memcache ile film verilerinin önbelleğe alınması 
+27.Filmlere fragman ekleme
 
-28.API Entegrasyonu --> IMDb API'sinden film verisi çekme
+28.Kullanıcı güncelleme 
 
-29.CI/CD Yönetimi --> Sürekli entegrasyon ve dağıtım için pipeline oluşturma
+29.Admin Yorum Silme 
 
 30.Kullanıcı İstatistiği --> Kullanıcıların site üzerindeki aktivitelerini izleme (film izleme sayısı, yorum sayısı, vb.) //Bu olur 
