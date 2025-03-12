@@ -1,4 +1,4 @@
-(Enes-Bugra-Demirel-Gereksinimler.md)
+
 1.Kayıt Olma, Kullanıcının siteye üye olabilmesi için bir kayıt formu oluşturulacak. Bu form, ad, soyad, e-posta, kullanıcı adı ve şifre gibi gerekli bilgileri toplar. Şifre, genellikle güçlü parola kriterlerine (uzunluk, karakter çeşitliliği) uygun olmalı ve doğrulama mekanizmasıyla tekrar girilmesi istenebilir. Ardından, formdaki veriler sunucuya gönderilir ve kullanıcı veritabanına kaydedilir.
 
 6.Yorum Yapma,Kullanıcıların izledikleri filmler hakkında yorum yapabilmeleri için bir alan sağlanır. Bu alan, yazı kutusu olarak tasarlanabilir. Yorumlar, genellikle sınırlı karakter sayısına sahip olur ve kullanıcılar bu alanı kullanarak film hakkında düşüncelerini paylaşabilir. Yorumlar veritabanında saklanır ve filmlerin altına eklenir.
