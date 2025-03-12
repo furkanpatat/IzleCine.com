@@ -64,5 +64,5 @@
 1. [Furkan Patat'ın Gereksinimleri](Furkan-Patat-Gereksinimler.md)
 2. [Burak Sayan'ın Gereksinimleri](Burak-sayan-gereksinimler.md)
 1. [Ayten Coşkun'un Gereksinimleri](Ayten-Coskun-Gereksinimler.md)
-2. [İbrahim Halil Yılmaz'ın Gereksinimleri]()
+2. [İbrahim Halil Yılmaz'ın Gereksinimleri](Halil-Yılmaz-Gereksinimler.md)
 1. [Enes Buğra Demirel'in Gereksinimleri](Enes-Bugra-Demirel-Gereksinimler.md)
