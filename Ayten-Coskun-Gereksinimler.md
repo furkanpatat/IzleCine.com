@@ -8,7 +8,7 @@
 - Listelere film ekleyip çıkarabilir ve özel isimler verebilirler.    
 
 #### 13: **Film Ekleme**  
-- Yetkilendirilmiş kullanıcılar platforma yeni filmler ekleyebilir.  
+- Yetkilendirilmiş kullanıcılar (admin) platforma yeni filmler ekleyebilir.  
 - Film ekleme işlemi; film adı, yönetmen, oyuncular, açıklama, çıkış tarihi ve afiş bilgilerini içermelidir.  
 - Kullanıcıların film ekleme yetkisi varsa, içerikler moderasyon sürecinden geçebilir.  
 
