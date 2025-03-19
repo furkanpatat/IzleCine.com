@@ -8,7 +8,7 @@
 
 **Uygulama Adresi:** www.izlecine.com 
 
-**Grup Adı:** 5ByTeS
+**Grup Adı:** fivebytes
 
 **Proje Ekibi:** Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
 
