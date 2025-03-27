@@ -13,7 +13,7 @@
 **Proje Ekibi:** Ayten Coşkun,Burak Sayan,Enes Buğra Demirel,Furkan Patat,İbrahim Halil Yılmaz
 
 1. [Gereksinim Analizi](Gereksinim-Analizi.md)
-2. [Durum-Diyagrami](Durum-Diyagramı.PNG)
+2. [Durum-Diyagrami](Durum-Diyagrami.md)
 3. [Durum Senaryoları](Durum-Senaryoları.md)
 4. [Front-End](Front-End.md)
 5. [Back-End](Back-End.md)
