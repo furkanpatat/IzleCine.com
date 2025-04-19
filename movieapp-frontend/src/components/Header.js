@@ -4,7 +4,7 @@ import { href, Link, NavLink, useNavigate } from 'react-router-dom'
 import userIcon from '../assets/user.png'
 import { IoSearch, IoSearchOutline } from "react-icons/io5";
 import { navigation } from '../contants/navigation';
-
+import { RiStarSmileFill } from "react-icons/ri";
 
 const Header = () => {
 
@@ -22,7 +22,36 @@ const Header = () => {
 
   return (
 
-    <header  className='fixed top-0 w-full h-16 bg-neutral-600 bg-opacity-75'>
+    <header  className='fixed top-0 w-full h-16 bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 shadow-lg shadow-purple-900/40 backdrop-blur-md z-50'>
+            <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+  {[...Array(20)].map((_, i) => (
+    <div
+      key={i}
+      className="meteor"
+      style={{
+        top: `${Math.random() * 1}%`,
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 5}s`,
+        animationDuration: `${4 + Math.random() * 2}s`,
+      }}
+    />
+  ))}
+</div>
+<div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+  {[...Array(100)].map((_, i) => (
+    <div
+      key={i}
+      className={`star star-${(i % 4) + 1}`}
+      style={{
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 5}s`, // Yıldızlar farklı zamanlarda hareket etmeye başlayacak
+        opacity: Math.random() * 0.5 + 0.3, // Yıldızların parlaklıkları rastgele olacak
+      }}
+    />
+  ))}
+</div>
+
             <div className='container mx-auto px-3 flex items-center h-full'>
 
                 <Link to = {"/"} >
@@ -64,8 +93,12 @@ const Header = () => {
                     <img
                         src={userIcon}
                         width='w-10 h-10'
-                        />
+                     />
                 </div>
+                {/* 💖 Favoriler İkonu */}
+                <Link to="/favorites" className="text-white text-xl hover:text-purple-700 transition-all ">
+                <RiStarSmileFill /> 
+                        </Link>
               </div>
             </div>
 

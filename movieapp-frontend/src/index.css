@@ -17,3 +17,88 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+@keyframes starMovement {
+  0% {
+    transform: translateX(0) translateY(0); /* Yıldızlar yerinde olacak */
+  }
+  100% {
+    transform: translateX(-100px) translateY(100px); /* Yıldızlar sağdan sola ve yukarı doğru hareket edecek */
+  }
+}
+
+/* Yıldızlar */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background-color: white;
+  animation: twinkle 3s infinite, moveStars 10s linear infinite;
+  opacity: 0.5;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+/* Yıldızın boyutu ve hareketi için farklı animasyonlar */
+.star-1 {
+  animation-duration: 3s, 10s;
+}
+
+.star-2 {
+  animation-duration: 4s, 8s;
+}
+
+.star-3 {
+  animation-duration: 5s, 12s;
+}
+
+.star-4 {
+  animation-duration: 6s, 15s;
+}
+
+/* Yıldızın parlaması (opacity değişimi) */
+@keyframes twinkle {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+/* Yıldızın yatayda hareketi */
+@keyframes moveStars {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  100% {
+    transform: translateX(100vw) translateY(100vh); /* Yıldızlar sağa ve aşağıya hareket eder */
+  }
+}
+@keyframes meteor {
+  0% {
+    transform: translate(0, 0) rotate(-45deg);
+    opacity: 100;
+  }
+  100% {
+    transform: translate(200px, 200px) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+.meteor {
+  position: absolute;
+  width: 2px;
+  height: 60px;
+  background: linear-gradient(45deg, white, rgba(255,255,255,0));
+  border-radius: 9999px;
+  transform: rotate(45deg);
+  animation-name: meteor;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
