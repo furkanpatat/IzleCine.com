@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import MobileNavigation from './components/MobileNavigation';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       </div>
 
       <Footer/>
+      <MobileNavigation/>
     </main>
   );
 }
