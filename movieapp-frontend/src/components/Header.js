@@ -3,17 +3,8 @@ import logo from '../assets/logo.png'
 import { href, Link, NavLink, useNavigate } from 'react-router-dom'
 import userIcon from '../assets/user.png'
 import { IoSearch, IoSearchOutline } from "react-icons/io5";
+import { navigation } from '../contants/navigation';
 
-export const navigation = [
-  {
-    label : "Dizi",
-    href :"tv"
-  },
-  {
-    label:"Film",
-    href:"movie"
-  }
-]
 
 const Header = () => {
 
