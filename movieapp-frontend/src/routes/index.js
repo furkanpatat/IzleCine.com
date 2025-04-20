@@ -20,7 +20,7 @@ import SystemLogsPage from '../pages/SystemLogsPage';
 import PlatformSettings from '../pages/admin/PlatformSettings';
 import ReportedComments from '../pages/admin/ReportedComments';
 import MovieDetails from '../components/MovieDetails';
-import UserProfile from '../pages/UserProfile';
+import Watchlist from '../pages/Watchlist';
 
 const router = createBrowserRouter([
     {
@@ -48,8 +48,8 @@ const router = createBrowserRouter([
                 element: <SearchPage />
             },
             {
-                path: "password-reset",  // Yeni route burada
-                element: <PasswordReset />  // Şifre sıfırlama bileşeni
+                path: "password-reset",
+                element: <PasswordReset />
             },
             {
                 path: "login",
@@ -60,8 +60,8 @@ const router = createBrowserRouter([
                 element: <SignUpPage />
             },
             {
-                path: "user-profile",
-                element: <UserProfile />
+                path: "watchlist",
+                element: <Watchlist />
             },
             {
                 path: 'admin',
