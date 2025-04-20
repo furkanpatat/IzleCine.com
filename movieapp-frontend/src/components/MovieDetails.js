@@ -4,6 +4,7 @@ import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from '
 import CommentSection from './CommentSection';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToWatchlist } from '../store/watchlistSlice';
+import { addRating, updateRating } from '../store/ratingSlice';
 import { movies } from '../data/movies';
 
 const MovieDetails = () => {
@@ -11,8 +12,11 @@ const MovieDetails = () => {
   const { id } = useParams();
   const [imageError, setImageError] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [userRating, setUserRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const dispatch = useDispatch();
   const watchlist = useSelector(state => state.watchlist.items);
+  const ratings = useSelector(state => state.ratings.ratings);
   const isInWatchlist = watchlist.some(movie => movie.id === parseInt(id));
 
   // ID'ye göre filmi bul
@@ -24,6 +28,17 @@ const MovieDetails = () => {
       navigate('/');
     }
   }, [movie, navigate]);
+
+  // Kullanıcının mevcut puanını yükle
+  useEffect(() => {
+    if (movie && ratings[movie.id]) {
+      // Gerçek uygulamada burada kullanıcı ID'si kullanılacak
+      const currentUserRating = ratings[movie.id]['currentUser'];
+      if (currentUserRating) {
+        setUserRating(currentUserRating);
+      }
+    }
+  }, [movie, ratings]);
 
   const handleImageError = () => {
     setImageError(true);
@@ -37,6 +52,34 @@ const MovieDetails = () => {
         setIsAnimating(false);
       }, 500);
     }
+  };
+
+  const handleRating = (rating) => {
+    if (movie) {
+      setUserRating(rating);
+      // Gerçek uygulamada burada kullanıcı ID'si kullanılacak
+      const ratingData = {
+        movieId: movie.id,
+        userId: 'currentUser',
+        rating: rating
+      };
+      
+      if (ratings[movie.id] && ratings[movie.id]['currentUser']) {
+        dispatch(updateRating(ratingData));
+      } else {
+        dispatch(addRating(ratingData));
+      }
+    }
+  };
+
+  const calculateAverageRating = () => {
+    if (!movie || !ratings[movie.id]) return movie.rating;
+    
+    const userRatings = Object.values(ratings[movie.id]);
+    if (userRatings.length === 0) return movie.rating;
+    
+    const sum = userRatings.reduce((acc, curr) => acc + curr, 0);
+    return (sum / userRatings.length).toFixed(1);
   };
 
   if (!movie) {
@@ -81,7 +124,7 @@ const MovieDetails = () => {
               <div className="flex flex-wrap gap-4 mb-6">
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaStar className="text-yellow-400 mr-2" />
-                  <span className="font-medium">{movie.rating}</span>
+                  <span className="font-medium">{calculateAverageRating()}</span>
                 </div>
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaClock className="text-gray-400 mr-2" />
@@ -90,6 +133,33 @@ const MovieDetails = () => {
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaFilm className="text-gray-400 mr-2" />
                   <span className="font-medium">{movie.category}</span>
+                </div>
+              </div>
+
+              {/* User Rating Section */}
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-3 text-gray-200">Filmi Puanla</h2>
+                <div className="flex items-center space-x-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => handleRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="focus:outline-none"
+                    >
+                      <FaStar
+                        className={`w-8 h-8 transition-colors duration-200 ${
+                          (hoverRating || userRating) >= star
+                            ? 'text-yellow-400'
+                            : 'text-gray-400'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="ml-2 text-gray-300">
+                    {userRating > 0 ? `Puanınız: ${userRating}` : 'Puan verin'}
+                  </span>
                 </div>
               </div>
 
