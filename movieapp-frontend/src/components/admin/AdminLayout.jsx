@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  Film, 
-  Users, 
-  Plus, 
-  BarChart2, 
-  User, 
-  Bell, 
+import {
+  Home,
+  Film,
+  Users,
+  Plus,
+  BarChart2,
+  User,
+  Bell,
   Shield,
   Trash2,
   Settings,
@@ -17,7 +17,7 @@ import {
 
 const AdminLayout = () => {
   const location = useLocation();
-  
+
   const menuItems = [
     { path: '/admin', icon: Home, label: 'Dashboard', isActive: true },
     { path: '/admin/edit-movies', icon: Film, label: 'Edit Movies', isActive: true },
@@ -27,7 +27,7 @@ const AdminLayout = () => {
     { path: '/admin/statistics', icon: BarChart2, label: 'General Stats', isActive: true },
     { path: '/admin/manage-users', icon: User, label: 'Manage Users', isActive: true },
     { path: '/admin/system-logs', icon: FileText, label: 'System Logs', isActive: true },
-    { path: '#', icon: Settings, label: 'Platform Settings', isActive: false },
+    { path: '/admin/platform-settings', icon: Settings, label: 'Platform Settings', isActive: true },
     { path: '#', icon: Bell, label: 'Notifications', isActive: false },
     { path: '#', icon: Shield, label: 'Admin Management', isActive: false },
   ];
@@ -47,9 +47,8 @@ const AdminLayout = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 ${
-                  isActive ? 'bg-gray-700 text-white border-l-4 border-blue-500' : ''
-                } ${!item.isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 ${isActive ? 'bg-gray-700 text-white border-l-4 border-blue-500' : ''
+                  } ${!item.isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={(e) => !item.isActive && e.preventDefault()}
               >
                 <Icon className="w-5 h-5 mr-3" />

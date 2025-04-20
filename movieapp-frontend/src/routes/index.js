@@ -17,6 +17,7 @@ import DeleteMovie from '../pages/admin/DeleteMovie';
 import ManageUsers from '../pages/admin/ManageUsers';
 import StatisticsPage from '../pages/StatisticsPage';
 import SystemLogsPage from '../pages/SystemLogsPage';
+import PlatformSettings from '../pages/admin/PlatformSettings';
 
 const router = createBrowserRouter([
     {
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
                     {
                         path: 'system-logs',
                         element: <SystemLogsPage />,
+                    },
+                    {
+                        path: 'platform-settings',
+                        element: <PlatformSettings />,
                     },
                 ],
             }
