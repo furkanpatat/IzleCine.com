@@ -19,3 +19,8 @@
 5. [Back-End](movieapp-backend/src)
 6. [Video Sunum](Sunum.md)
 
+Önemli Notlar:
+
+Admin paneline /admin endpointe ile erişilmektedir.
+
+![Ekran Görüntüsü - 2025-04-20 23-56-51](https://github.com/user-attachments/assets/a73ff110-c2ba-49ce-99e1-e9baff6ca5d4)
