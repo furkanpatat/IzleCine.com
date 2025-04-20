@@ -37,7 +37,7 @@ const Dashboard = () => {
     { 
       title: 'Delete Movie', 
       icon: Trash2, 
-      path: '#',
+      path: '/admin/delete-movies',
       color: 'bg-red-600',
       hoverColor: 'hover:bg-red-700'
     },
@@ -51,7 +51,7 @@ const Dashboard = () => {
     { 
       title: 'Manage Users', 
       icon: User, 
-      path: '#',
+      path: '/admin/manage-users',
       color: 'bg-indigo-600',
       hoverColor: 'hover:bg-indigo-700'
     },

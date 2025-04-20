@@ -14,6 +14,7 @@ const EditMovieDetails = () => {
     duration: '',
     category: '',
     posterUrl: '',
+    trailerUrl: '',
   });
 
   const [previewUrl, setPreviewUrl] = useState('');
@@ -30,6 +31,7 @@ const EditMovieDetails = () => {
         duration: '148',
         category: 'Sci-Fi',
         posterUrl: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg',
+        trailerUrl: 'https://www.youtube.com/watch?v=YoHD9XEInc0',
       },
     };
 
@@ -41,6 +43,7 @@ const EditMovieDetails = () => {
       duration: '',
       category: '',
       posterUrl: '',
+      trailerUrl: '',
     };
 
     setMovie(mockMovie);
@@ -190,6 +193,18 @@ const EditMovieDetails = () => {
                     className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter poster URL"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Trailer URL</label>
+                  <input
+                    type="url"
+                    name="trailerUrl"
+                    value={movie.trailerUrl}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter YouTube trailer URL"
                   />
                 </div>
               </div>

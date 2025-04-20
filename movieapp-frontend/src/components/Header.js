@@ -72,6 +72,7 @@ const Header = () => {
                       <div>
                         <NavLink key={nav.label} to={nav.href} className={({isActive})=> `px-2 hover:text-neutral-100 ${isActive && "text-neutral-100"}`}> 
                           {nav.label}
+                          
                         </NavLink>
                       </div>
                     )

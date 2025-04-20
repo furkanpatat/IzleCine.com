@@ -11,6 +11,8 @@ import Dashboard from '../pages/admin/Dashboard';
 import EditMovies from '../pages/admin/EditMovies';
 import UserStats from '../pages/admin/UserStats';
 import EditMovieDetails from '../pages/admin/EditMovieDetails';
+import DeleteMovie from '../pages/admin/DeleteMovie';
+import ManageUsers from '../pages/admin/ManageUsers';
 
 const router = createBrowserRouter([
     {
@@ -57,12 +59,20 @@ const router = createBrowserRouter([
                         element: <EditMovies />,
                     },
                     {
+                        path: 'delete-movies',
+                        element: <DeleteMovie />,
+                    },
+                    {
                         path: 'user-stats',
                         element: <UserStats />,
                     },
                     {
                         path: 'edit-movie/:id',
                         element: <EditMovieDetails />,
+                    },
+                    {
+                        path: 'manage-users',
+                        element: <ManageUsers />,
                     },
                 ],
             }
