@@ -18,6 +18,7 @@ import ManageUsers from '../pages/admin/ManageUsers';
 import StatisticsPage from '../pages/StatisticsPage';
 import SystemLogsPage from '../pages/SystemLogsPage';
 import PlatformSettings from '../pages/admin/PlatformSettings';
+import ReportedComments from '../pages/admin/ReportedComments';
 
 const router = createBrowserRouter([
     {
@@ -98,6 +99,10 @@ const router = createBrowserRouter([
                     {
                         path: 'platform-settings',
                         element: <PlatformSettings />,
+                    },
+                    {
+                        path: 'reported-comments',
+                        element: <ReportedComments />,
                     },
                 ],
             }

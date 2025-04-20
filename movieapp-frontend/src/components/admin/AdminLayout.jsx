@@ -12,7 +12,8 @@ import {
   Trash2,
   Settings,
   FileText,
-  LogOut
+  LogOut,
+  Flag
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -28,6 +29,7 @@ const AdminLayout = () => {
     { path: '/admin/manage-users', icon: User, label: 'Manage Users', isActive: true },
     { path: '/admin/system-logs', icon: FileText, label: 'System Logs', isActive: true },
     { path: '/admin/platform-settings', icon: Settings, label: 'Platform Settings', isActive: true },
+    { path: '/admin/reported-comments', icon: Flag, label: 'Raporlanan Yorumlar', isActive: true },
     { path: '#', icon: Bell, label: 'Notifications', isActive: false },
     { path: '#', icon: Shield, label: 'Admin Management', isActive: false },
   ];
