@@ -14,6 +14,8 @@ import EditMovieDetails from '../pages/admin/EditMovieDetails';
 import AddMovie from "../pages/admin/AddMovie";
 import DeleteMovie from '../pages/admin/DeleteMovie';
 import ManageUsers from '../pages/admin/ManageUsers';
+import StatisticsPage from '../pages/StatisticsPage';
+import SystemLogsPage from '../pages/SystemLogsPage';
 
 const router = createBrowserRouter([
     {
@@ -78,6 +80,14 @@ const router = createBrowserRouter([
                     {
                         path: 'manage-users',
                         element: <ManageUsers />,
+                    },
+                    {
+                        path: 'statistics',
+                        element: <StatisticsPage />,
+                    },
+                    {
+                        path: 'system-logs',
+                        element: <SystemLogsPage />,
                     },
                 ],
             }

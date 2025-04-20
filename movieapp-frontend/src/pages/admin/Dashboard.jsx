@@ -44,7 +44,7 @@ const Dashboard = () => {
     { 
       title: 'General Statistics', 
       icon: BarChart2, 
-      path: '#',
+      path: '/admin/statistics',
       color: 'bg-yellow-600',
       hoverColor: 'hover:bg-yellow-700'
     },
@@ -58,7 +58,7 @@ const Dashboard = () => {
     { 
       title: 'System Logs', 
       icon: FileText, 
-      path: '#',
+      path: '/admin/system-logs',
       color: 'bg-gray-600',
       hoverColor: 'hover:bg-gray-700'
     },

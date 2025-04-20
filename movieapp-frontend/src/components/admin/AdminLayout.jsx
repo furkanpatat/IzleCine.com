@@ -22,11 +22,11 @@ const AdminLayout = () => {
     { path: '/admin', icon: Home, label: 'Dashboard', isActive: true },
     { path: '/admin/edit-movies', icon: Film, label: 'Edit Movies', isActive: true },
     { path: '/admin/user-stats', icon: Users, label: 'User Statistics', isActive: true },
-    { path: '#', icon: Plus, label: 'Add Movie', isActive: false },
-    { path: '#', icon: Trash2, label: 'Delete Movie', isActive: false },
-    { path: '#', icon: BarChart2, label: 'General Stats', isActive: false },
-    { path: '#', icon: User, label: 'Manage Users', isActive: false },
-    { path: '#', icon: FileText, label: 'System Logs', isActive: false },
+    { path: '/admin/add-movie', icon: Plus, label: 'Add Movie', isActive: true },
+    { path: '/admin/delete-movies', icon: Trash2, label: 'Delete Movie', isActive: true },
+    { path: '/admin/statistics', icon: BarChart2, label: 'General Stats', isActive: true },
+    { path: '/admin/manage-users', icon: User, label: 'Manage Users', isActive: true },
+    { path: '/admin/system-logs', icon: FileText, label: 'System Logs', isActive: true },
     { path: '#', icon: Settings, label: 'Platform Settings', isActive: false },
     { path: '#', icon: Bell, label: 'Notifications', isActive: false },
     { path: '#', icon: Shield, label: 'Admin Management', isActive: false },
@@ -42,7 +42,7 @@ const AdminLayout = () => {
         <nav className="mt-6">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.isActive && location.pathname === item.path;
+            const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.path}
