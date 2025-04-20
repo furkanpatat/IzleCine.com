@@ -19,6 +19,7 @@ import StatisticsPage from '../pages/StatisticsPage';
 import SystemLogsPage from '../pages/SystemLogsPage';
 import PlatformSettings from '../pages/admin/PlatformSettings';
 import ReportedComments from '../pages/admin/ReportedComments';
+import MovieDetails from '../components/MovieDetails';
 
 const router = createBrowserRouter([
     {
@@ -30,19 +31,20 @@ const router = createBrowserRouter([
                 element: <Home />
             },
             {
+                path: "movie/:id",
+                element: <MovieDetails />
+            },
+            {
                 path: ":explore",
                 element: <ExplorePage />
-
             },
             {
                 path: ":explore/:id",
                 element: <DetailsPage />
-
             },
             {
                 path: ":search",
                 element: <SearchPage />
-
             },
             {
                 path: "password-reset",  // Yeni route burada
