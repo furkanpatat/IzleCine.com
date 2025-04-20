@@ -4,7 +4,7 @@ import Home from "../pages/Home";
 import ExplorePage from "../pages/ExplorePage";
 import DetailsPage from "../pages/DetailsPage";
 import SearchPage from "../pages/SearchPage";
-
+import PasswordReset from "../pages/PasswordReset";  
 const router = createBrowserRouter([
     {
         path :"/",
@@ -28,6 +28,10 @@ const router = createBrowserRouter([
                 path:":search",
                 element:<SearchPage/>
                 
+            },
+            {
+                path: "password-reset",  // Yeni route burada
+                element: <PasswordReset />  // Şifre sıfırlama bileşeni
             }
         ]
     }
