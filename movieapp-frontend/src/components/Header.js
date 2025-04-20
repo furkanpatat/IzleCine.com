@@ -5,6 +5,7 @@ import userIcon from '../assets/user.png'
 import { IoSearch, IoSearchOutline } from "react-icons/io5";
 import { navigation } from '../contants/navigation';
 import { RiStarSmileFill } from "react-icons/ri";
+import ProfileDropdown from './ProfileDropdown';
 
 const Header = () => {
 
@@ -92,13 +93,7 @@ const Header = () => {
                     <IoSearchOutline/>
                   </button>
                 </form>
-               
-                <div className='w-8 h-8 rounded-full overflow-hidden cursor-pointer active:scale-50 transition-all'>
-                    <img
-                        src={userIcon}
-                        width='w-10 h-10'
-                     />
-                </div>
+                <ProfileDropdown />
                 {/* 💖 Favoriler İkonu */}
                 <Link to="/favorites" className="text-white text-xl hover:text-purple-700 transition-all ">
                 <RiStarSmileFill /> 
