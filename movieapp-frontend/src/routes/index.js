@@ -6,6 +6,12 @@ import DetailsPage from "../pages/DetailsPage";
 import SearchPage from "../pages/SearchPage";
 import PasswordReset from "../pages/PasswordReset";  
 import LoginPage from "../pages/LoginPage";
+import AdminLayout from '../components/admin/AdminLayout';
+import Dashboard from '../pages/admin/Dashboard';
+import EditMovies from '../pages/admin/EditMovies';
+import UserStats from '../pages/admin/UserStats';
+import EditMovieDetails from '../pages/admin/EditMovieDetails';
+
 const router = createBrowserRouter([
     {
         path :"/",
@@ -37,6 +43,28 @@ const router = createBrowserRouter([
             {
                 path: "login",
                 element: <LoginPage />
+            },
+            {
+                path: 'admin',
+                element: <AdminLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Dashboard />,
+                    },
+                    {
+                        path: 'edit-movies',
+                        element: <EditMovies />,
+                    },
+                    {
+                        path: 'user-stats',
+                        element: <UserStats />,
+                    },
+                    {
+                        path: 'edit-movie/:id',
+                        element: <EditMovieDetails />,
+                    },
+                ],
             }
         ]
     }
