@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage } from 'react-icons/fa';
+import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from 'react-icons/fa';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [imageError, setImageError] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   
   // This is a placeholder. In a real app, you would fetch the movie details from an API
   const movie = {
@@ -22,6 +24,17 @@ const MovieDetails = () => {
 
   const handleImageError = () => {
     setImageError(true);
+  };
+
+  const handleAddToWatchlist = () => {
+    if (!isAdded) {
+      setIsAnimating(true);
+      // Simulate API call
+      setTimeout(() => {
+        setIsAdded(true);
+        setIsAnimating(false);
+      }, 500);
+    }
   };
 
   return (
@@ -82,7 +95,7 @@ const MovieDetails = () => {
                 <p className="text-gray-300 leading-relaxed">{movie.description}</p>
               </div>
 
-              <div>
+              <div className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4 text-gray-200">Cast</h2>
                 <div className="flex flex-wrap gap-3">
                   {movie.cast.map((actor, index) => (
@@ -94,6 +107,43 @@ const MovieDetails = () => {
                     </span>
                   ))}
                 </div>
+              </div>
+
+              {/* Add to Watchlist Button */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleAddToWatchlist}
+                  disabled={isAdded}
+                  className={`
+                    flex items-center justify-center gap-2
+                    px-6 py-3 rounded-lg font-medium
+                    transition-all duration-300
+                    ${isAdded 
+                      ? 'bg-green-600 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700 hover:scale-105'
+                    }
+                    ${isAnimating ? 'animate-pulse' : ''}
+                    shadow-lg hover:shadow-xl
+                  `}
+                >
+                  {isAdded ? (
+                    <>
+                      <FaCheck className="text-xl" />
+                      <span>Added to Watchlist</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaPlus className="text-xl" />
+                      <span>Add to Watchlist</span>
+                    </>
+                  )}
+                </button>
+                {isAdded && (
+                  <div className="text-green-400 flex items-center gap-2 animate-fade-in">
+                    <FaCheck className="text-xl" />
+                    <span className="font-medium">Successfully added!</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
