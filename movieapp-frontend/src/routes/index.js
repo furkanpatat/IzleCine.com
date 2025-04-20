@@ -4,8 +4,9 @@ import Home from "../pages/Home";
 import ExplorePage from "../pages/ExplorePage";
 import DetailsPage from "../pages/DetailsPage";
 import SearchPage from "../pages/SearchPage";
-import PasswordReset from "../pages/PasswordReset";  
+import PasswordReset from "../pages/PasswordReset";
 import LoginPage from "../pages/LoginPage";
+import SignUpPage from "../pages/SignUpPage";
 import AdminLayout from '../components/admin/AdminLayout';
 import Dashboard from '../pages/admin/Dashboard';
 import EditMovies from '../pages/admin/EditMovies';
@@ -19,27 +20,27 @@ import SystemLogsPage from '../pages/SystemLogsPage';
 
 const router = createBrowserRouter([
     {
-        path :"/",
-        element : <App/>,
-        children : [
+        path: "/",
+        element: <App />,
+        children: [
             {
-                path : "",
-                element : <Home/>
+                path: "",
+                element: <Home />
             },
             {
-                path:":explore",
-                element:<ExplorePage/>
+                path: ":explore",
+                element: <ExplorePage />
 
             },
             {
-                path:":explore/:id",
-                element:<DetailsPage/>
-                
+                path: ":explore/:id",
+                element: <DetailsPage />
+
             },
             {
-                path:":search",
-                element:<SearchPage/>
-                
+                path: ":search",
+                element: <SearchPage />
+
             },
             {
                 path: "password-reset",  // Yeni route burada
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
             {
                 path: "login",
                 element: <LoginPage />
+            },
+            {
+                path: "signup",
+                element: <SignUpPage />
             },
             {
                 path: 'admin',
