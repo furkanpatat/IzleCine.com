@@ -1,0 +1,39 @@
+.details-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.movie-details {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.movie-details h1 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.movie-details p {
+  color: #666;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .details-page {
+    padding: 1rem;
+  }
+
+  .movie-details {
+    padding: 1.5rem;
+  }
+
+  .movie-details h1 {
+    font-size: 2rem;
+  }
+} 
