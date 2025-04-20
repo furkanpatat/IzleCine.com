@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from 'react-icons/fa';
 import CommentSection from './CommentSection';
-import RatingSystem from './RatingSystem';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -147,11 +146,6 @@ const MovieDetails = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Rating System */}
-            <div className="mt-8">
-              <RatingSystem />
             </div>
           </div>
         </div>
