@@ -30,7 +30,7 @@ const Dashboard = () => {
     { 
       title: 'Add Movie', 
       icon: Plus, 
-      path: '#',
+      path: '/admin/add-movie',
       color: 'bg-purple-600',
       hoverColor: 'hover:bg-purple-700'
     },

@@ -11,6 +11,7 @@ import Dashboard from '../pages/admin/Dashboard';
 import EditMovies from '../pages/admin/EditMovies';
 import UserStats from '../pages/admin/UserStats';
 import EditMovieDetails from '../pages/admin/EditMovieDetails';
+import AddMovie from "../pages/admin/AddMovie";
 import DeleteMovie from '../pages/admin/DeleteMovie';
 import ManageUsers from '../pages/admin/ManageUsers';
 
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
                     {
                         path: 'delete-movies',
                         element: <DeleteMovie />,
+                    },
+                    {
+                        path: 'add-movie',
+                        element: <AddMovie />,
                     },
                     {
                         path: 'user-stats',
