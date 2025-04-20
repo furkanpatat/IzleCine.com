@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from 'react-icons/fa';
+import CommentSection from './CommentSection';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const MovieDetails = () => {
   const [imageError, setImageError] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  
+
   // This is a placeholder. In a real app, you would fetch the movie details from an API
   const movie = {
     id: id,
@@ -71,7 +72,7 @@ const MovieDetails = () => {
           <div className="lg:col-span-2">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">{movie.title}</h1>
-              
+
               <div className="flex flex-wrap gap-4 mb-6">
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaStar className="text-yellow-400 mr-2" />
@@ -118,8 +119,8 @@ const MovieDetails = () => {
                     flex items-center justify-center gap-2
                     px-6 py-3 rounded-lg font-medium
                     transition-all duration-300
-                    ${isAdded 
-                      ? 'bg-green-600 cursor-not-allowed' 
+                    ${isAdded
+                      ? 'bg-green-600 cursor-not-allowed'
                       : 'bg-blue-600 hover:bg-blue-700 hover:scale-105'
                     }
                     ${isAnimating ? 'animate-pulse' : ''}
@@ -148,6 +149,9 @@ const MovieDetails = () => {
             </div>
           </div>
         </div>
+
+        {/* Comment Section */}
+        <CommentSection />
       </div>
     </div>
   );
