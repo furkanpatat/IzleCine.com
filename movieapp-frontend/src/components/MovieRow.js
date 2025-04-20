@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaImage } from 'react-icons/fa';
+import { FaImage, FaHeart } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToFavorites, removeFromFavorites } from '../store/izleCine';
 
 const MovieRow = ({ title, movies }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [imageErrors, setImageErrors] = useState({});
+  const favorites = useSelector(state => state.IzleCineData.favorites);
 
   const handleMovieClick = (movieId) => {
     navigate(`/movie/${movieId}`);
@@ -12,6 +16,15 @@ const MovieRow = ({ title, movies }) => {
 
   const handleImageError = (movieId) => {
     setImageErrors(prev => ({ ...prev, [movieId]: true }));
+  };
+
+  const handleFavoriteClick = (e, movie) => {
+    e.stopPropagation();
+    if (favorites.some(fav => fav.id === movie.id)) {
+      dispatch(removeFromFavorites(movie.id));
+    } else {
+      dispatch(addToFavorites(movie));
+    }
   };
 
   return (
@@ -40,9 +53,21 @@ const MovieRow = ({ title, movies }) => {
               <div className="absolute bottom-0 left-0 p-4 w-full">
                 <h3 className="text-lg font-semibold mb-2 text-white">{movie.title}</h3>
                 <p className="text-sm text-gray-300 mb-2">{movie.year} • {movie.category}</p>
-                <div className="flex items-center">
-                  <span className="text-yellow-400">★</span>
-                  <span className="ml-1 text-white font-medium">{movie.rating}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <span className="text-yellow-400">★</span>
+                    <span className="ml-1 text-white font-medium">{movie.rating}</span>
+                  </div>
+                  <button
+                    onClick={(e) => handleFavoriteClick(e, movie)}
+                    className={`p-2 rounded-full transition-colors duration-200 ${
+                      favorites.some(fav => fav.id === movie.id)
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                    }`}
+                  >
+                    <FaHeart />
+                  </button>
                 </div>
               </div>
             </div>
