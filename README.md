@@ -15,7 +15,7 @@
 1. [Gereksinim Analizi](Gereksinim-Analizi.md)
 2. [Durum-Diyagrami](Durum-Diyagrami.md)
 3. [Durum Senaryoları](Durum-Senaryoları.md)
-4. [Front-End](Front-End.md)
-5. [Back-End](Back-End.md)
+4. [Front-End](movieapp-frontend)
+5. [Back-End](movieapp-backend/src)
 6. [Video Sunum](Sunum.md)
 
