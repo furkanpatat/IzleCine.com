@@ -20,6 +20,7 @@ import SystemLogsPage from '../pages/SystemLogsPage';
 import PlatformSettings from '../pages/admin/PlatformSettings';
 import ReportedComments from '../pages/admin/ReportedComments';
 import MovieDetails from '../components/MovieDetails';
+import UserProfile from '../pages/UserProfile';
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             {
                 path: "signup",
                 element: <SignUpPage />
+            },
+            {
+                path: "user-profile",
+                element: <UserProfile />
             },
             {
                 path: 'admin',

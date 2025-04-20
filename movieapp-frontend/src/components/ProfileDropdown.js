@@ -66,6 +66,13 @@ const ProfileDropdown = () => {
             İzleme Listesi
           </Link>
 
+           <Link
+              to="/user-profile"
+              className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
+            >
+               Ayarlar
+            </Link>
+          
           <div className="px-4 py-3 text-xs font-medium text-gray-200">
             <div className="flex items-center justify-between">
               <span>Tema</span>
