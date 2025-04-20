@@ -5,6 +5,7 @@ import ExplorePage from "../pages/ExplorePage";
 import DetailsPage from "../pages/DetailsPage";
 import SearchPage from "../pages/SearchPage";
 import PasswordReset from "../pages/PasswordReset";  
+import LoginPage from "../pages/LoginPage";
 const router = createBrowserRouter([
     {
         path :"/",
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
             {
                 path: "password-reset",  // Yeni route burada
                 element: <PasswordReset />  // Şifre sıfırlama bileşeni
+            },
+            {
+                path: "login",
+                element: <LoginPage />
             }
         ]
     }

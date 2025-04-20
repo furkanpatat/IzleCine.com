@@ -102,6 +102,10 @@ const Header = () => {
                 <Link to="/favorites" className="text-white text-xl hover:text-purple-700 transition-all ">
                 <RiStarSmileFill /> 
                         </Link>
+                  {/* Giriş Yap Butonu */}
+                <Link to="/login" className="bg-purple-700 hover:bg-purple-300 text-white px-4 py-2 rounded-md transition-all duration-300">
+                  Giriş Yap
+                </Link>      
               </div>
             </div>
 
