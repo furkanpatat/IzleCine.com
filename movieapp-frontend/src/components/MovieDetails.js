@@ -5,7 +5,7 @@ import CommentSection from './CommentSection';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToWatchlist } from '../store/watchlistSlice';
 import { addRating, updateRating } from '../store/ratingSlice';
-import { movies } from '../data/movies';
+import tmdbService from '../services/tmdbService';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -14,25 +14,35 @@ const MovieDetails = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [movie, setMovie] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const watchlist = useSelector(state => state.watchlist.items);
   const ratings = useSelector(state => state.ratings.ratings);
   const isInWatchlist = watchlist.some(movie => movie.id === parseInt(id));
 
-  // ID'ye göre filmi bul
-  const movie = movies.find(m => m.id === parseInt(id));
-
-  // Eğer film bulunamazsa ana sayfaya yönlendir
   useEffect(() => {
-    if (!movie) {
-      navigate('/');
-    }
-  }, [movie, navigate]);
+    const fetchMovieDetails = async () => {
+      try {
+        setLoading(true);
+        const data = await tmdbService.getMovieDetails(id);
+        setMovie(data);
+        setError(null);
+      } catch (err) {
+        setError('Film detayları yüklenirken bir hata oluştu.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovieDetails();
+  }, [id]);
 
   // Kullanıcının mevcut puanını yükle
   useEffect(() => {
     if (movie && ratings[movie.id]) {
-      // Gerçek uygulamada burada kullanıcı ID'si kullanılacak
       const currentUserRating = ratings[movie.id]['currentUser'];
       if (currentUserRating) {
         setUserRating(currentUserRating);
@@ -57,7 +67,6 @@ const MovieDetails = () => {
   const handleRating = (rating) => {
     if (movie) {
       setUserRating(rating);
-      // Gerçek uygulamada burada kullanıcı ID'si kullanılacak
       const ratingData = {
         movieId: movie.id,
         userId: 'currentUser',
@@ -73,17 +82,37 @@ const MovieDetails = () => {
   };
 
   const calculateAverageRating = () => {
-    if (!movie || !ratings[movie.id]) return movie.rating;
+    if (!movie || !ratings[movie.id]) return movie.vote_average;
     
     const userRatings = Object.values(ratings[movie.id]);
-    if (userRatings.length === 0) return movie.rating;
+    if (userRatings.length === 0) return movie.vote_average;
     
     const sum = userRatings.reduce((acc, curr) => acc + curr, 0);
     return (sum / userRatings.length).toFixed(1);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center text-red-500">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   if (!movie) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center text-white">
+        <p>Film bulunamadı.</p>
+      </div>
+    );
   }
 
   return (
@@ -107,7 +136,7 @@ const MovieDetails = () => {
                 </div>
               ) : (
                 <img
-                  src={movie.image}
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
                   className="w-full h-full object-cover"
                   onError={handleImageError}
@@ -128,11 +157,11 @@ const MovieDetails = () => {
                 </div>
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaClock className="text-gray-400 mr-2" />
-                  <span className="font-medium">{movie.year}</span>
+                  <span className="font-medium">{new Date(movie.release_date).getFullYear()}</span>
                 </div>
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaFilm className="text-gray-400 mr-2" />
-                  <span className="font-medium">{movie.category}</span>
+                  <span className="font-medium">{movie.runtime} dakika</span>
                 </div>
               </div>
 
@@ -165,7 +194,22 @@ const MovieDetails = () => {
 
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4 text-gray-200">Açıklama</h2>
-                <p className="text-gray-300 leading-relaxed">{movie.description}</p>
+                <p className="text-gray-300 leading-relaxed">{movie.overview}</p>
+              </div>
+
+              {/* Genres */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold mb-4 text-gray-200">Türler</h2>
+                <div className="flex flex-wrap gap-2">
+                  {movie.genres.map(genre => (
+                    <span
+                      key={genre.id}
+                      className="bg-gray-700/50 px-4 py-2 rounded-lg text-sm"
+                    >
+                      {genre.name}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               {/* Add to Watchlist Button */}
