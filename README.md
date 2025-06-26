@@ -24,3 +24,23 @@
 Admin paneline /admin endpointe ile erişilmektedir.
 
 ![Ekran Görüntüsü - 2025-04-20 23-56-51](https://github.com/user-attachments/assets/a73ff110-c2ba-49ce-99e1-e9baff6ca5d4)
+
+# Backend
+
+Node.js, Express.js ve MongoDB ile hazırlanmış backend projesi bu dizinde yer alacaktır.
+
+## Kurulum
+
+1. `cd backend`
+2. `npm install`
+3. `.env` dosyasını oluşturun ve `MONGO_URI` değerini girin.
+4. `npm start` ile başlatın.
+
+## Klasör Yapısı
+
+- backend/
+  - controllers/
+  - models/
+  - routes/
+  - server.js
+  - .env
