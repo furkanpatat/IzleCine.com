@@ -107,6 +107,39 @@ const tmdbService = {
       console.error('Error fetching movies by genre:', error);
       throw error;
     }
+  },
+
+  // Film türlerini getir
+  getMovieGenres: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/genre/movie/list`, {
+        params: {
+          api_key: API_KEY,
+          language: 'tr-TR'
+        }
+      });
+      return response.data.genres;
+    } catch (error) {
+      console.error('Error fetching movie genres:', error);
+      throw error;
+    }
+  },
+
+  // Trend olan filmleri getir
+  getTrendingMovies: async (page = 1) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/trending/movie/week`, {
+        params: {
+          api_key: API_KEY,
+          language: 'tr-TR',
+          page: page
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching trending movies:', error);
+      throw error;
+    }
   }
 };
 

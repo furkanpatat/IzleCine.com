@@ -78,7 +78,7 @@ const DetailsPage = () => {
           
           <div className="meta-info">
             <span className="rating">
-              <i className="fas fa-star"></i> {details.vote_average.toFixed(1)}
+              <i className="fas fa-star"></i> {typeof details.vote_average === 'number' && !isNaN(details.vote_average) ? details.vote_average.toFixed(1) : '-'}
             </span>
             <span className="year">
               {type === 'movie' 
@@ -95,11 +95,13 @@ const DetailsPage = () => {
           <p className="overview">{details.overview}</p>
 
           <div className="genres">
-            {details.genres.map(genre => (
-              <span key={genre.id} className="genre-tag">
-                {genre.name}
-              </span>
-            ))}
+            {Array.isArray(details.genres) && details.genres.length > 0 ? (
+              details.genres.map(genre => (
+                <span key={genre.id} className="genre-tag">
+                  {genre.name}
+                </span>
+              ))
+            ) : null}
           </div>
 
           {details.credits && (

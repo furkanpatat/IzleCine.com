@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { setBannerData } from './store/izleCine';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
+import CategoryPage from './pages/CategoryPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/category/:key" element={<CategoryPage />} />
         </Routes>
         <Outlet />
       </div>
