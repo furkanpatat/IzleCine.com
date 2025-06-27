@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
   const [language, setLanguage] = useState('tr');
   const dropdownRef = useRef(null);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -28,6 +30,7 @@ const ProfileDropdown = () => {
   const toggleLanguage = () => {
     const newLang = language === 'tr' ? 'en' : 'tr';
     setLanguage(newLang);
+    i18n.changeLanguage(newLang);
   };
 
   return (
@@ -56,26 +59,26 @@ const ProfileDropdown = () => {
             to="/profil"
             className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
           >
-            Profil
+            {t('Profil')}
           </Link>
 
           <Link
             to="/watchlist"
             className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
           >
-            İzleme Listesi
+            {t('İzleme Listesi')}
           </Link>
 
            <Link
               to="/user-profile"
               className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
             >
-               Ayarlar
+               {t('Ayarlar')}
             </Link>
           
           <div className="px-4 py-3 text-xs font-medium text-gray-200">
             <div className="flex items-center justify-between">
-              <span>Tema</span>
+              <span>{t('Tema')}</span>
               <button
                 onClick={toggleTheme}
                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${
@@ -93,7 +96,7 @@ const ProfileDropdown = () => {
 
           <div className="px-4 py-3 text-xs font-medium text-gray-200">
             <div className="flex items-center justify-between">
-              <span>Dil</span>
+              <span>{t('Dil')}</span>
               <button
                 onClick={toggleLanguage}
                 className={`px-2 py-1 rounded-md transition-colors duration-300 ${

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlay, FaInfoCircle, FaChevronLeft, FaChevronRight, FaStar, FaClock, FaFilm, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const BannerHome = ({ movies }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -9,6 +10,7 @@ const BannerHome = ({ movies }) => {
   const [isMuted, setIsMuted] = useState(true);
   const bannerRef = useRef(null);
   const featuredMovies = movies.slice(0, 5);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,6 +34,28 @@ const BannerHome = ({ movies }) => {
 
   const handleNextSlide = () => {
     handleSlideChange((currentSlide + 1) % featuredMovies.length);
+  };
+
+  const genres = {
+    28: t('Aksiyon'),
+    12: t('Macera'),
+    16: t('Animasyon'),
+    35: t('Komedi'),
+    80: t('Suç'),
+    99: t('Belgesel'),
+    18: t('Drama'),
+    10751: t('Aile'),
+    14: t('Fantastik'),
+    36: t('Tarih'),
+    27: t('Korku'),
+    10402: t('Müzik'),
+    9648: t('Gizem'),
+    10749: t('Romantik'),
+    878: t('Bilim Kurgu'),
+    10770: t('TV Filmi'),
+    53: t('Gerilim'),
+    10752: t('Savaş'),
+    37: t('Western')
   };
 
   return (
@@ -100,27 +124,6 @@ const BannerHome = ({ movies }) => {
                     <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
                       <FaFilm className="text-gray-400 mr-2" />
                       <span className="font-medium">{movie.genre_ids?.map(id => {
-                        const genres = {
-                          28: 'Aksiyon',
-                          12: 'Macera',
-                          16: 'Animasyon',
-                          35: 'Komedi',
-                          80: 'Suç',
-                          99: 'Belgesel',
-                          18: 'Drama',
-                          10751: 'Aile',
-                          14: 'Fantastik',
-                          36: 'Tarih',
-                          27: 'Korku',
-                          10402: 'Müzik',
-                          9648: 'Gizem',
-                          10749: 'Romantik',
-                          878: 'Bilim Kurgu',
-                          10770: 'TV Filmi',
-                          53: 'Gerilim',
-                          10752: 'Savaş',
-                          37: 'Western'
-                        };
                         return genres[id] || '';
                       }).filter(Boolean).join(', ')}</span>
                     </div>

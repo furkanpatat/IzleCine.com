@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import BannerHome from '../components/BannerHome';
 import MovieRow from '../components/MovieRow';
 import tmdbService from '../services/tmdbService';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -13,6 +14,7 @@ const Home = () => {
   const [horrorMovies, setHorrorMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -78,31 +80,31 @@ const Home = () => {
       <div className="container mx-auto px-4 py-8 space-y-16">
         {trendingMovies.length > 0 && (
           <div className="category-section animate-fade-in">
-            <MovieRow title="Trend Filmler" movies={trendingMovies} />
+            <MovieRow title={t('Trend Filmler')} movies={trendingMovies} />
           </div>
         )}
 
         {newMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <MovieRow title="Yeni Gelenler" movies={newMovies} />
+            <MovieRow title={t('Yeni Gelenler')} movies={newMovies} />
           </div>
         )}
 
         {actionMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <MovieRow title="Aksiyon Filmleri" movies={actionMovies} />
+            <MovieRow title={t('Aksiyon Filmleri')} movies={actionMovies} />
           </div>
         )}
 
         {comedyMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <MovieRow title="Komedi Filmleri" movies={comedyMovies} />
+            <MovieRow title={t('Komedi Filmleri')} movies={comedyMovies} />
           </div>
         )}
 
         {dramaMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <MovieRow title="Drama Filmleri" movies={dramaMovies} />
+            <MovieRow title={t('Drama Filmleri')} movies={dramaMovies} />
           </div>
         )}
 

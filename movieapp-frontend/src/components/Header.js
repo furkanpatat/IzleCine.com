@@ -8,6 +8,7 @@ import { RiStarSmileFill } from "react-icons/ri";
 import ProfileDropdown from './ProfileDropdown';
 import tmdbService from '../services/tmdbService';
 import MovieRow from './MovieRow';
+import { useTranslation } from 'react-i18next';
 
 const CATEGORY_CONFIG = [
   { key: 'popular', label: 'Popüler', fetch: () => tmdbService.getPopularMovies() },
@@ -26,6 +27,7 @@ const Header = () => {
   const [categoryMovies, setCategoryMovies] = useState([]);
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [categoryError, setCategoryError] = useState(null);
+  const { t } = useTranslation();
   
   
   useEffect (()=>{
@@ -138,7 +140,7 @@ const Header = () => {
                         </Link>
                   {/* Giriş Yap Butonu */}
                 <Link to="/login" className="bg-purple-700 hover:bg-purple-300 text-white px-4 py-2 rounded-md transition-all duration-300">
-                  Giriş Yap
+                  {t('Giriş Yap')}
                 </Link>      
               </div>
             </div>
