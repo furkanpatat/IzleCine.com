@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Comment = require('../models/Comment');
+const mongoose = require('mongoose');
 
 exports.register = async (req, res) => {
   try {
@@ -33,5 +35,68 @@ exports.login = async (req, res) => {
     res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     res.status(500).json({ message: 'Sunucu hatası.' });
+  }
+};
+
+// 1. Kullanıcı yorum yaptığında
+exports.addUserComment = async (req, res) => {
+  try {
+    const { userId, movieId, content } = req.body;
+    if (!userId || !movieId || !content) {
+      return res.status(400).json({ message: 'Eksik bilgi.' });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+    }
+    const comment = new Comment({ userId, movieId, content });
+    await comment.save();
+    await User.findByIdAndUpdate(userId, {
+      $push: { comments: { movieId, commentText: content, commentedAt: new Date() } }
+    });
+    return res.status(201).json({ message: 'Yorum eklendi.', comment });
+  } catch (err) {
+    return res.status(500).json({ message: 'Sunucu hatası.', error: err.message });
+  }
+};
+
+// 2. Kullanıcı bir filmi favorilere eklediğinde
+exports.addFavoriteMovie = async (req, res) => {
+  try {
+    const { userId, movieId } = req.body;
+    if (!userId || !movieId) {
+      return res.status(400).json({ message: 'Eksik bilgi.' });
+    }
+    const update = {
+      $addToSet: { likedMovies: { movieId, likedAt: new Date() } }
+    };
+    const user = await User.findByIdAndUpdate(userId, update, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+    }
+    return res.status(200).json({ message: 'Film favorilere eklendi.', likedMovies: user.likedMovies });
+  } catch (err) {
+    return res.status(500).json({ message: 'Sunucu hatası.', error: err.message });
+  }
+};
+
+// 3. Kullanıcı bir filme puan verdiğinde
+exports.rateMovie = async (req, res) => {
+  try {
+    const { userId, movieId, rating } = req.body;
+    if (!userId || !movieId || typeof rating !== 'number') {
+      return res.status(400).json({ message: 'Eksik veya hatalı bilgi.' });
+    }
+    // ratings alanı User modelinde yoksa, eklenmesi gerekir. Burada ratings: Map olarak varsayılmıştır.
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+    }
+    if (!user.ratings) user.ratings = new Map();
+    user.ratings.set(movieId, rating);
+    await user.save();
+    return res.status(200).json({ message: 'Puan kaydedildi.', ratings: Object.fromEntries(user.ratings) });
+  } catch (err) {
+    return res.status(500).json({ message: 'Sunucu hatası.', error: err.message });
   }
 }; 
