@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+import authService from '../services/authService';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -8,10 +9,17 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically handle the login logic
-    console.log('Login attempt with:', { email, password });
+    try {
+      const data = await authService.login({ email, password });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      alert('Login successful!');
+      navigate('/user-profile');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (

@@ -13,7 +13,6 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
-app.use('/api/login', userRoutes); // login aynı userRoutes içinde olacak
 
 const PORT = process.env.PORT || 5000;
 

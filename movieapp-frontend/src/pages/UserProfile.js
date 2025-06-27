@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const UserProfile = () => {
   const navigate = useNavigate();
   
-  // Mock user data
-  const [userData, setUserData] = useState({
+  // Get user from localStorage
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  // Fallback mock data if not logged in
+  const [userData, setUserData] = useState(user || {
     firstName: 'Halil',
     lastName: 'Yılmaz',
     username: 'ibohllylmz',

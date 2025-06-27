@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';  // We'll reuse the login page styles
+import authService from '../services/authService';
 
 const SignUpPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [username, setUsername] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
             setError('Şifreler eşleşmiyor');
             return;
         }
-
-        // Here you would typically handle the signup logic
-        console.log('Signup attempt with:', { email, password });
+        try {
+            await authService.register({ username, email, password });
+            alert('Registration successful!');
+            navigate('/login');
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (
@@ -61,6 +67,18 @@ const SignUpPage = () => {
                         name="confirmPassword"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="username">Kullanıcı Adı:</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                     />
                 </div>
