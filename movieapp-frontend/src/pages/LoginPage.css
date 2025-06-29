@@ -109,6 +109,22 @@
     margin-top: 22px;
 }
 
+.forgot-password-link {
+    color: #9328ad;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 5px;
+    background-color: transparent;
+    display: inline-block;
+}
+
+.forgot-password-link:hover {
+    transform: translateY(-1px);
+}
+
 .forgot-password a {
     color: #9328ad;
     text-decoration: none;

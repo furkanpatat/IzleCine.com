@@ -2,14 +2,11 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import MobileNavigation from './components/MobileNavigation';
-import { Outlet, Routes, Route } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setBannerData } from './store/izleCine';
-import Home from './pages/Home';
-import Favorites from './pages/Favorites';
-import CategoryPage from './pages/CategoryPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -31,11 +28,6 @@ function App() {
     <main className="pb-14 lg:pb-0">
       <Header />
       <div className="pt-16">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/category/:key" element={<CategoryPage />} />
-        </Routes>
         <Outlet />
       </div>
       <Footer />

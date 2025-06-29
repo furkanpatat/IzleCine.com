@@ -5,6 +5,7 @@ import ExplorePage from "../pages/ExplorePage";
 import DetailsPage from "../pages/DetailsPage";
 import SearchPage from "../pages/SearchPage";
 import PasswordReset from "../pages/PasswordReset";
+import ForgotPassword from "../pages/ForgotPassword";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
 import AdminLayout from '../components/admin/AdminLayout';
@@ -37,20 +38,12 @@ const router = createBrowserRouter([
                 element: <MovieDetails />
             },
             {
-                path: ":explore",
-                element: <ExplorePage />
-            },
-            {
-                path: ":explore/:id",
-                element: <DetailsPage />
-            },
-            {
-                path: ":search",
-                element: <SearchPage />
-            },
-            {
                 path: "password-reset",
                 element: <PasswordReset />
+            },
+            {
+                path: "forgot-password",
+                element: <ForgotPassword />
             },
             {
                 path: "login",
@@ -67,6 +60,18 @@ const router = createBrowserRouter([
             {
                 path: "watchlist",
                 element: <Watchlist />
+            },
+            {
+                path: ":explore",
+                element: <ExplorePage />
+            },
+            {
+                path: ":explore/:id",
+                element: <DetailsPage />
+            },
+            {
+                path: ":search",
+                element: <SearchPage />
             },
             {
                 path: 'admin',

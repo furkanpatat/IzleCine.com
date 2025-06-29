@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Comment = require('../models/Comment');
 const mongoose = require('mongoose');
+const sendToQueue = require('../sendMailJob');
 
 exports.register = async (req, res) => {
   try {
@@ -98,5 +99,84 @@ exports.rateMovie = async (req, res) => {
     return res.status(200).json({ message: 'Puan kaydedildi.', ratings: Object.fromEntries(user.ratings) });
   } catch (err) {
     return res.status(500).json({ message: 'Sunucu hatası.', error: err.message });
+  }
+};
+
+// Forgot Password - Şifre sıfırlama e-postası gönderme
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    // E-posta adresinin geçerli olup olmadığını kontrol et
+    if (!email) {
+      return res.status(400).json({ message: 'E-posta adresi gerekli.' });
+    }
+
+    // Kullanıcının veritabanında olup olmadığını kontrol et
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı.' });
+    }
+
+    // Şifre sıfırlama token'ı oluştur (1 saat geçerli)
+    const resetToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || 'secretkey',
+      { expiresIn: '1h' }
+    );
+
+    // Şifre sıfırlama linkini oluştur
+    const resetLink = `http://localhost:3000/password-reset?token=${resetToken}`;
+
+    // E-posta gönderme işlemini kuyruğa ekle
+    const mailData = {
+      email: email,
+      resetLink: resetLink
+    };
+
+    await sendToQueue(mailData);
+
+    res.status(200).json({ 
+      message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.' 
+    });
+
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ message: 'Sunucu hatası oluştu.' });
+  }
+};
+
+// Reset Password - Token ile şifre sıfırlama
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token ve yeni şifre gerekli.' });
+    }
+
+    // Token'ı doğrula
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
+    const user = await User.findById(decoded.userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+    }
+
+    // Yeni şifreyi hash'le
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Kullanıcının şifresini güncelle
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Şifreniz başarıyla sıfırlandı.' });
+
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(400).json({ message: 'Geçersiz veya süresi dolmuş token.' });
+    }
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Sunucu hatası oluştu.' });
   }
 }; 

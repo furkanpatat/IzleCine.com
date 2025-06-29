@@ -58,7 +58,7 @@ const LoginPage = () => {
         <Link to="/signup" className="register-button">Kayıt Ol</Link>
         
         <div className="forgot-password">
-          <Link to="/password-reset">Şifrenizi mi unuttunuz?</Link>
+          <Link to="/forgot-password" className="forgot-password-link">Şifrenizi mi unuttunuz?</Link>
         </div>
       </form>
     </div>
