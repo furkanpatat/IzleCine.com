@@ -3,7 +3,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import MobileNavigation from './components/MobileNavigation';
 import { Outlet } from 'react-router-dom';
-import axios from 'axios';
+import tmdbService from './services/tmdbService';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setBannerData } from './store/izleCine';
@@ -13,8 +13,8 @@ function App() {
 
   const fetchTrendingData = async () => {
     try {
-      const response = await axios.get('/trending/all/week');
-      dispatch(setBannerData(response.data.results));
+      const response = await tmdbService.getTrendingMovies();
+      dispatch(setBannerData(response.results));
     } catch (error) {
       console.log("error", error);
     }

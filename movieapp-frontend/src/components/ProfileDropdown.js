@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { FaUser, FaHeart, FaComment, FaSignOutAlt, FaCog, FaList } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
+import userImage from '../assets/user.png';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState('dark');
-  const [language, setLanguage] = useState('tr');
   const dropdownRef = useRef(null);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -22,90 +23,98 @@ const ProfileDropdown = () => {
     };
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-    // Tema değişikliği için gerekli işlemler burada yapılacak
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    window.dispatchEvent(new Event('userChanged'));
+    setIsOpen(false);
   };
 
-  const toggleLanguage = () => {
-    const newLang = language === 'tr' ? 'en' : 'tr';
-    setLanguage(newLang);
-    i18n.changeLanguage(newLang);
+  const toggleDropdown = () => {
+    console.log('Toggle dropdown clicked, current state:', isOpen);
+    setIsOpen(!isOpen);
   };
+
+  console.log('ProfileDropdown rendered, isOpen:', isOpen);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="profile-dropdown-container relative" ref={dropdownRef}>
       <div
-        className="w-8 h-8 rounded-full overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500/50 transition-all duration-300"
-        onMouseEnter={() => setIsOpen(true)}
+        className="profile-dropdown-trigger w-8 h-8 rounded-full overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500/50 transition-all duration-300"
+        onClick={toggleDropdown}
       >
         <img
-          src={require('../assets/user.png')}
+          src={userImage}
           alt="Profile"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Failed to load user image');
+            e.target.style.display = 'none';
+          }}
         />
       </div>
 
       {isOpen && (
-        <div
-          className="absolute right-0 md:right-auto md:left-0 mt-2 w-48 bg-gray-800/80 backdrop-blur-md rounded-lg shadow-xl py-3 z-50 border border-gray-700/50 transition-all duration-300 transform origin-top"
-          onMouseEnter={() => setIsOpen(true)}
-          onMouseLeave={() => setIsOpen(false)}
-          style={{
-            animation: 'fadeIn 0.2s ease-out',
-          }}
-        >
-          <Link
-            to="/profil"
-            className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
-          >
-            {t('Profil')}
-          </Link>
-
-          <Link
-            to="/watchlist"
-            className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
-          >
-            {t('İzleme Listesi')}
-          </Link>
-
-           <Link
-              to="/user-profile"
-              className="block px-4 py-3 text-xs font-medium text-gray-200 hover:bg-gray-700/50 hover:text-white transition-colors duration-200"
+        <div className="profile-dropdown-menu">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
+            <h2 className="text-lg font-semibold text-white">Menu</h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-white transition-colors duration-200"
             >
-               {t('Ayarlar')}
-            </Link>
-          
-          <div className="px-4 py-3 text-xs font-medium text-gray-200">
-            <div className="flex items-center justify-between">
-              <span>{t('Tema')}</span>
-              <button
-                onClick={toggleTheme}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-300 ${
-                  theme === 'dark' ? 'bg-purple-600/80' : 'bg-gray-400/80'
-                }`}
-              >
-                <span
-                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform duration-300 ${
-                    theme === 'dark' ? 'translate-x-4' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
+              <IoClose className="text-xl" />
+            </button>
           </div>
 
-          <div className="px-4 py-3 text-xs font-medium text-gray-200">
-            <div className="flex items-center justify-between">
-              <span>{t('Dil')}</span>
-              <button
-                onClick={toggleLanguage}
-                className={`px-2 py-1 rounded-md transition-colors duration-300 ${
-                  language === 'tr' ? 'bg-purple-600/80' : 'bg-gray-600/80'
-                }`}
-              >
-                {language.toUpperCase()}
-              </button>
-            </div>
+          {/* Navigation Links */}
+          <div className="p-2 space-y-1">
+            <Link
+              to="/user-profile"
+              className="flex items-center gap-3 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaUser className="text-sm" />
+              <span className="text-sm">Profile</span>
+            </Link>
+            
+            <Link
+              to="/watchlist"
+              className="flex items-center gap-3 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaList className="text-sm" />
+              <span className="text-sm">Watchlist</span>
+            </Link>
+
+            <Link
+              to="/favorites"
+              className="flex items-center gap-3 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaHeart className="text-sm" />
+              <span className="text-sm">Favorites</span>
+            </Link>
+
+            <Link
+              to="/settings"
+              className="flex items-center gap-3 w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaCog className="text-sm" />
+              <span className="text-sm">Settings</span>
+            </Link>
+          </div>
+
+          {/* Logout */}
+          <div className="border-t border-gray-700/50 p-2">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+            >
+              <FaSignOutAlt className="text-sm" />
+              <span className="text-sm">Logout</span>
+            </button>
           </div>
         </div>
       )}

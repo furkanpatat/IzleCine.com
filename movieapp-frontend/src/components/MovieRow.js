@@ -4,15 +4,19 @@ import { FaImage, FaHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/izleCine';
 
-const MovieRow = ({ title, movies }) => {
+const MovieRow = ({ title, movies = [] }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [imageErrors, setImageErrors] = useState({});
   const [isHovered, setIsHovered] = useState(false);
   const rowRef = useRef(null);
-  const favorites = useSelector(state => state.IzleCineData.favorites);
+  const favorites = useSelector(state => state.IzleCineData?.favorites || []);
 
   const handleMovieClick = (movieId) => {
+    if (!movieId) {
+      console.error('Movie ID is missing');
+      return;
+    }
     navigate(`/movie/${movieId}`);
   };
 
@@ -22,6 +26,11 @@ const MovieRow = ({ title, movies }) => {
 
   const handleFavoriteClick = (e, movie) => {
     e.stopPropagation();
+    if (!movie || !movie.id) {
+      console.error('Invalid movie data for favorite action');
+      return;
+    }
+    
     if (favorites.some(fav => fav.id === movie.id)) {
       dispatch(removeFromFavorites(movie.id));
     } else {
@@ -43,6 +52,13 @@ const MovieRow = ({ title, movies }) => {
     }
   };
 
+  // Filter out movies without valid IDs
+  const validMovies = movies.filter(movie => movie && movie.id);
+
+  if (!validMovies.length) {
+    return null; // Don't render if no valid movies
+  }
+
   return (
     <div className="mb-16 relative group">
       <h2 className="text-3xl font-bold mb-6 text-white pl-4 border-l-4 border-red-600">{title}</h2>
@@ -61,7 +77,7 @@ const MovieRow = ({ title, movies }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {movies.map((movie) => (
+          {validMovies.map((movie) => (
             <div
               key={movie.id}
               onClick={() => handleMovieClick(movie.id)}
@@ -75,16 +91,16 @@ const MovieRow = ({ title, movies }) => {
                 ) : (
                   <img
                     src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title}
+                    alt={movie.title || 'Movie'}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={() => handleImageError(movie.id)}
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <div className="absolute bottom-0 left-0 p-4 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-lg font-semibold mb-2 text-white line-clamp-2">{movie.title}</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-white line-clamp-2">{movie.title || 'Unknown Title'}</h3>
                     <p className="text-sm text-gray-300 mb-2">
-                      {new Date(movie.release_date).getFullYear()} • {movie.genre_ids?.map(id => {
+                      {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'} • {movie.genre_ids?.map(id => {
                         const genres = {
                           28: 'Aksiyon',
                           12: 'Macera',
@@ -107,12 +123,12 @@ const MovieRow = ({ title, movies }) => {
                           37: 'Western'
                         };
                         return genres[id] || '';
-                      }).filter(Boolean).join(', ')}
+                      }).filter(Boolean).join(', ') || 'N/A'}
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <span className="text-yellow-400">★</span>
-                        <span className="ml-1 text-white font-medium">{movie.vote_average.toFixed(1)}</span>
+                        <span className="ml-1 text-white font-medium">{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
                       </div>
                       <button
                         onClick={(e) => handleFavoriteClick(e, movie)}

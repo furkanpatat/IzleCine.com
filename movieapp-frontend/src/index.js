@@ -8,11 +8,8 @@ import { Provider } from 'react-redux';
 import store from './store/store'; // ✅ Default import!
 import './i18n';
 
-import axios from 'axios';
-
-// axios ayarları
-axios.defaults.baseURL = "https://api.themoviedb.org/3/";
-axios.defaults.headers.common['Authorization'] = `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`;
+// Remove global axios configuration to prevent conflicts with authentication requests
+// Each service should use its own axios instance with appropriate base URL
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

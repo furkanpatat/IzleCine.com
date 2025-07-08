@@ -8,6 +8,7 @@ import PasswordReset from "../pages/PasswordReset";
 import ForgotPassword from "../pages/ForgotPassword";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
+import CompleteProfile from "../pages/CompleteProfile";
 import AdminLayout from '../components/admin/AdminLayout';
 import Dashboard from '../pages/admin/Dashboard';
 import EditMovies from '../pages/admin/EditMovies';
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
             {
                 path: "signup",
                 element: <SignUpPage />
+            },
+            {
+                path: "complete-profile",
+                element: <CompleteProfile />
             },
             {
                 path: "user-profile",

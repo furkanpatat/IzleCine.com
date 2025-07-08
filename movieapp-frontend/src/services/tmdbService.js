@@ -1,16 +1,26 @@
 import axios from 'axios';
 
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN;
 const BASE_URL = 'https://api.themoviedb.org/3';
+
+// Create a dedicated axios instance for TMDb API requests
+const tmdbAxios = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+    'Content-Type': 'application/json'
+  },
+  params: {
+    language: 'tr-TR'
+  }
+});
 
 const tmdbService = {
   // Popüler filmleri getir
   getPopularMovies: async (page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/movie/popular`, {
+      const response = await tmdbAxios.get('/movie/popular', {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           page: page
         }
       });
@@ -24,10 +34,8 @@ const tmdbService = {
   // Film detaylarını getir
   getMovieDetails: async (movieId) => {
     try {
-      const response = await axios.get(`${BASE_URL}/movie/${movieId}`, {
+      const response = await tmdbAxios.get(`/movie/${movieId}`, {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           append_to_response: 'videos,credits,similar'
         }
       });
@@ -41,10 +49,8 @@ const tmdbService = {
   // Popüler dizileri getir
   getPopularTVShows: async (page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/tv/popular`, {
+      const response = await tmdbAxios.get('/tv/popular', {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           page: page
         }
       });
@@ -58,10 +64,8 @@ const tmdbService = {
   // Dizi detaylarını getir
   getTVShowDetails: async (tvId) => {
     try {
-      const response = await axios.get(`${BASE_URL}/tv/${tvId}`, {
+      const response = await tmdbAxios.get(`/tv/${tvId}`, {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           append_to_response: 'videos,credits,similar'
         }
       });
@@ -75,10 +79,8 @@ const tmdbService = {
   // Arama yap
   search: async (query, page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/search/multi`, {
+      const response = await tmdbAxios.get('/search/multi', {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           query: query,
           page: page
         }
@@ -93,10 +95,8 @@ const tmdbService = {
   // Kategoriye göre filmleri getir
   getMoviesByGenre: async (genreId, page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/discover/movie`, {
+      const response = await tmdbAxios.get('/discover/movie', {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           with_genres: genreId,
           page: page,
           sort_by: 'popularity.desc'
@@ -112,12 +112,7 @@ const tmdbService = {
   // Film türlerini getir
   getMovieGenres: async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/genre/movie/list`, {
-        params: {
-          api_key: API_KEY,
-          language: 'tr-TR'
-        }
-      });
+      const response = await tmdbAxios.get('/genre/movie/list');
       return response.data.genres;
     } catch (error) {
       console.error('Error fetching movie genres:', error);
@@ -128,10 +123,8 @@ const tmdbService = {
   // Trend olan filmleri getir
   getTrendingMovies: async (page = 1) => {
     try {
-      const response = await axios.get(`${BASE_URL}/trending/movie/week`, {
+      const response = await tmdbAxios.get('/trending/movie/week', {
         params: {
-          api_key: API_KEY,
-          language: 'tr-TR',
           page: page
         }
       });

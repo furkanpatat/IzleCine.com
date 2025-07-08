@@ -18,20 +18,31 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
-  const watchlist = useSelector(state => state.watchlist.items);
-  const ratings = useSelector(state => state.ratings.ratings);
+  const watchlist = useSelector(state => state.watchlist?.items || []);
+  const ratings = useSelector(state => state.ratings?.ratings || {});
   const isInWatchlist = watchlist.some(movie => movie.id === parseInt(id));
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
+      if (!id) {
+        setError('Film ID bulunamadı.');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const data = await tmdbService.getMovieDetails(id);
-        setMovie(data);
         setError(null);
+        const data = await tmdbService.getMovieDetails(id);
+        
+        if (!data || !data.id) {
+          throw new Error('Film verisi alınamadı.');
+        }
+        
+        setMovie(data);
       } catch (err) {
-        setError('Film detayları yüklenirken bir hata oluştu.');
-        console.error(err);
+        console.error('Movie details fetch error:', err);
+        setError(err.message || 'Film detayları yüklenirken bir hata oluştu.');
       } finally {
         setLoading(false);
       }
@@ -82,10 +93,12 @@ const MovieDetails = () => {
   };
 
   const calculateAverageRating = () => {
-    if (!movie || !ratings[movie.id]) return movie.vote_average;
+    if (!movie) return 0;
+    
+    if (!ratings[movie.id]) return movie.vote_average || 0;
     
     const userRatings = Object.values(ratings[movie.id]);
-    if (userRatings.length === 0) return movie.vote_average;
+    if (userRatings.length === 0) return movie.vote_average || 0;
     
     const sum = userRatings.reduce((acc, curr) => acc + curr, 0);
     return (sum / userRatings.length).toFixed(1);
@@ -101,16 +114,32 @@ const MovieDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center text-red-500">
-        <p>{error}</p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 text-xl mb-4">{error}</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+          >
+            Geri Dön
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!movie) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center text-white">
-        <p>Film bulunamadı.</p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-white text-xl mb-4">Film bulunamadı.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+          >
+            Geri Dön
+          </button>
+        </div>
       </div>
     );
   }
@@ -157,11 +186,11 @@ const MovieDetails = () => {
                 </div>
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaClock className="text-gray-400 mr-2" />
-                  <span className="font-medium">{new Date(movie.release_date).getFullYear()}</span>
+                  <span className="font-medium">{movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}</span>
                 </div>
                 <div className="flex items-center bg-gray-700/50 px-4 py-2 rounded-lg">
                   <FaFilm className="text-gray-400 mr-2" />
-                  <span className="font-medium">{movie.runtime} dakika</span>
+                  <span className="font-medium">{movie.runtime || 'N/A'} dakika</span>
                 </div>
               </div>
 
@@ -194,23 +223,25 @@ const MovieDetails = () => {
 
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold mb-4 text-gray-200">Açıklama</h2>
-                <p className="text-gray-300 leading-relaxed">{movie.overview}</p>
+                <p className="text-gray-300 leading-relaxed">{movie.overview || 'Açıklama bulunmuyor.'}</p>
               </div>
 
               {/* Genres */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-200">Türler</h2>
-                <div className="flex flex-wrap gap-2">
-                  {movie.genres.map(genre => (
-                    <span
-                      key={genre.id}
-                      className="bg-gray-700/50 px-4 py-2 rounded-lg text-sm"
-                    >
-                      {genre.name}
-                    </span>
-                  ))}
+              {movie.genres && movie.genres.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-2xl font-semibold mb-4 text-gray-200">Türler</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {movie.genres.map(genre => (
+                      <span
+                        key={genre.id}
+                        className="bg-gray-700/50 px-4 py-2 rounded-lg text-sm"
+                      >
+                        {genre.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Add to Watchlist Button */}
               <div className="flex items-center gap-4">
