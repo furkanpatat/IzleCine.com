@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToWatchlist } from '../store/watchlistSlice';
 import { addRating, updateRating } from '../store/ratingSlice';
 import tmdbService from '../services/tmdbService';
+import UserService from '../services/userService';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -65,15 +66,28 @@ const MovieDetails = () => {
     setImageError(true);
   };
 
-  const handleAddToWatchlist = () => {
-    if (!isInWatchlist && movie) {
+  const handleAddToWatchlist = async () => {
+  if (!isInWatchlist && movie) {
+    try {
       setIsAnimating(true);
+
+      // 1️⃣ Veritabanına ekle
+      const updatedWatchlist = await UserService.addToWatchlist(movie.id);
+
+      // 2️⃣ Redux’a da ekle
       dispatch(addToWatchlist(movie));
+
+      // (isteğe bağlı) Eğer güncel liste dönüyorsa:
+      // dispatch(setWatchlist(updatedWatchlist.map(item => item.movieId)));
+
       setTimeout(() => {
         setIsAnimating(false);
       }, 500);
+    } catch (error) {
+      console.error('Film izleme listesine eklenemedi:', error.message);
     }
-  };
+  }
+};
 
   const handleRating = (rating) => {
     if (movie) {

@@ -1,15 +1,39 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaImage, FaTrash } from 'react-icons/fa';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { removeFromWatchlist } from '../store/watchlistSlice';
+import UserService from '../services/userService';
+import tmdbService from '../services/tmdbService';
 
 const Watchlist = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [imageErrors, setImageErrors] = useState({});
-  const watchlist = useSelector(state => state.watchlist.items);
+  const [watchlist, setWatchlist] = useState([]);
 
+useEffect(() => {
+  const fetchWatchlist = async () => {
+    try {
+      const savedItems = await UserService.getWatchlist(); // [{ movieId, addedAt }]
+      const movieIds = savedItems.map(item => item.movieId);
+
+      const detailedMovies = await Promise.all(
+        movieIds.map(async (id) => {
+          const res = await tmdbService.getMovieDetails(id);
+          return res;
+        })
+      );
+
+      setWatchlist(detailedMovies);
+    } catch (err) {
+      console.error('İzleme listesi alınamadı:', err.message);
+    }
+  };
+
+  fetchWatchlist();
+}, []);
   const handleMovieClick = (movieId) => {
     navigate(`/movie/${movieId}`);
   };
@@ -58,7 +82,7 @@ const Watchlist = () => {
                     </div>
                   ) : (
                     <img
-                      src={movie.image}
+                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/default-image.png'}
                       alt={movie.title}
                       className="w-full h-full object-cover"
                       onError={() => handleImageError(movie.id)}
