@@ -4,23 +4,14 @@ import { FaImage, FaHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/izleCine';
 import userService from '../services/userService';
-import LoginPromptModal from './LoginPromptModal';
 
 const MovieRow = ({ title, movies = [] }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [imageErrors, setImageErrors] = useState({});
   const [isHovered, setIsHovered] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const rowRef = useRef(null);
   const favorites = useSelector(state => state.IzleCineData?.favorites || []);
-
-  // Check if user is authenticated
-  const isAuthenticated = () => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
-  };
 
   const handleMovieClick = (movieId) => {
     if (!movieId || isNaN(Number(movieId))) {
@@ -36,13 +27,6 @@ const MovieRow = ({ title, movies = [] }) => {
 
   const handleFavoriteClick = async (e, movie) => {
     e.stopPropagation();
-    
-    // Check if user is authenticated
-    if (!isAuthenticated()) {
-      setShowLoginModal(true);
-      return;
-    }
-
     if (!movie || !movie.id) {
       console.error('Invalid movie data for favorite action');
       return;
@@ -177,13 +161,6 @@ const MovieRow = ({ title, movies = [] }) => {
           <FaChevronRight className="text-xl" />
         </button>
       </div>
-
-      {/* Login Modal */}
-      <LoginPromptModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        actionType="film beğenme"
-      />
     </div>
   );
 };

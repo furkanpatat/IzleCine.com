@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar } from 'react-icons/fa';
+import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar, FaTrash } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import userService from '../services/userService';
 import tmdbService from '../services/tmdbService';
+import axios from 'axios'; // Added axios import
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -13,6 +14,10 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Added state for modal
+  const [commentToDelete, setCommentToDelete] = useState(null); // Added state for comment to delete
+  const [deleting, setDeleting] = useState(false); // Added state for deletion process
+  const [deletingCommentId, setDeletingCommentId] = useState(null); // Added state for animating comment deletion
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -93,6 +98,7 @@ const UserProfile = () => {
         setUserData(profileData);
         setLikedMovies(likedMoviesWithDetails);
         setUserComments(userCommentsWithTitles);
+        console.log('Loaded user comments:', userCommentsWithTitles);
       } catch (apiError) {
         console.log('API calls failed, using mock data:', apiError);
         // Fallback to mock data for testing
@@ -142,6 +148,66 @@ const UserProfile = () => {
     localStorage.removeItem('token');
     window.dispatchEvent(new Event('userChanged'));
     navigate('/login');
+  };
+
+  const handleDeleteComment = (comment, index) => {
+    console.log('Deleting comment:', comment, 'at index:', index);
+    setCommentToDelete({ ...comment, index });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!commentToDelete) return;
+
+    console.log('Confirming deletion of comment:', commentToDelete);
+
+    try {
+      setDeleting(true);
+      const token = localStorage.getItem('token');
+      
+      const commentId = commentToDelete.id || commentToDelete._id;
+      console.log('Deleting comment with ID:', commentId);
+      
+      // Animasyon için comment ID'sini set et
+      setDeletingCommentId(commentId);
+      
+      // Backend'e silme isteği gönder
+      await axios.delete(`/api/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log('Backend deletion successful, updating local state...');
+      console.log('Current comments before deletion:', userComments);
+
+      // Animasyon için kısa bir bekleme süresi
+      setTimeout(() => {
+        // Local state'den sadece seçilen yorumu kaldır (index kullanarak)
+        setUserComments(prevComments => {
+          const filteredComments = prevComments.filter((comment, index) => {
+            console.log('Checking comment at index:', index, 'comment:', comment);
+            return index !== commentToDelete.index;
+          });
+          console.log('Filtered comments:', filteredComments);
+          return filteredComments;
+        });
+
+        setShowDeleteModal(false);
+        setCommentToDelete(null);
+        setDeletingCommentId(null); // Animasyon state'ini temizle
+      }, 300); // 300ms animasyon süresi
+
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      alert('Yorum silinirken bir hata oluştu!');
+      setDeletingCommentId(null); // Hata durumunda animasyon state'ini temizle
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const cancelDeleteComment = () => {
+    setShowDeleteModal(false);
+    setCommentToDelete(null);
   };
 
   const renderProfileTab = () => (
@@ -274,29 +340,56 @@ const UserProfile = () => {
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-semibold text-white">Your Comments</h3>
         <span className="text-gray-400 text-sm">{userComments.length} comments</span>
-          </div>
+      </div>
 
       {userComments.length > 0 ? (
         <div className="space-y-4">
-          {userComments.map((comment, index) => (
-            <div key={index} className="bg-gray-800/50 backdrop-blur-md rounded-lg p-4 border border-gray-700/50">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="text-white font-semibold">{comment.movieTitle || 'Movie'}</h4>
-                  <p className="text-gray-400 text-sm">
-                    {comment.commentedAt ? new Date(comment.commentedAt).toLocaleDateString() : 'Recently'}
-                  </p>
-                </div>
-                {comment.rating && (
-                  <div className="flex items-center space-x-1 bg-yellow-500/20 px-2 py-1 rounded">
-                    <FaStar className="text-yellow-500 text-sm" />
-                    <span className="text-yellow-500 text-sm font-medium">{comment.rating}</span>
+          {userComments.map((comment, index) => {
+            const commentId = comment.id || comment._id;
+            const isDeleting = deletingCommentId === commentId;
+            
+            return (
+              <div 
+                key={index} 
+                className={`bg-gray-800/50 backdrop-blur-md rounded-lg p-4 border border-gray-700/50 transition-all duration-300 transform ${
+                  isDeleting 
+                    ? 'opacity-0 scale-95 -translate-y-2 pointer-events-none' 
+                    : 'opacity-100 scale-100 translate-y-0'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="text-white font-semibold">{comment.movieTitle || 'Movie'}</h4>
+                    <p className="text-gray-400 text-sm">
+                      {comment.commentedAt ? new Date(comment.commentedAt).toLocaleDateString() : 'Recently'}
+                    </p>
                   </div>
-                )}
+                  <div className="flex items-center space-x-2">
+                    {comment.rating && (
+                      <div className="flex items-center space-x-1 bg-yellow-500/20 px-2 py-1 rounded">
+                        <FaStar className="text-yellow-500 text-sm" />
+                        <span className="text-yellow-500 text-sm font-medium">{comment.rating}</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteComment(comment, index);
+                      }}
+                      className={`p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 ${
+                        isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      title="Delete comment"
+                      disabled={isDeleting}
+                    >
+                      <FaTrash className="text-sm" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-gray-300">{comment.content}</p>
               </div>
-              <p className="text-gray-300">{comment.content}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12">
@@ -399,6 +492,60 @@ const UserProfile = () => {
           {activeTab === 'liked' && renderLikedMoviesTab()}
           {activeTab === 'comments' && renderCommentsTab()}
         </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={cancelDeleteComment} />
+            <div className="relative bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-700/50 p-8 w-full max-w-md mx-4">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaTrash className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Yorumu Sil</h2>
+                <p className="text-gray-400 mb-6">
+                  Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </p>
+                
+                {commentToDelete && (
+                  <div className="bg-gray-700/30 rounded-lg p-4 mb-6">
+                    <p className="text-gray-300 text-sm mb-2">Yorum:</p>
+                    <p className="text-white italic">"{commentToDelete.content}"</p>
+                    <p className="text-gray-400 text-xs mt-2">
+                      Film: {commentToDelete.movieTitle}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={cancelDeleteComment}
+                    className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-600/50 hover:border-gray-500/50"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    onClick={confirmDeleteComment}
+                    disabled={deleting}
+                    className="flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Siliniyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash className="w-4 h-4" />
+                        <span>Evet, Sil</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

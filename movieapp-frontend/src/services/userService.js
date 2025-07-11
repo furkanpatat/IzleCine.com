@@ -177,6 +177,17 @@ class UserService {
       throw new Error(error.response?.data?.message || 'Failed to fetch user statistics');
     }
   }
+
+  // Delete comment
+  async deleteComment(commentId) {
+    try {
+      const response = await this.api.delete(`/comments/${commentId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw new Error(error.response?.data?.message || 'Failed to delete comment');
+    }
+  }
 }
 
 export default new UserService(); 
