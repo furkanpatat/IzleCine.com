@@ -19,6 +19,7 @@ router.post('/reset-password', userController.resetPassword); // /api/users/rese
 // Profile routes
 router.get('/profile', auth, userController.getProfile); // /api/users/profile
 router.put('/profile', auth, userController.updateProfile); // /api/users/profile
+router.patch('/profile', auth, userController.updateProfile); // /api/users/profile (PATCH)
 
 // Liked movies routes
 router.get('/liked-movies', auth, userController.getLikedMovies); // /api/users/liked-movies

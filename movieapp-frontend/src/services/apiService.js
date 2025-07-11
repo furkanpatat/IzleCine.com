@@ -44,6 +44,23 @@ const apiService = {
     }
   },
 
+  updateUserProfilePatch: async (token, profileData) => {
+    try {
+      const response = await apiAxios.patch('/users/profile', profileData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        throw new Error(error.response.data.message || 'Profile update failed');
+      } else {
+        throw new Error('Profile update failed');
+      }
+    }
+  },
+
   // Check if user profile is complete
   checkProfileComplete: async (token) => {
     try {

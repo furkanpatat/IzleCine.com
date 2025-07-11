@@ -214,21 +214,26 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, city, birthYear } = req.body;
-    
-    // Validate required fields
-    if (!firstName || !lastName) {
-      return res.status(400).json({ message: 'First name and last name are required.' });
+    const { username, city, theme } = req.body;
+    const userId = req.user.userId;
+
+    // Username benzersizliği kontrolü
+    if (username) {
+      const existing = await User.findOne({ username, _id: { $ne: userId } });
+      if (existing) {
+        return res.status(400).json({ message: 'Bu kullanıcı adı zaten kullanılıyor.' });
+      }
     }
 
-    // Validate birth year if provided
-    if (birthYear && (birthYear < 1900 || birthYear > new Date().getFullYear())) {
-      return res.status(400).json({ message: 'Invalid birth year.' });
-    }
+    // Sadece gönderilen alanları güncelle
+    const updateFields = {};
+    if (username) updateFields.username = username;
+    if (city !== undefined) updateFields.city = city;
+    if (theme) updateFields.theme = theme;
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.userId,
-      { firstName, lastName, city, birthYear },
+      userId,
+      updateFields,
       { new: true, runValidators: true }
     ).select('-password');
 

@@ -25,6 +25,7 @@ import MovieDetails from '../components/MovieDetails';
 import Watchlist from '../pages/Watchlist';
 import UserProfile from '../pages/UserProfile';
 import CategoryPage from "../pages/CategoryPage";
+import SettingsPage from "../pages/SettingsPage";
 
 const router = createBrowserRouter([
     {
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
             {
                 path: "category/:key",
                 element: <CategoryPage />
+            },
+            {
+                path: "settings",
+                element: <SettingsPage />
             },
             {
                 path: ":explore",

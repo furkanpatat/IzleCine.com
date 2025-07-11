@@ -502,3 +502,56 @@ code {
   cursor: pointer;
   pointer-events: auto;
 }
+
+/* === DARK MODE OVERRIDES === */
+body.theme-dark {
+  background: #09051a !important;
+  color: #e0e0e0;
+}
+body.theme-dark .bg-gray-900 {
+  background-color: #0a0616 !important;
+}
+body.theme-dark .bg-gray-800 {
+  background-color: #18122b !important;
+}
+body.theme-dark .bg-gradient-to-b {
+  background: linear-gradient(to bottom, #09051a, #000000) !important;
+}
+body.theme-dark .bg-gradient-to-r {
+  background: linear-gradient(to right, #18122b, #09051a, #000000) !important;
+}
+body.theme-dark .text-white {
+  color: #e0e0e0 !important;
+}
+body.theme-dark .bg-white\/10 {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+body.theme-dark .bg-purple-700 {
+  background-color: #4b206b !important;
+}
+body.theme-dark .bg-purple-600 {
+  background-color: #3a1852 !important;
+}
+body.theme-dark .shadow-lg, body.theme-dark .shadow {
+  box-shadow: 0 4px 32px 0 #000000cc !important;
+}
+body.theme-dark input, body.theme-dark textarea {
+  background-color: #18122b !important;
+  color: #e0e0e0 !important;
+}
+body.theme-dark .border {
+  border-color: #2d2250 !important;
+}
+body.theme-dark .text-gray-300 {
+  color: #bdbdbd !important;
+}
+body.theme-dark .text-gray-400 {
+  color: #a0a0a0 !important;
+}
+body.theme-dark .text-gray-600 {
+  color: #888 !important;
+}
+body.theme-dark .text-black {
+  color: #e0e0e0 !important;
+}
+/* Yıldızlar ve meteorlar uzay teması için olduğu gibi kalacak! */
