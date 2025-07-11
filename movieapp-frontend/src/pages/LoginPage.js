@@ -3,6 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import apiService from '../services/apiService';
 
+// JWT decode helper
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
+
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,6 +61,12 @@ const LoginPage = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       window.dispatchEvent(new Event('userChanged'));
+      // JWT'den rolü kontrol et
+      const payload = parseJwt(data.token);
+      if (payload && payload.role === 'admin') {
+        navigate('/admin');
+        return;
+      }
       // Check if user has completed their profile
       const isProfileComplete = await apiService.checkProfileComplete(data.token);
       if (isProfileComplete) {

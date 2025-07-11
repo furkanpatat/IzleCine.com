@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import userService from '../services/userService';
+import tmdbService from '../services/tmdbService';
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -51,9 +52,47 @@ const UserProfile = () => {
           commentsData
         });
 
+        // --- Liked Movies Detaylarını TMDB'den Çek ---
+        const likedMoviesWithDetails = await Promise.all(
+          (likedMoviesData || []).map(async (item) => {
+            // movieId string veya obje olabilir
+            const movieId = item.movieId || item.id || item;
+            try {
+              const details = await tmdbService.getMovieDetails(movieId);
+              return {
+                movieId,
+                title: details.title,
+                posterPath: details.poster_path,
+                likedAt: item.likedAt || item.liked_at || null
+              };
+            } catch {
+              return {
+                movieId,
+                title: 'Unknown',
+                posterPath: null,
+                likedAt: item.likedAt || item.liked_at || null
+              };
+            }
+          })
+        );
+        // --- Comments için movieTitle yoksa TMDB'den çek ---
+        const userCommentsWithTitles = await Promise.all(
+          (commentsData || []).map(async (comment) => {
+            if (comment.movieTitle && comment.movieTitle !== 'Movie') {
+              return comment;
+            }
+            try {
+              const details = await tmdbService.getMovieDetails(comment.movieId);
+              return { ...comment, movieTitle: details.title };
+            } catch {
+              return { ...comment, movieTitle: 'Unknown' };
+            }
+          })
+        );
+
         setUserData(profileData);
-        setLikedMovies(likedMoviesData);
-        setUserComments(commentsData);
+        setLikedMovies(likedMoviesWithDetails);
+        setUserComments(userCommentsWithTitles);
       } catch (apiError) {
         console.log('API calls failed, using mock data:', apiError);
         // Fallback to mock data for testing
@@ -194,7 +233,11 @@ const UserProfile = () => {
       {likedMovies.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {likedMovies.map((movie, index) => (
-            <div key={index} className="bg-gray-800/50 backdrop-blur-md rounded-lg overflow-hidden border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+            <div
+              key={index}
+              className="bg-gray-800/50 backdrop-blur-md rounded-lg overflow-hidden border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+              onClick={() => navigate(`/movie/${movie.movieId}`)}
+            >
               <div className="aspect-[2/3] bg-gray-700 relative">
                 {movie.posterPath && (
                   <img 

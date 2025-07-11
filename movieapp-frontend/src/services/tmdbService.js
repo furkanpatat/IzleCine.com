@@ -36,7 +36,8 @@ const tmdbService = {
     try {
       const response = await tmdbAxios.get(`/movie/${movieId}`, {
         params: {
-          append_to_response: 'videos,credits,similar'
+          append_to_response: 'videos',
+          language: 'tr-TR', // veya ihtiyaca göre 'en-US'
         }
       });
       return response.data;

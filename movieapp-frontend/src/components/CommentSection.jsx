@@ -1,58 +1,50 @@
 import React, { useState } from 'react';
 import { ThumbsUp, ThumbsDown, Flag, MessageSquare, Send } from 'lucide-react';
 import Comment from './Comment';
+import axios from 'axios';
 
-const CommentSection = () => {
-    // Mock data for comments
-    const [comments, setComments] = useState([
-        {
-            _id: '1',
-            content: 'This movie was amazing! The cinematography was stunning.',
-            user: {
-                username: 'MovieFan123',
-                profileImage: '/default-avatar.png'
-            },
-            createdAt: new Date().toISOString(),
-            likes: 15,
-            dislikes: 2,
-            status: 'active'
-        },
-        {
-            _id: '2',
-            content: 'I found the plot a bit confusing, but the acting was great.',
-            user: {
-                username: 'CinemaCritic',
-                profileImage: '/default-avatar.png'
-            },
-            createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-            likes: 8,
-            dislikes: 1,
-            status: 'active'
-        }
-    ]);
+const CommentSection = ({ movieId }) => {
+    // Yorumlar başlangıçta boş olacak
+    const [comments, setComments] = useState([]);
 
     const [newComment, setNewComment] = useState('');
     const [isAdmin] = useState(false); // This would come from user context in a real app
 
-    const handleSubmitComment = (e) => {
+    const handleSubmitComment = async (e) => {
         e.preventDefault();
         if (!newComment.trim()) return;
 
-        const comment = {
-            _id: Date.now().toString(),
-            content: newComment,
-            user: {
-                username: 'CurrentUser', // This would come from user context in a real app
-                profileImage: '/default-avatar.png'
-            },
-            createdAt: new Date().toISOString(),
-            likes: 0,
-            dislikes: 0,
-            status: 'active'
-        };
-
-        setComments([comment, ...comments]);
-        setNewComment('');
+        // Kullanıcı bilgisi localStorage'dan alınır
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem('token');
+        if (!user || !token) {
+            alert('Yorum yapmak için giriş yapmalısınız!');
+            return;
+        }
+        // Backend'e gönderilecek veriyi logla
+        console.log('Yorum POST verisi:', { userId: user.id || user._id, movieId, content: newComment });
+        try {
+            const response = await axios.post('/api/comments', {
+                userId: user.id || user._id, // id veya _id olabilir
+                movieId,
+                content: newComment
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const comment = response.data.comment || {
+                _id: Date.now().toString(),
+                content: newComment,
+                user: { username: user.username, profileImage: '/default-avatar.png' },
+                createdAt: new Date().toISOString(),
+                likes: 0,
+                dislikes: 0,
+                status: 'active'
+            };
+            setComments([comment, ...comments]);
+            setNewComment('');
+        } catch (err) {
+            alert('Yorum eklenirken bir hata oluştu!');
+        }
     };
 
     const handleVote = (commentId, type) => {

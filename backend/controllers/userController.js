@@ -35,6 +35,12 @@ exports.login = async (req, res) => {
   }
   try {
     const { email, password } = req.body;
+    // Admin girişi
+    if (email === 'admin@admin.com' && password === 'superadmin123') {
+      const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
+      return res.json({ token, user: { username: 'admin', email: 'admin@admin.com', role: 'admin' } });
+    }
+    // Normal kullanıcılar
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password.' });
@@ -463,6 +469,51 @@ exports.getUserStats = async (req, res) => {
     res.json(stats);
   } catch (err) {
     console.error('Get user stats error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}; 
+
+// Admin için genel kullanıcı istatistikleri
+exports.getGeneralUserStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    const newSignups = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+    // Aktif kullanıcıyı basitçe son 7 gün içinde giriş yapanlar olarak varsayalım (örnek, login log yoksa yeni kayıtlar gibi dönecek)
+    // Eğer User modelinde lastLogin gibi bir alan yoksa, aktif kullanıcıyı newSignups ile aynı döneceğiz
+    res.json({
+      totalUsers,
+      newSignups,
+      activeUsers: newSignups // lastLogin yoksa newSignups ile aynı
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+}; 
+
+// Admin için tüm kullanıcıları dönen endpoint
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, '-password').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+}; 
+
+// Admin için kullanıcı silme
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    // İlgili kullanıcının yorumlarını da silebilirsin (opsiyonel)
+    await Comment.deleteMany({ userId });
+    res.json({ message: 'User deleted successfully.' });
+  } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 }; 

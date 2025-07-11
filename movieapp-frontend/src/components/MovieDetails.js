@@ -286,7 +286,7 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <CommentSection />
+        <CommentSection movieId={id} />
       </div>
     </div>
   );

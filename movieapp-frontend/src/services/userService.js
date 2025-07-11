@@ -145,6 +145,28 @@ class UserService {
     }
   }
 
+  // Add movie to liked movies
+  async addLikedMovie(movieId) {
+    try {
+      const response = await this.api.post('/users/liked-movies', { movieId });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding to liked movies:', error);
+      throw new Error(error.response?.data?.message || 'Failed to add to liked movies');
+    }
+  }
+
+  // Remove movie from liked movies
+  async removeLikedMovie(movieId) {
+    try {
+      const response = await this.api.delete(`/users/liked-movies/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error removing from liked movies:', error);
+      throw new Error(error.response?.data?.message || 'Failed to remove from liked movies');
+    }
+  }
+
   // Get user statistics
   async getUserStats() {
     try {

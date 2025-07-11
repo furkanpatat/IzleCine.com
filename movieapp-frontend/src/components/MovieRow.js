@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaImage, FaHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/izleCine';
+import userService from '../services/userService';
 
 const MovieRow = ({ title, movies = [] }) => {
   const navigate = useNavigate();
@@ -24,17 +25,22 @@ const MovieRow = ({ title, movies = [] }) => {
     setImageErrors(prev => ({ ...prev, [movieId]: true }));
   };
 
-  const handleFavoriteClick = (e, movie) => {
+  const handleFavoriteClick = async (e, movie) => {
     e.stopPropagation();
     if (!movie || !movie.id) {
       console.error('Invalid movie data for favorite action');
       return;
     }
-    
-    if (favorites.some(fav => fav.id === movie.id)) {
-      dispatch(removeFromFavorites(movie.id));
-    } else {
-      dispatch(addToFavorites(movie));
+    try {
+      if (favorites.some(fav => fav.id === movie.id)) {
+        dispatch(removeFromFavorites(movie.id));
+        await userService.removeLikedMovie(movie.id);
+      } else {
+        dispatch(addToFavorites(movie));
+        await userService.addLikedMovie(movie.id);
+      }
+    } catch (err) {
+      alert('Favori işlemi sırasında bir hata oluştu!');
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import tmdbService from '../services/tmdbService';
 import '../styles/DetailsPage.css';
+import CommentSection from '../components/CommentSection';
 
 const DetailsPage = () => {
   const { id, type } = useParams();
@@ -157,6 +158,8 @@ const DetailsPage = () => {
           )}
         </div>
       </div>
+      {/* Yorumlar bölümü */}
+      <CommentSection movieId={id} />
     </div>
   );
 };

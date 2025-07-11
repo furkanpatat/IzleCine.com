@@ -1,8 +1,33 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Edit2, Trash2 } from 'lucide-react';
 
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
+
 const EditMovies = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+  }, [navigate]);
+
   const [movies, setMovies] = useState([
     {
       id: 1,

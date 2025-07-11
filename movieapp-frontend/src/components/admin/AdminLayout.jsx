@@ -42,12 +42,13 @@ const AdminLayout = () => {
           <h1 className="text-2xl font-bold text-white">İzleCine Admin</h1>
         </div>
         <nav className="mt-6">
-          {menuItems.map((item) => {
+          {menuItems.map((item, idx) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            // Benzersiz key: path + idx
             return (
               <Link
-                key={item.path}
+                key={item.path === '#' ? `${item.path}-${idx}` : item.path}
                 to={item.path}
                 className={`flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 ${isActive ? 'bg-gray-700 text-white border-l-4 border-blue-500' : ''
                   } ${!item.isActive ? 'opacity-50 cursor-not-allowed' : ''}`}

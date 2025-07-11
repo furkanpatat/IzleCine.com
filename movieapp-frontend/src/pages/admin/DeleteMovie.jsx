@@ -2,12 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
+
 const DeleteMovie = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+
     // In a real app, this would fetch from an API
     const fetchMovies = async () => {
       try {
@@ -45,7 +67,7 @@ const DeleteMovie = () => {
     };
 
     fetchMovies();
-  }, []);
+  }, [navigate]);
 
   const handleDelete = async (movieId) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete this movie?`);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlay, FaInfoCircle, FaChevronLeft, FaChevronRight, FaStar, FaClock, FaFilm, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import tmdbService from '../services/tmdbService';
 
 const BannerHome = ({ movies }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -11,6 +12,10 @@ const BannerHome = ({ movies }) => {
   const bannerRef = useRef(null);
   const featuredMovies = movies.slice(0, 5);
   const { t } = useTranslation();
+  const [trailerModalOpen, setTrailerModalOpen] = useState(false);
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [trailerLoading, setTrailerLoading] = useState(false);
+  const [trailerError, setTrailerError] = useState('');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,6 +61,35 @@ const BannerHome = ({ movies }) => {
     53: t('Gerilim'),
     10752: t('Savaş'),
     37: t('Western')
+  };
+
+  // Fragmanı aç
+  const handleOpenTrailer = async (movieId) => {
+    setTrailerModalOpen(true);
+    setTrailerLoading(true);
+    setTrailerError('');
+    setTrailerKey(null);
+    try {
+      const details = await tmdbService.getMovieDetails(movieId);
+      const trailer = details.videos?.results?.find(
+        v => v.site === 'YouTube' && v.type === 'Trailer'
+      );
+      if (trailer) {
+        setTrailerKey(trailer.key);
+      } else {
+        setTrailerError('Fragman bulunamadı.');
+      }
+    } catch (err) {
+      setTrailerError('Fragman yüklenemedi.');
+    } finally {
+      setTrailerLoading(false);
+    }
+  };
+  // Fragmanı kapat
+  const handleCloseTrailer = () => {
+    setTrailerModalOpen(false);
+    setTrailerKey(null);
+    setTrailerError('');
   };
 
   return (
@@ -136,13 +170,13 @@ const BannerHome = ({ movies }) => {
 
                   {/* Action Buttons with Glassmorphism */}
                   <div className="flex gap-3">
-                    <Link 
-                      to={`/movie/${movie.id}`}
+                    <button
+                      onClick={() => handleOpenTrailer(movie.id)}
                       className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow"
                     >
                       <FaPlay className="text-lg" />
                       <span className="font-semibold">Fragmanı İzle</span>
-                    </Link>
+                    </button>
                     <Link 
                       to={`/movie/${movie.id}`}
                       className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-md hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover"
@@ -209,6 +243,41 @@ const BannerHome = ({ movies }) => {
       >
         {isMuted ? <FaVolumeMute className="text-lg" /> : <FaVolumeUp className="text-lg" />}
       </button>
+
+      {/* Trailer Modal */}
+      {trailerModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in">
+          <div className="relative bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-0 overflow-hidden animate-scale-in">
+            <button
+              onClick={handleCloseTrailer}
+              className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl z-10 bg-black/30 rounded-full p-2 transition-colors duration-200"
+              aria-label="Kapat"
+            >
+              ×
+            </button>
+            <div className="w-full aspect-video bg-black flex items-center justify-center">
+              {trailerLoading ? (
+                <div className="text-white text-lg">Yükleniyor...</div>
+              ) : trailerKey ? (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
+                  title="Fragman"
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  className="rounded-b-2xl"
+                ></iframe>
+              ) : (
+                <div className="text-white text-lg p-8">{trailerError || 'Fragman bulunamadı.'}</div>
+              )}
+            </div>
+          </div>
+          {/* Modal arka planına tıklayınca kapansın */}
+          <div className="fixed inset-0 z-40" onClick={handleCloseTrailer}></div>
+        </div>
+      )}
     </div>
   );
 };

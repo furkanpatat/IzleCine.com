@@ -1,72 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
+import axios from 'axios';
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 const ManageUsers = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteUserId, setDeleteUserId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        // Simulating API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data - replace with actual API call
-        const mockUsers = [
-          {
-            id: 1,
-            username: 'john_doe',
-            email: 'john@example.com',
-            role: 'user',
-            createdAt: '2023-01-15',
-          },
-          {
-            id: 2,
-            username: 'jane_smith',
-            email: 'jane@example.com',
-            role: 'user',
-            createdAt: '2023-02-20',
-          },
-          {
-            id: 3,
-            username: 'admin_user',
-            email: 'admin@example.com',
-            role: 'admin',
-            createdAt: '2023-03-10',
-          },
-        ];
-        
-        setUsers(mockUsers);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  const handleDelete = async (userId) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete this user? This action cannot be undone.`);
-    
-    if (confirmDelete) {
-      try {
-        setIsLoading(true);
-        // In a real app, this would make an API call to delete the user
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Simulate successful deletion
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-        console.log(`User with id ${userId} deleted successfully`);
-      } catch (error) {
-        console.error('Error deleting user:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
     }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+    // Gerçek kullanıcıları çek
+    axios.get('/api/admin/users', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setUsers(res.data))
+      .catch(() => {
+        setUsers([]);
+      })
+      .finally(() => setIsLoading(false));
+  }, [navigate]);
+
+  const handleDelete = (userId) => {
+    setDeleteUserId(userId);
+    setShowModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteUserId) return;
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`/api/admin/users/${deleteUserId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUsers(prev => prev.filter(u => (u._id || u.id) !== deleteUserId));
+      setModalMessage('Kullanıcı başarıyla silindi.');
+    } catch (err) {
+      setModalMessage('Kullanıcı silinirken hata oluştu.');
+    } finally {
+      setIsLoading(false);
+      setShowModal(false);
+      setDeleteUserId(null);
+      setTimeout(() => setModalMessage(''), 2000);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowModal(false);
+    setDeleteUserId(null);
   };
 
   return (
@@ -112,7 +117,7 @@ const ManageUsers = () => {
               </thead>
               <tbody className="bg-gray-800 divide-y divide-gray-700">
                 {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-700 transition-colors duration-200">
+                  <tr key={user._id || user.id} className="hover:bg-gray-700 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                       {user.username}
                     </td>
@@ -125,7 +130,7 @@ const ManageUsers = () => {
                           ? 'bg-purple-600 text-white' 
                           : 'bg-blue-600 text-white'
                       }`}>
-                        {user.role}
+                        {user.role || 'user'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -133,7 +138,7 @@ const ManageUsers = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => handleDelete(user._id || user.id)}
                         disabled={isLoading}
                         className="text-red-400 hover:text-red-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -147,6 +152,40 @@ const ManageUsers = () => {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40 backdrop-blur-sm transition-all duration-300">
+          <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full animate-fadeIn">
+            <div className="flex flex-col items-center">
+              <div className="bg-red-100 rounded-full p-3 mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              </div>
+              <h2 className="text-2xl font-bold mb-2 text-gray-800">Kullanıcıyı Sil</h2>
+              <p className="mb-6 text-gray-600 text-center">Bu kullanıcıyı silmek istediğinize emin misiniz? <br />Bu işlem geri alınamaz.</p>
+              <div className="flex w-full gap-4">
+                <button
+                  onClick={cancelDelete}
+                  className="flex-1 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-100 transition-all duration-200"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 py-2 rounded-lg bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold shadow hover:from-red-700 hover:to-pink-700 transition-all duration-200"
+                >
+                  Sil
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {modalMessage && (
+        <div className={`fixed bottom-4 right-4 px-6 py-3 rounded shadow-lg z-50 ${modalMessage.includes('başarıyla') ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+          {modalMessage}
+        </div>
+      )}
     </div>
   );
 };

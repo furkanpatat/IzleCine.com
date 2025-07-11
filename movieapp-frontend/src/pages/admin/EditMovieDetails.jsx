@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
+
 const EditMovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -49,6 +57,22 @@ const EditMovieDetails = () => {
     setMovie(mockMovie);
     setPreviewUrl(mockMovie.posterUrl);
   }, [id]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,8 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Flag, Trash2, EyeOff, Check, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 const ReportedComments = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
+      return;
+    }
+  }, [navigate]);
+
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReason, setSelectedReason] = useState('all');

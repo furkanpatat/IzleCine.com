@@ -1,17 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Film,
-  Users,
-  Plus,
-  Trash2,
-  BarChart2,
-  User,
-  FileText,
-  Settings
-} from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Film, Users, Plus, Trash2, BarChart2, User, FileText, Settings } from 'lucide-react';
+
+// JWT decode helper
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    const payload = parseJwt(token);
+    if (!payload || payload.role !== 'admin') {
+      navigate('/login');
+      return;
+    }
+  }, [navigate]);
+
   const cards = [
     {
       title: 'Edit Movies',
@@ -83,8 +98,7 @@ const Dashboard = () => {
             <Link
               key={card.title}
               to={card.path}
-              className={`${card.color} ${card.hoverColor} p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+              className={`${card.color} ${card.hoverColor} p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={(e) => isDisabled && e.preventDefault()}
             >
               <div className="flex items-center justify-between">

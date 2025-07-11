@@ -18,6 +18,15 @@ const CATEGORY_CONFIG = [
   { key: 'drama', label: 'Drama', fetch: () => tmdbService.getMoviesByGenre(18) },
 ];
 
+// JWT decode helper (kopya, diğer admin sayfalarındakiyle aynı)
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
+
 const Header = () => {
   const [searchInput, setSearchInput] = useState('')
   const navigate = useNavigate()
@@ -30,9 +39,21 @@ const Header = () => {
 
   // --- Login state management ---
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkLogin = () => setIsLoggedIn(!!localStorage.getItem('user'));
+    const checkLogin = () => {
+      setIsLoggedIn(!!localStorage.getItem('user'));
+      // Admin kontrolü
+      const token = localStorage.getItem('token');
+      if (token) {
+        const payload = parseJwt(token);
+        setIsAdmin(payload && payload.role === 'admin');
+      } else {
+        setIsAdmin(false);
+      }
+    };
+    checkLogin();
     window.addEventListener('storage', checkLogin);
     window.addEventListener('userChanged', checkLogin);
     return () => {
@@ -127,61 +148,80 @@ const Header = () => {
         </div>
 
         <div className='container mx-auto px-3 flex items-center h-full'>
-          <Link to={"/"} className="transition-transform duration-300 hover:scale-105">
+          <Link to={isAdmin ? "/admin" : "/"} className="transition-transform duration-300 hover:scale-105">
             <img
               src={logo}
               alt='logo'
               width={240}
             />
           </Link>
-          <div className='hidden lg:flex items-center gap-4 ml-5'>
-            {CATEGORY_CONFIG.map(cat => (
-              <button
-                key={cat.key}
-                onClick={() => handleCategoryClick(cat)}
-                className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400/60 border border-transparent backdrop-blur-md
-                      ${selectedCategory.key === cat.key
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg scale-105'
-                    : 'bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-500 hover:text-white hover:shadow-lg'}
-                    `}
-                style={{ letterSpacing: '0.03em' }}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-          <div className='ml-auto flex items-center gap-5'>
-            <form className='flex items-center gap-2' onSubmit={handleSubmit}>
-              <input
-                type='text'
-                placeholder='Search...'
-                className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block transition-all duration-300 focus:bg-white/10 rounded-md'
-                onChange={(e) => setSearchInput(e.target.value)}
-                value={searchInput}
-              />
-              <button className='text-2xl text-white transition-all duration-300 hover:scale-110'>
-                <IoSearchOutline />
-              </button>
-            </form>
-            
-            {/* User profile and favorites */}
-            <div className="flex items-center gap-3">
-              {isLoggedIn && (
-                <Link to="/favorites" className="text-white text-xl hover:text-purple-400 transition-all duration-300 hover:scale-110">
-                  <RiStarSmileFill />
-                </Link>
-              )}
-              {isLoggedIn ? (
-                <ProfileDropdown />
-              ) : (
-                <Link
-                  to="/login"
-                  className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:scale-105 hover:shadow-lg"
+          {/* Kategori butonları sadece admin değilse göster */}
+          {!isAdmin && (
+            <div className='hidden lg:flex items-center gap-4 ml-5'>
+              {CATEGORY_CONFIG.map(cat => (
+                <button
+                  key={cat.key}
+                  onClick={() => handleCategoryClick(cat)}
+                  className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400/60 border border-transparent backdrop-blur-md
+                        ${selectedCategory.key === cat.key
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg scale-105'
+                      : 'bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-500 hover:text-white hover:shadow-lg'}
+                      `}
+                  style={{ letterSpacing: '0.03em' }}
                 >
-                  {t('Giriş Yap')}
-                </Link>
-              )}
+                  {cat.label}
+                </button>
+              ))}
             </div>
+          )}
+          <div className='ml-auto flex items-center gap-5'>
+            {/* Admin ise sadece çıkış butonu göster */}
+            {isAdmin ? (
+              <button
+                onClick={() => {
+                  localStorage.removeItem('user');
+                  localStorage.removeItem('token');
+                  window.dispatchEvent(new Event('userChanged'));
+                  window.location.href = '/login';
+                }}
+                className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:from-red-700 hover:to-pink-700 transition-all duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-red-400/60"
+              >
+                Çıkış Yap
+              </button>
+            ) : (
+              <>
+                <form className='flex items-center gap-2' onSubmit={handleSubmit}>
+                  <input
+                    type='text'
+                    placeholder='Search...'
+                    className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block transition-all duration-300 focus:bg-white/10 rounded-md'
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    value={searchInput}
+                  />
+                  <button className='text-2xl text-white transition-all duration-300 hover:scale-110'>
+                    <IoSearchOutline />
+                  </button>
+                </form>
+                {/* User profile and favorites */}
+                <div className="flex items-center gap-3">
+                  {isLoggedIn && (
+                    <Link to="/favorites" className="text-white text-xl hover:text-purple-400 transition-all duration-300 hover:scale-110">
+                      <RiStarSmileFill />
+                    </Link>
+                  )}
+                  {isLoggedIn ? (
+                    <ProfileDropdown />
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    >
+                      {t('Giriş Yap')}
+                    </Link>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </header>

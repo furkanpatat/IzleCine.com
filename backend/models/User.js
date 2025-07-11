@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: false },
   city: { type: String, required: false },
   birthYear: { type: Number, required: false, min: 1900, max: new Date().getFullYear() },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
   createdAt: { type: Date, default: Date.now },
   likedMovies: [
     {
