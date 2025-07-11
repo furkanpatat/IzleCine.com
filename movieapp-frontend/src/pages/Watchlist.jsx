@@ -45,10 +45,17 @@ useEffect(() => {
     }));
   };
 
-  const handleRemoveFromWatchlist = (e, movieId) => {
-    e.stopPropagation(); // Film detayına gitmeyi engelle
-    dispatch(removeFromWatchlist(movieId));
-  };
+  const handleRemoveFromWatchlist = async (e, movieId) => {
+  e.stopPropagation();
+
+  try {
+    await UserService.removeFromWatchlist(movieId); // Backend'den sil
+    setWatchlist(prev => prev.filter(movie => movie.id !== movieId)); // Ekrandan da kaldır
+  } catch (err) {
+    console.error("Silme başarısız:", err.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">

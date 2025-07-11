@@ -284,18 +284,26 @@ exports.getUserComments = async (req, res) => {
 exports.addToWatchlist = async (req, res) => {
   try {
     const { movieId } = req.body;
+    const userId = req.user.id;
+
     if (!movieId) {
       return res.status(400).json({ message: 'movieId is required.' });
     }
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { $addToSet: { watchlist: { movieId, addedAt: new Date() } } },
-      { new: true }
-    );
+
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    res.json(user.watchlist);
+
+    const alreadyExists = user.watchlist.some(item => item.movieId.toString() == movieId.toString());
+    if (alreadyExists) {
+      return res.status(400).json({ message: 'Film zaten izleme listesinde.' });
+    }
+
+    user.watchlist.push({ movieId, addedAt: new Date() });
+    await user.save();
+
+    res.status(200).json({ message: 'Film izleme listesine eklendi.' });
   } catch (err) {
     console.error('Add to watchlist error:', err);
     res.status(500).json({ message: 'Server error' });
@@ -418,7 +426,7 @@ exports.removeFromWatchlist = async (req, res) => {
     if (!movieId) {
       return res.status(400).json({ message: 'movieId is required.' });
     }
-
+    const userId = req.user.id; 
     const user = await User.findByIdAndUpdate(
       req.user.userId,
       { $pull: { watchlist: { movieId } } },

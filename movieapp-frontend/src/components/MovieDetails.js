@@ -10,6 +10,7 @@ import tmdbService from '../services/tmdbService';
 import UserService from '../services/userService';
 import ratingService from '../services/ratingService';
 
+
 const MovieDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -26,8 +27,9 @@ const MovieDetails = () => {
   const watchlist = useSelector(state => state.watchlist?.items || []);
   const ratings = useSelector(state => state.ratings?.ratings || {});
   const storedUser = JSON.parse(localStorage.getItem('user'));
- const currentUserId = storedUser?.id;
-  const isInWatchlist = watchlist.some(movie => movie.id === parseInt(id));
+  const currentUserId = storedUser?.id;
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+
  
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -72,34 +74,45 @@ const MovieDetails = () => {
     fetchUserRating();
   }, [movie, currentUserId]);
 
+  useEffect(() => {
+  const checkWatchlist = async () => {
+    try {
+      const savedItems = await UserService.getWatchlist(); // backend'ten çek
+      const movieIds = savedItems.map(item => item.movieId); // sadece ID'leri al
+      setIsInWatchlist(movieIds.includes(String(movie.id))); // kontrol et
+    } catch (err) {
+      console.error('Watchlist kontrol hatası:', err.message);
+    }
+  };
+
+  if (movie?.id) {
+    checkWatchlist();
+  }
+}, [movie?.id]);
+
+
   const handleImageError = () => {
     setImageError(true);
   };
 
   const handleAddToWatchlist = async () => {
-    // Check if user is authenticated
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const token = localStorage.getItem('token');
-    
-    if (!user || !token) {
-      setLoginAction('İzleme listesine eklemek');
-      setShowLoginModal(true);
-      return;
+  try {
+    await UserService.addToWatchlist(movie.id); // backend'e ekle
+    setIsInWatchlist(true); // UI'da güncelle
+    setIsAnimating(true); // animasyon başlasın
+    setTimeout(() => setIsAnimating(false), 1500); // sonra bitsin
+  } catch (err) {
+    if (err.message.includes('zaten')) {
+      alert('Bu film zaten izleme listesinde.');
+    } else {
+      alert('Film eklenirken bir hata oluştu.');
+      console.error('Watchlist ekleme hatası:', err.message);
     }
+  }
+};
 
-    if (!isInWatchlist && movie) {
-      try {
-        setIsAnimating(true);
-        await UserService.addToWatchlist(movie.id);
-        dispatch(addToWatchlist(movie));
-        setTimeout(() => {
-          setIsAnimating(false);
-        }, 500);
-      } catch (error) {
-        console.error('Film izleme listesine eklenemedi:', error.message);
-      }
-    }
-  };
+
+  
 
   const handleRating = (rating) => {
     // Check if user is authenticated
