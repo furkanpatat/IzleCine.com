@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from 'react-icons/fa';
 import CommentSection from './CommentSection';
+import LoginPromptModal from './LoginPromptModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToWatchlist } from '../store/watchlistSlice';
 import { submitRating } from '../store/ratingSlice';
@@ -19,6 +20,8 @@ const MovieDetails = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginAction, setLoginAction] = useState('');
   const dispatch = useDispatch();
   const watchlist = useSelector(state => state.watchlist?.items || []);
   const ratings = useSelector(state => state.ratings?.ratings || {});
@@ -74,6 +77,16 @@ const MovieDetails = () => {
   };
 
   const handleAddToWatchlist = async () => {
+    // Check if user is authenticated
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const token = localStorage.getItem('token');
+    
+    if (!user || !token) {
+      setLoginAction('İzleme listesine eklemek');
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!isInWatchlist && movie) {
       try {
         setIsAnimating(true);
@@ -89,16 +102,31 @@ const MovieDetails = () => {
   };
 
   const handleRating = (rating) => {
-  if (movie && currentUserId) {
-    setUserRating(rating);
-    const ratingData = {
-      movieId: movie.id,
-      userId: currentUserId,
-      rating
-    };
-    dispatch(submitRating(ratingData));
-  }
-};
+    // Check if user is authenticated
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const token = localStorage.getItem('token');
+    
+    if (!user || !token) {
+      setLoginAction('Film puanlamak');
+      setShowLoginModal(true);
+      return;
+    }
+
+    if (movie && currentUserId) {
+      setUserRating(rating);
+      const ratingData = {
+        movieId: movie.id,
+        userId: currentUserId,
+        rating
+      };
+      dispatch(submitRating(ratingData));
+    }
+  };
+
+  const handleContinueAsGuest = () => {
+    setShowLoginModal(false);
+    // User can continue browsing without authentication
+  };
 
   const calculateAverageRating = () => {
     if (!movie) return 0;
@@ -288,6 +316,13 @@ const MovieDetails = () => {
 
         <CommentSection movieId={id} />
       </div>
+
+      <LoginPromptModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onContinueAsGuest={handleContinueAsGuest}
+        action={loginAction}
+      />
     </div>
   );
 };
