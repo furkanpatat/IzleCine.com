@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const userRoutes = require('./routes/userRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
 
 const app = express();
 app.use(helmet());
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/ratings', ratingRoutes);
 
 const PORT = process.env.PORT || 5002;
 

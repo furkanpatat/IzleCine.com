@@ -4,9 +4,10 @@ import { FaArrowLeft, FaStar, FaClock, FaFilm, FaImage, FaPlus, FaCheck } from '
 import CommentSection from './CommentSection';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToWatchlist } from '../store/watchlistSlice';
-import { addRating, updateRating } from '../store/ratingSlice';
+import { submitRating } from '../store/ratingSlice';
 import tmdbService from '../services/tmdbService';
 import UserService from '../services/userService';
+import ratingService from '../services/ratingService';
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -21,8 +22,10 @@ const MovieDetails = () => {
   const dispatch = useDispatch();
   const watchlist = useSelector(state => state.watchlist?.items || []);
   const ratings = useSelector(state => state.ratings?.ratings || {});
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+ const currentUserId = storedUser?.id;
   const isInWatchlist = watchlist.some(movie => movie.id === parseInt(id));
-
+ 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       if (!id) {
@@ -35,11 +38,11 @@ const MovieDetails = () => {
         setLoading(true);
         setError(null);
         const data = await tmdbService.getMovieDetails(id);
-        
+
         if (!data || !data.id) {
           throw new Error('Film verisi alınamadı.');
         }
-        
+
         setMovie(data);
       } catch (err) {
         console.error('Movie details fetch error:', err);
@@ -52,79 +55,70 @@ const MovieDetails = () => {
     fetchMovieDetails();
   }, [id]);
 
-  // Kullanıcının mevcut puanını yükle
   useEffect(() => {
-    if (movie && ratings[movie.id]) {
-      const currentUserRating = ratings[movie.id]['currentUser'];
-      if (currentUserRating) {
-        setUserRating(currentUserRating);
+    const fetchUserRating = async () => {
+      if (!movie?.id || !currentUserId) return;
+      try {
+        const rating = await ratingService.getUserRating(movie.id, currentUserId);
+        setUserRating(rating);
+      } catch (err) {
+        console.error('Kullanıcı puanı çekilemedi:', err.message);
       }
-    }
-  }, [movie, ratings]);
+    };
+
+    fetchUserRating();
+  }, [movie, currentUserId]);
 
   const handleImageError = () => {
     setImageError(true);
   };
 
   const handleAddToWatchlist = async () => {
-  if (!isInWatchlist && movie) {
-    try {
-      setIsAnimating(true);
-
-      // 1️⃣ Veritabanına ekle
-      const updatedWatchlist = await UserService.addToWatchlist(movie.id);
-
-      // 2️⃣ Redux’a da ekle
-      dispatch(addToWatchlist(movie));
-
-      // (isteğe bağlı) Eğer güncel liste dönüyorsa:
-      // dispatch(setWatchlist(updatedWatchlist.map(item => item.movieId)));
-
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 500);
-    } catch (error) {
-      console.error('Film izleme listesine eklenemedi:', error.message);
-    }
-  }
-};
-
-  const handleRating = (rating) => {
-    if (movie) {
-      setUserRating(rating);
-      const ratingData = {
-        movieId: movie.id,
-        userId: 'currentUser',
-        rating: rating
-      };
-      
-      if (ratings[movie.id] && ratings[movie.id]['currentUser']) {
-        dispatch(updateRating(ratingData));
-      } else {
-        dispatch(addRating(ratingData));
+    if (!isInWatchlist && movie) {
+      try {
+        setIsAnimating(true);
+        await UserService.addToWatchlist(movie.id);
+        dispatch(addToWatchlist(movie));
+        setTimeout(() => {
+          setIsAnimating(false);
+        }, 500);
+      } catch (error) {
+        console.error('Film izleme listesine eklenemedi:', error.message);
       }
     }
   };
 
+  const handleRating = (rating) => {
+  if (movie && currentUserId) {
+    setUserRating(rating);
+    const ratingData = {
+      movieId: movie.id,
+      userId: currentUserId,
+      rating
+    };
+    dispatch(submitRating(ratingData));
+  }
+};
+
   const calculateAverageRating = () => {
     if (!movie) return 0;
-    
+
     if (!ratings[movie.id]) return movie.vote_average || 0;
-    
+
     const userRatings = Object.values(ratings[movie.id]);
     if (userRatings.length === 0) return movie.vote_average || 0;
-    
+
     const sum = userRatings.reduce((acc, curr) => acc + curr, 0);
     return (sum / userRatings.length).toFixed(1);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
-        <div className="loading-spinner"></div>
-      </div>
-    );
-  }
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+          <div className="loading-spinner"></div>
+        </div>
+      );
+    }
 
   if (error) {
     return (
@@ -170,7 +164,6 @@ const MovieDetails = () => {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Movie Poster */}
           <div className="lg:col-span-1">
             <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-300">
               {imageError ? (
@@ -188,7 +181,6 @@ const MovieDetails = () => {
             </div>
           </div>
 
-          {/* Movie Details */}
           <div className="lg:col-span-2">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 shadow-xl">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">{movie.title}</h1>
@@ -208,7 +200,6 @@ const MovieDetails = () => {
                 </div>
               </div>
 
-              {/* User Rating Section */}
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-3 text-gray-200">Filmi Puanla</h2>
                 <div className="flex items-center space-x-2">
@@ -240,7 +231,6 @@ const MovieDetails = () => {
                 <p className="text-gray-300 leading-relaxed">{movie.overview || 'Açıklama bulunmuyor.'}</p>
               </div>
 
-              {/* Genres */}
               {movie.genres && movie.genres.length > 0 && (
                 <div className="mb-8">
                   <h2 className="text-2xl font-semibold mb-4 text-gray-200">Türler</h2>
@@ -257,7 +247,6 @@ const MovieDetails = () => {
                 </div>
               )}
 
-              {/* Add to Watchlist Button */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleAddToWatchlist}
@@ -297,11 +286,9 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        {/* Comment Section */}
         <CommentSection />
       </div>
     </div>
   );
 };
-
-export default MovieDetails; 
+export default MovieDetails;
