@@ -3,6 +3,7 @@ import { ThumbsUp, ThumbsDown, Flag, MessageSquare, Send } from 'lucide-react';
 import Comment from './Comment';
 import LoginPromptModal from './LoginPromptModal';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const CommentSection = ({ movieId }) => {
     // Yorumlar başlangıçta boş olacak
@@ -11,6 +12,7 @@ const CommentSection = ({ movieId }) => {
     const [isAdmin] = useState(false); // This would come from user context in a real app
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [loginAction, setLoginAction] = useState('');
+    const { t } = useTranslation();
 
     const handleSubmitComment = async (e) => {
         e.preventDefault();
@@ -20,7 +22,7 @@ const CommentSection = ({ movieId }) => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const token = localStorage.getItem('token');
         if (!user || !token) {
-            setLoginAction('Yorum yapmak');
+            setLoginAction(t('Yorum yapmak'));
             setShowLoginModal(true);
             return;
         }
@@ -46,7 +48,7 @@ const CommentSection = ({ movieId }) => {
             setComments([comment, ...comments]);
             setNewComment('');
         } catch (err) {
-            alert('Yorum eklenirken bir hata oluştu!');
+            alert(t('Yorum eklenirken bir hata oluştu!'));
         }
     };
 
@@ -56,7 +58,7 @@ const CommentSection = ({ movieId }) => {
         const token = localStorage.getItem('token');
         
         if (!user || !token) {
-            setLoginAction('Oy vermek');
+            setLoginAction(t('Oy vermek'));
             setShowLoginModal(true);
             return;
         }
@@ -85,7 +87,7 @@ const CommentSection = ({ movieId }) => {
         const token = localStorage.getItem('token');
         
         if (!user || !token) {
-            setLoginAction('Yorum raporlamak');
+            setLoginAction(t('Yorum raporlamak'));
             setShowLoginModal(true);
             return;
         }
@@ -94,9 +96,9 @@ const CommentSection = ({ movieId }) => {
             await axios.post(`/api/comments/${commentId}/report`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Yorum başarıyla raporlandı!');
+            alert(t('Yorum başarıyla raporlandı!'));
         } catch (err) {
-            alert('Raporlama sırasında bir hata oluştu!');
+            alert(t('Raporlama sırasında bir hata oluştu!'));
         }
     };
 
@@ -127,7 +129,7 @@ const CommentSection = ({ movieId }) => {
                 <div className="flex items-center gap-2 mb-8">
                     <MessageSquare className="w-6 h-6 text-purple-500" />
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                        Yorumlar
+                        {t('Yorumlar')}
                     </h2>
                 </div>
 
@@ -137,7 +139,7 @@ const CommentSection = ({ movieId }) => {
                         <textarea
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Filim hakkında düşüncelerinizi paylaşın..."
+                            placeholder={t('Filim hakkında düşüncelerinizi paylaşın...')}
                             className="w-full h-32 bg-gray-700/30 rounded-xl p-4 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none transition-all duration-200"
                         />
                         <div className="flex justify-end mt-4">
@@ -146,7 +148,7 @@ const CommentSection = ({ movieId }) => {
                                 className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20"
                             >
                                 <Send className="w-4 h-4" />
-                                <span>Yorum Yap</span>
+                                <span>{t('Yorum Yap')}</span>
                             </button>
                         </div>
                     </div>
@@ -184,7 +186,7 @@ const CommentSection = ({ movieId }) => {
                                 </div>
                                 {comment.status === 'reported' && (
                                     <span className="px-3 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
-                                        Rapor Edildi
+                                        {t('Rapor Edildi')}
                                     </span>
                                 )}
                             </div>
@@ -199,63 +201,52 @@ const CommentSection = ({ movieId }) => {
                                         onClick={() => handleVote(comment._id, 'likes')}
                                         className="flex items-center text-gray-300 hover:text-green-400 transition-colors duration-200 group"
                                     >
-                                        <div className="p-2 rounded-lg bg-gray-700/30 group-hover:bg-green-500/10 transition-colors duration-200">
-                                            <ThumbsUp className="w-5 h-5" />
-                                        </div>
-                                        <span className="ml-2 font-medium">{comment.likes}</span>
+                                        <ThumbsUp className="w-4 h-4 mr-1" />
+                                        <span>{t('Beğen')}</span>
+                                        <span className="ml-1">{comment.likes || 0}</span>
                                     </button>
                                     <button
                                         onClick={() => handleVote(comment._id, 'dislikes')}
                                         className="flex items-center text-gray-300 hover:text-red-400 transition-colors duration-200 group"
                                     >
-                                        <div className="p-2 rounded-lg bg-gray-700/30 group-hover:bg-red-500/10 transition-colors duration-200">
-                                            <ThumbsDown className="w-5 h-5" />
-                                        </div>
-                                        <span className="ml-2 font-medium">{comment.dislikes}</span>
+                                        <ThumbsDown className="w-4 h-4 mr-1" />
+                                        <span>{t('Beğenme')}</span>
+                                        <span className="ml-1">{comment.dislikes || 0}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => handleReport(comment._id)}
+                                        className="flex items-center text-gray-300 hover:text-yellow-400 transition-colors duration-200 group"
+                                    >
+                                        <Flag className="w-4 h-4 mr-1" />
+                                        <span>{t('Raporla')}</span>
                                     </button>
                                 </div>
-
-                                <div className="flex items-center space-x-4">
-                                    {!isAdmin && comment.status !== 'reported' && (
+                                {isAdmin && (
+                                    <div className="flex items-center space-x-3">
                                         <button
-                                            onClick={() => handleReport(comment._id)}
-                                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg group"
+                                            onClick={() => handleDelete(comment._id)}
+                                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
                                         >
-                                            <div className="p-1.5 rounded-lg bg-gray-700/30 group-hover:bg-red-500/10 transition-colors duration-200">
-                                                <Flag className="w-4 h-4" />
-                                            </div>
-                                            <span className="ml-2">Raporla</span>
+                                            <span>{t('Sil')}</span>
                                         </button>
-                                    )}
-
-                                    {isAdmin && (
-                                        <div className="flex items-center space-x-3">
-                                            <button
-                                                onClick={() => handleDelete(comment._id)}
-                                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
-                                            >
-                                                Sil
-                                            </button>
-                                            <button
-                                                onClick={() => handleHide(comment._id)}
-                                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
-                                            >
-                                                Gizle
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                        <button
+                                            onClick={() => handleHide(comment._id)}
+                                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
+                                        >
+                                            <span>{t('Gizle')}</span>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
-
             <LoginPromptModal
                 isOpen={showLoginModal}
                 onClose={() => setShowLoginModal(false)}
-                onContinueAsGuest={handleContinueAsGuest}
                 action={loginAction}
+                onContinueAsGuest={handleContinueAsGuest}
             />
         </>
     );

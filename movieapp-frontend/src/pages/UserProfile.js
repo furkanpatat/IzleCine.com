@@ -198,7 +198,7 @@ const UserProfile = () => {
 
     } catch (error) {
       console.error('Error deleting comment:', error);
-      alert('Yorum silinirken bir hata oluştu!');
+      alert(t('Yorum silinirken bir hata oluştu!'));
       setDeletingCommentId(null); // Hata durumunda animasyon state'ini temizle
     } finally {
       setDeleting(false);
@@ -228,7 +228,7 @@ const UserProfile = () => {
             <p className="text-gray-400">{userData?.email}</p>
             <p className="text-sm text-gray-500 flex items-center mt-1">
               <FaCalendar className="mr-1" />
-              Member since {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Recently'}
+              {t('Member since')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : t('Recently')}
             </p>
           </div>
         </div>
@@ -236,13 +236,13 @@ const UserProfile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {userData?.city && (
             <div className="bg-gray-700/30 rounded-lg p-4">
-              <h3 className="text-gray-400 text-sm font-medium">City</h3>
+              <h3 className="text-gray-400 text-sm font-medium">{t('City')}</h3>
               <p className="text-white text-lg">{userData.city}</p>
             </div>
           )}
           {userData?.birthYear && (
             <div className="bg-gray-700/30 rounded-lg p-4">
-              <h3 className="text-gray-400 text-sm font-medium">Birth Year</h3>
+              <h3 className="text-gray-400 text-sm font-medium">{t('Birth Year')}</h3>
               <p className="text-white text-lg">{userData.birthYear}</p>
             </div>
           )}
@@ -254,7 +254,7 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Liked Movies</p>
+              <p className="text-gray-400 text-sm">{t('Liked Movies')}</p>
               <p className="text-2xl font-bold text-white">{likedMovies.length}</p>
             </div>
             <FaHeart className="text-2xl text-pink-500" />
@@ -264,7 +264,7 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-xl p-4 border border-blue-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Comments</p>
+              <p className="text-gray-400 text-sm">{t('Comments')}</p>
               <p className="text-2xl font-bold text-white">{userComments.length}</p>
             </div>
             <FaComment className="text-2xl text-blue-500" />
@@ -274,11 +274,11 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-xl p-4 border border-yellow-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Average Rating</p>
+              <p className="text-gray-400 text-sm">{t('Average Rating')}</p>
               <p className="text-2xl font-bold text-white">
                 {userComments.length > 0 
                   ? (userComments.reduce((sum, comment) => sum + (comment.rating || 0), 0) / userComments.length).toFixed(1)
-                  : 'N/A'
+                  : t('N/A')
                 }
               </p>
             </div>
@@ -292,8 +292,8 @@ const UserProfile = () => {
   const renderLikedMoviesTab = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-white">Liked Movies</h3>
-        <span className="text-gray-400 text-sm">{likedMovies.length} movies</span>
+        <h3 className="text-xl font-semibold text-white">{t('Liked Movies')}</h3>
+        <span className="text-gray-400 text-sm">{likedMovies.length} {t('movies')}</span>
       </div>
       
       {likedMovies.length > 0 ? (
@@ -319,7 +319,7 @@ const UserProfile = () => {
               <div className="p-4">
                 <h4 className="text-white font-semibold mb-2 line-clamp-2">{movie.title}</h4>
                 <p className="text-gray-400 text-xs">
-                  Liked on {movie.likedAt ? new Date(movie.likedAt).toLocaleDateString() : 'Recently'}
+                  {t('Liked on')} {movie.likedAt ? new Date(movie.likedAt).toLocaleDateString() : t('Recently')}
                 </p>
               </div>
             </div>
@@ -328,8 +328,8 @@ const UserProfile = () => {
       ) : (
         <div className="text-center py-12">
           <FaHeart className="text-6xl text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">No liked movies yet</p>
-          <p className="text-gray-500 text-sm">Start liking movies to see them here</p>
+          <p className="text-gray-400 text-lg">{t('No liked movies yet')}</p>
+          <p className="text-gray-500 text-sm">{t('Start liking movies to see them here')}</p>
         </div>
       )}
     </div>
@@ -338,8 +338,8 @@ const UserProfile = () => {
   const renderCommentsTab = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-white">Your Comments</h3>
-        <span className="text-gray-400 text-sm">{userComments.length} comments</span>
+        <h3 className="text-xl font-semibold text-white">{t('Your Comments')}</h3>
+        <span className="text-gray-400 text-sm">{userComments.length} {t('comments')}</span>
       </div>
 
       {userComments.length > 0 ? (
@@ -359,9 +359,9 @@ const UserProfile = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h4 className="text-white font-semibold">{comment.movieTitle || 'Movie'}</h4>
+                    <h4 className="text-white font-semibold">{comment.movieTitle || t('Movie')}</h4>
                     <p className="text-gray-400 text-sm">
-                      {comment.commentedAt ? new Date(comment.commentedAt).toLocaleDateString() : 'Recently'}
+                      {comment.commentedAt ? new Date(comment.commentedAt).toLocaleDateString() : t('Recently')}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -379,7 +379,7 @@ const UserProfile = () => {
                       className={`p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 ${
                         isDeleting ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                      title="Delete comment"
+                      title={t('Delete comment')}
                       disabled={isDeleting}
                     >
                       <FaTrash className="text-sm" />
@@ -394,17 +394,17 @@ const UserProfile = () => {
       ) : (
         <div className="text-center py-12">
           <FaComment className="text-6xl text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">No comments yet</p>
-          <p className="text-gray-500 text-sm">Start commenting on movies to see them here</p>
+          <p className="text-gray-400 text-lg">{t('No comments yet')}</p>
+          <p className="text-gray-500 text-sm">{t('Start commenting on movies to see them here')}</p>
         </div>
       )}
     </div>
   );
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: FaUser },
-    { id: 'liked', label: 'Liked Movies', icon: FaHeart },
-    { id: 'comments', label: 'Comments', icon: FaComment }
+    { id: 'profile', label: t('Profile'), icon: FaUser },
+    { id: 'liked', label: t('Liked Movies'), icon: FaHeart },
+    { id: 'comments', label: t('Comments'), icon: FaComment }
   ];
 
   if (loading) {
@@ -414,7 +414,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <div className="loading-spinner mx-auto mb-4"></div>
-              <p className="text-gray-400">Loading profile data...</p>
+              <p className="text-gray-400">{t('Loading profile data...')}</p>
             </div>
           </div>
         </div>
@@ -429,13 +429,13 @@ const UserProfile = () => {
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <IoClose className="text-6xl text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Error Loading Profile</h2>
+              <h2 className="text-xl font-semibold text-white mb-2">{t('Error Loading Profile')}</h2>
               <p className="text-gray-400 mb-4">{error}</p>
                   <button
                 onClick={fetchUserData}
                 className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
               >
-                Try Again
+                {t('Try Again')}
                 </button>
             </div>
           </div>
@@ -454,14 +454,14 @@ const UserProfile = () => {
             className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200"
           >
             <FaArrowLeft />
-            <span>Back</span>
+            <span>{t('Back')}</span>
           </button>
           
           <button
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
           >
-            Logout
+            {t('Logout')}
           </button>
         </div>
 
@@ -502,17 +502,17 @@ const UserProfile = () => {
                 <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaTrash className="w-8 h-8 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Yorumu Sil</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('Yorumu Sil')}</h2>
                 <p className="text-gray-400 mb-6">
-                  Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                  {t('Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')}
                 </p>
                 
                 {commentToDelete && (
                   <div className="bg-gray-700/30 rounded-lg p-4 mb-6">
-                    <p className="text-gray-300 text-sm mb-2">Yorum:</p>
+                    <p className="text-gray-300 text-sm mb-2">{t('Yorum:')}</p>
                     <p className="text-white italic">"{commentToDelete.content}"</p>
                     <p className="text-gray-400 text-xs mt-2">
-                      Film: {commentToDelete.movieTitle}
+                      {t('Film:')} {commentToDelete.movieTitle}
                     </p>
                   </div>
                 )}
@@ -522,7 +522,7 @@ const UserProfile = () => {
                     onClick={cancelDeleteComment}
                     className="flex-1 bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-600/50 hover:border-gray-500/50"
                   >
-                    İptal
+                    {t('İptal')}
                   </button>
                   <button
                     onClick={confirmDeleteComment}
@@ -532,12 +532,12 @@ const UserProfile = () => {
                     {deleting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Siliniyor...</span>
+                        <span>{t('Siliniyor...')}</span>
                       </>
                     ) : (
                       <>
                         <FaTrash className="w-4 h-4" />
-                        <span>Evet, Sil</span>
+                        <span>{t('Evet, Sil')}</span>
                       </>
                     )}
                   </button>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import { useTranslation } from 'react-i18next';
 
 const SignUpPage = () => {
     const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const SignUpPage = () => {
     const [error, setError] = useState('');
     const [username, setUsername] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     // Memoize star and meteor data to prevent re-rendering
     const starElements = useMemo(() => {
@@ -36,12 +38,12 @@ const SignUpPage = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setError('Şifreler eşleşmiyor');
+            setError(t('Şifreler eşleşmiyor'));
             return;
         }
         try {
             await authService.register({ username, email, password });
-            alert('Registration successful!');
+            alert(t('Registration successful!'));
             navigate('/complete-profile');
         } catch (err) {
             setError(err.message);
@@ -85,8 +87,8 @@ const SignUpPage = () => {
                 <div className="w-full max-w-md">
                     <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-gray-700/50 transition-all duration-500 ease-out opacity-100">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-2">Kayıt Ol</h2>
-                            <p className="text-gray-300">Yeni bir hesap oluşturarak film dünyasına katılın.</p>
+                            <h2 className="text-3xl font-bold text-white mb-2">{t('Kayıt Ol')}</h2>
+                            <p className="text-gray-300">{t('Yeni bir hesap oluşturarak film dünyasına katılın.')}</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -98,7 +100,7 @@ const SignUpPage = () => {
 
                             <div className="space-y-2">
                                 <label htmlFor="username" className="block text-sm font-medium text-gray-300">
-                                    Kullanıcı Adı
+                                    {t('Kullanıcı Adı')}
                                 </label>
                                 <input
                                     type="text"
@@ -107,14 +109,14 @@ const SignUpPage = () => {
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                                    placeholder="kullanici_adi"
+                                    placeholder={t('kullanici_adi')}
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                                    E-posta Adresiniz
+                                    {t('E-posta Adresiniz')}
                                 </label>
                                 <input
                                     type="email"
@@ -123,14 +125,14 @@ const SignUpPage = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                                    placeholder="ornek@email.com"
+                                    placeholder={t('ornek@email.com')}
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                                    Şifre
+                                    {t('Şifre')}
                                 </label>
                                 <input
                                     type="password"
@@ -139,14 +141,14 @@ const SignUpPage = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                                    placeholder="••••••••"
+                                    placeholder={t('••••••••')}
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
-                                    Şifre Tekrar
+                                    {t('Şifre Tekrar')}
                                 </label>
                                 <input
                                     type="password"
@@ -155,7 +157,7 @@ const SignUpPage = () => {
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                                    placeholder="••••••••"
+                                    placeholder={t('••••••••')}
                                     required
                                 />
                             </div>
@@ -164,7 +166,7 @@ const SignUpPage = () => {
                                 type="submit" 
                                 className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:from-purple-700 hover:to-indigo-700 hover:scale-105 hover:shadow-lg"
                             >
-                                Kayıt Ol
+                                {t('Kayıt Ol')}
                             </button>
                             
                             <div className="text-center">
@@ -172,7 +174,7 @@ const SignUpPage = () => {
                                     to="/login" 
                                     className="inline-block w-full bg-gray-700/50 text-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:bg-gray-600/50 hover:text-white hover:scale-105"
                                 >
-                                    Giriş Yap
+                                    {t('Giriş Yap')}
                                 </Link>
                             </div>
                         </form>

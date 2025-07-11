@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PasswordReset.css';
 import authService from '../services/authService';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const { t } = useTranslation();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,20 +28,20 @@ const ForgotPassword = () => {
 
     return (
         <div className="password-reset-container">
-            <h2>Şifremi Unuttum</h2>
+            <h2>{t('Şifremi Unuttum')}</h2>
             <p>
-                E-posta adresinizi girin, şifrenizi sıfırlamak için size bir bağlantı göndereceğiz.
+                {t('E-posta adresinizi girin, şifrenizi sıfırlamak için size bir bağlantı göndereceğiz.')}
             </p>
 
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="email">E-posta Adresi</label>
+                    <label htmlFor="email">{t('E-posta Adresi')}</label>
                     <input
                         type="email"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="ornek@email.com"
+                        placeholder={t('ornek@email.com')}
                         required
                         disabled={isLoading}
                     />
@@ -52,12 +54,12 @@ const ForgotPassword = () => {
                 )}
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Gönderiliyor...' : 'Şifre Yenile'}
+                    {isLoading ? t('Gönderiliyor...') : t('Şifre Yenile')}
                 </button>
             </form>
 
             <div className="back-to-login">
-                <Link to="/login">Giriş sayfasına geri dön</Link>
+                <Link to="/login">{t('Giriş sayfasına geri dön')}</Link>
             </div>
         </div>
     );

@@ -47,7 +47,7 @@ const Home = () => {
         setHorrorMovies(horrorMoviesData.results || []);
         setError(null);
       } catch (err) {
-        setError('Filmler yüklenirken bir hata oluştu.');
+        setError(t('Filmler yüklenirken bir hata oluştu.'));
         console.error(err);
       } finally {
         setLoading(false);
@@ -55,7 +55,7 @@ const Home = () => {
     };
 
     fetchMovies();
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
@@ -110,13 +110,13 @@ const Home = () => {
 
         {horrorMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '1s' }}>
-            <MovieRow title="Korku Filmleri" movies={horrorMovies} />
+            <MovieRow title={t('Korku Filmleri')} movies={horrorMovies} />
           </div>
         )}
 
         {recommendedMovies.length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '1.2s' }}>
-            <MovieRow title="İlginizi Çekebilir" movies={recommendedMovies} />
+            <MovieRow title={t('İlginizi Çekebilir')} movies={recommendedMovies} />
           </div>
         )}
       </div>

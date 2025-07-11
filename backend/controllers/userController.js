@@ -230,7 +230,8 @@ exports.updateProfile = async (req, res) => {
     if (username) updateFields.username = username;
     if (city !== undefined) updateFields.city = city;
     if (theme) updateFields.theme = theme;
-
+    if (language) updateFields.language = language; 
+    
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       updateFields,

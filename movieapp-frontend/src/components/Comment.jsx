@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Flag, Trash2, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Comment = ({ comment, onReport, onDelete, onHide, isAdmin }) => {
   const [isReported, setIsReported] = useState(false);
+  const { t } = useTranslation();
 
   const handleReport = async () => {
     try {
@@ -40,7 +42,7 @@ const Comment = ({ comment, onReport, onDelete, onHide, isAdmin }) => {
         </div>
         {comment.status === 'reported' && (
           <span className="px-3 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
-            Rapor Edildi
+            {t('Rapor Edildi')}
           </span>
         )}
       </div>
@@ -56,7 +58,7 @@ const Comment = ({ comment, onReport, onDelete, onHide, isAdmin }) => {
             className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
           >
             <Flag className="w-4 h-4 mr-2" />
-            <span>Raporla</span>
+            <span>{t('Raporla')}</span>
           </button>
         )}
         
@@ -67,14 +69,14 @@ const Comment = ({ comment, onReport, onDelete, onHide, isAdmin }) => {
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              <span>Sil</span>
+              <span>{t('Sil')}</span>
             </button>
             <button
               onClick={() => onHide(comment._id)}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
             >
               <EyeOff className="w-4 h-4 mr-2" />
-              <span>Gizle</span>
+              <span>{t('Gizle')}</span>
             </button>
           </div>
         )}

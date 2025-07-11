@@ -29,7 +29,12 @@ const userSchema = new mongoose.Schema({
       commentText: { type: String },
       commentedAt: { type: Date, default: Date.now }
     }
-  ]
+  ],
+  language: {
+  type: String,
+  enum: ['tr', 'en'],
+  default: 'tr'
+  }
 });
 
 userSchema.set('toJSON', {

@@ -1,8 +1,11 @@
 import React from 'react';
 import { FaUser, FaTimes, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const LoginPromptModal = ({ isOpen, onClose, onContinueAsGuest, action }) => {
+  const { t } = useTranslation();
+  
   if (!isOpen) return null;
 
   return (
@@ -13,9 +16,9 @@ const LoginPromptModal = ({ isOpen, onClose, onContinueAsGuest, action }) => {
           <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaUser className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Giriş Yapın</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">{t('Giriş Yapın')}</h2>
           <p className="text-gray-400 mb-6">
-            {action || 'Bu özelliği kullanmak'} için giriş yapmanız gerekiyor.
+            {action || t('Bu özelliği kullanmak')} {t('için giriş yapmanız gerekiyor.')}
           </p>
           
           <div className="space-y-3">
@@ -25,7 +28,7 @@ const LoginPromptModal = ({ isOpen, onClose, onContinueAsGuest, action }) => {
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
             >
               <FaSignInAlt className="w-4 h-4" />
-              <span>Giriş Yap</span>
+              <span>{t('Giriş Yap')}</span>
             </Link>
             
             <Link
@@ -34,14 +37,14 @@ const LoginPromptModal = ({ isOpen, onClose, onContinueAsGuest, action }) => {
               className="w-full bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-600/50 hover:border-gray-500/50 flex items-center justify-center space-x-2"
             >
               <FaUserPlus className="w-4 h-4" />
-              <span>Kayıt Ol</span>
+              <span>{t('Kayıt Ol')}</span>
             </Link>
             
             <button
               onClick={onContinueAsGuest}
               className="w-full bg-transparent hover:bg-gray-700/30 text-gray-400 font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-gray-600/50 hover:border-gray-500/50"
             >
-              Misafir olarak devam et
+              {t('Misafir olarak devam et')}
             </button>
           </div>
           

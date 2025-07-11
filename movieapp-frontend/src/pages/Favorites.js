@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { removeFromFavorites } from '../store/izleCine';
+import { useTranslation } from 'react-i18next';
 
 const Favorites = () => {
   const favorites = useSelector(state => state.IzleCineData.favorites);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleMovieClick = (movieId) => {
     navigate(`/movie/${movieId}`);
@@ -23,8 +25,8 @@ const Favorites = () => {
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
         <div className="text-center">
           <FaHeart className="text-6xl text-gray-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Henüz Favori Filminiz Yok</h2>
-          <p className="text-gray-400">Beğendiğiniz filmleri favorilere ekleyerek burada görüntüleyebilirsiniz.</p>
+          <h2 className="text-2xl font-bold mb-2">{t('Henüz Favori Filminiz Yok')}</h2>
+          <p className="text-gray-400">{t('Beğendiğiniz filmleri favorilere ekleyerek burada görüntüleyebilirsiniz.')}</p>
         </div>
       </div>
     );
@@ -33,7 +35,7 @@ const Favorites = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">Favori Filmlerim</h1>
+        <h1 className="text-3xl font-bold mb-8">{t('Favori Filmlerim')}</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {favorites.map((movie) => (
             <div

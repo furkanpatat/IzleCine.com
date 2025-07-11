@@ -1,9 +1,11 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next';
 
 const ExplorePage = () => {
+  const { t } = useTranslation();
   return (
     <div>
-      ExplorePage
+      {t('ExplorePage')}
     </div>
   )
 }

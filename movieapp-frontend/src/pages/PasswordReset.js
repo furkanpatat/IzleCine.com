@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PasswordReset.css';  // Bileşene özel stil dosyasını import et
+import { useTranslation } from 'react-i18next';
 
   // Global stilleri import et
 const PasswordReset = () => {
@@ -12,6 +13,7 @@ const PasswordReset = () => {
   const [passwordStrength, setPasswordStrength] = useState('');
   const [passwordStrengthColor, setPasswordStrengthColor] = useState('#e0e0e0');
   const [showPasswordRules, setShowPasswordRules] = useState(false);
+  const { t } = useTranslation();
 
   const checkPasswordStrength = (password) => {
     let strength = 0;
@@ -24,13 +26,13 @@ const PasswordReset = () => {
     switch (strength) {
       case 0:
       case 1:
-        return { text: 'Zayıf', color: '#e74c3c' };
+        return { text: t('Zayıf'), color: '#e74c3c' };
       case 2:
       case 3:
-        return { text: 'Orta', color: '#f39c12' };
+        return { text: t('Orta'), color: '#f39c12' };
       case 4:
       case 5:
-        return { text: 'Güçlü', color: '#27ae60' };
+        return { text: t('Güçlü'), color: '#27ae60' };
       default:
         return { text: '', color: '#e0e0e0' };
     }
@@ -45,7 +47,7 @@ const PasswordReset = () => {
       setPasswordStrength('');
       setPasswordStrengthColor('#e0e0e0');
     }
-  }, [newPassword]);
+  }, [newPassword, t]);
 
   // Form gönderildiğinde çalışacak fonksiyon
   const handleSubmit = (e) => {
@@ -53,7 +55,7 @@ const PasswordReset = () => {
 
     // Şifrelerin uyuşup uyuşmadığını kontrol et
     if (newPassword !== confirmPassword) {
-      setError('Şifreler uyuşmuyor.');
+      setError(t('Şifreler uyuşmuyor.'));
       return;
     }
 
@@ -66,19 +68,19 @@ const PasswordReset = () => {
 
   return (
     <div className="password-reset-container">
-      <h2>Şifrenizi Sıfırlayın</h2>
-      <p>Hesabınıza tekrar erişim sağlamak için yeni bir şifre oluşturun.</p>
+      <h2>{t('Şifrenizi Sıfırlayın')}</h2>
+      <p>{t('Hesabınıza tekrar erişim sağlamak için yeni bir şifre oluşturun.')}</p>
 
       {success ? (
         <div className="success-message">
-          Şifreniz başarıyla sıfırlandı! <a href="/login">Giriş Yap</a>
+          {t('Şifreniz başarıyla sıfırlandı!')} <a href="/login">{t('Giriş Yap')}</a>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
           {error && <p className="error-message">{error}</p>}
           
           <div className="form-group">
-            <label htmlFor="email">E-posta Adresiniz:</label>
+            <label htmlFor="email">{t('E-posta Adresiniz:')}</label>
             <input
               type="email"
               id="email"
@@ -90,7 +92,7 @@ const PasswordReset = () => {
           </div>
 
           <div className="form-group password-input-group">
-            <label htmlFor="new-password">Yeni Şifre:</label>
+            <label htmlFor="new-password">{t('Yeni Şifre:')}</label>
             <input
               type="password"
               id="new-password"
@@ -109,19 +111,19 @@ const PasswordReset = () => {
             )}
             {showPasswordRules && (
               <div className="password-rules-tooltip">
-                <h3>Şifre Kuralları:</h3>
+                <h3>{t('Şifre Kuralları:')}</h3>
                 <ul>
-                  <li className={newPassword.length >= 8 ? 'rule-met' : ''}>En az 8 karakter</li>
-                  <li className={newPassword.match(/[A-Z]/) ? 'rule-met' : ''}>En az 1 büyük harf</li>
-                  <li className={newPassword.match(/[a-z]/) ? 'rule-met' : ''}>En az 1 küçük harf</li>
-                  <li className={newPassword.match(/[0-9]/) ? 'rule-met' : ''}>En az 1 sayı</li>
+                  <li className={newPassword.length >= 8 ? 'rule-met' : ''}>{t('En az 8 karakter')}</li>
+                  <li className={newPassword.match(/[A-Z]/) ? 'rule-met' : ''}>{t('En az 1 büyük harf')}</li>
+                  <li className={newPassword.match(/[a-z]/) ? 'rule-met' : ''}>{t('En az 1 küçük harf')}</li>
+                  <li className={newPassword.match(/[0-9]/) ? 'rule-met' : ''}>{t('En az 1 sayı')}</li>
                 </ul>
               </div>
             )}
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirm-password">Şifreyi Tekrar Girin:</label>
+            <label htmlFor="confirm-password">{t('Şifreyi Tekrar Girin:')}</label>
             <input
               type="password"
               id="confirm-password"
@@ -132,12 +134,12 @@ const PasswordReset = () => {
             />
           </div>
 
-          <button type="submit">Şifreyi Sıfırla</button>
+          <button type="submit">{t('Şifreyi Sıfırla')}</button>
         </form>
       )}
       
       <p className="back-to-login">
-        Zaten şifreni hatırlıyor musun? <a href="/login">Giriş yap</a>
+        {t('Zaten şifreni hatırlıyor musun?')} <a href="/login">{t('Giriş yap')}</a>
       </p>
     </div>
   );

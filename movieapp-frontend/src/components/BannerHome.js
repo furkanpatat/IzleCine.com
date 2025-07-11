@@ -175,14 +175,14 @@ const BannerHome = ({ movies }) => {
                       className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow"
                     >
                       <FaPlay className="text-lg" />
-                      <span className="font-semibold">Fragmanı İzle</span>
+                      <span className="font-semibold">{t('Fragmanı İzle')}</span>
                     </button>
                     <Link 
                       to={`/movie/${movie.id}`}
                       className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-6 py-2 rounded-md hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover"
                     >
                       <FaInfoCircle className="text-lg" />
-                      <span className="font-semibold">Film Hakkında</span>
+                      <span className="font-semibold">{t('Film Hakkında')}</span>
                     </Link>
                   </div>
                 </div>
@@ -251,26 +251,26 @@ const BannerHome = ({ movies }) => {
             <button
               onClick={handleCloseTrailer}
               className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl z-10 bg-black/30 rounded-full p-2 transition-colors duration-200"
-              aria-label="Kapat"
+              aria-label={t('Kapat')}
             >
               ×
             </button>
             <div className="w-full aspect-video bg-black flex items-center justify-center">
               {trailerLoading ? (
-                <div className="text-white text-lg">Yükleniyor...</div>
+                <div className="text-white text-lg">{t('Yükleniyor...')}</div>
               ) : trailerKey ? (
                 <iframe
                   width="100%"
                   height="100%"
                   src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
-                  title="Fragman"
+                  title={t('Fragman')}
                   frameBorder="0"
                   allow="autoplay; encrypted-media"
                   allowFullScreen
                   className="rounded-b-2xl"
                 ></iframe>
               ) : (
-                <div className="text-white text-lg p-8">{trailerError || 'Fragman bulunamadı.'}</div>
+                <div className="text-white text-lg p-8">{trailerError || t('Fragman bulunamadı.')}</div>
               )}
             </div>
           </div>

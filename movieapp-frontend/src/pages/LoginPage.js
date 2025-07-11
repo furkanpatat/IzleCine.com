@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import apiService from '../services/apiService';
+import { useTranslation } from 'react-i18next';
 
 // JWT decode helper
 function parseJwt(token) {
@@ -19,6 +20,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const errorRef = useRef(null);
+  const { t } = useTranslation();
 
   // Memoize star and meteor data to prevent re-rendering
   const starElements = useMemo(() => {
@@ -121,8 +123,8 @@ const LoginPage = () => {
         <div className="w-full max-w-md">
           <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-gray-700/50 transition-all duration-500 ease-out opacity-100">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-2">Giriş Yap</h2>
-              <p className="text-gray-300">Hesabınıza giriş yaparak film dünyasına adım atın.</p>
+              <h2 className="text-3xl font-bold text-white mb-2">{t('Giriş Yap')}</h2>
+              <p className="text-gray-300">{t('Hesabınıza giriş yaparak film dünyasına adım atın.')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -138,7 +140,7 @@ const LoginPage = () => {
               )}
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                  E-posta Adresiniz
+                  {t('E-posta Adresiniz')}
                 </label>
                 <input
                   type="email"
@@ -147,7 +149,7 @@ const LoginPage = () => {
                   value={email}
                   onChange={handleEmailChange}
                   className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                  placeholder="ornek@email.com"
+                  placeholder={t('ornek@email.com')}
                   required
                   disabled={loading}
                 />
@@ -155,7 +157,7 @@ const LoginPage = () => {
 
               <div className="space-y-2">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                  Şifre
+                  {t('Şifre')}
                 </label>
                 <input
                   type="password"
@@ -164,7 +166,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={handlePasswordChange}
                   className="w-full px-4 py-3 bg-gray-700/50 text-white rounded-lg border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                  placeholder="••••••••"
+                  placeholder={t('••••••••')}
                   required
                   disabled={loading}
                 />
@@ -175,7 +177,7 @@ const LoginPage = () => {
                 className={`w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:from-purple-700 hover:to-indigo-700 hover:scale-105 hover:shadow-lg ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
                 disabled={loading}
               >
-                {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+                {loading ? t('Giriş Yapılıyor...') : t('Giriş Yap')}
               </button>
 
               <div className="text-center">
@@ -183,7 +185,7 @@ const LoginPage = () => {
                   to="/signup"
                   className="inline-block w-full bg-gray-700/50 text-gray-300 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:bg-gray-600/50 hover:text-white hover:scale-105"
                 >
-                  Kayıt Ol
+                  {t('Kayıt Ol')}
                 </Link>
               </div>
 
@@ -192,7 +194,7 @@ const LoginPage = () => {
                   to="/forgot-password"
                   className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors duration-300 hover:underline"
                 >
-                  Şifrenizi mi unuttunuz?
+                  {t('Şifrenizi mi unuttunuz?')}
                 </Link>
               </div>
             </form>

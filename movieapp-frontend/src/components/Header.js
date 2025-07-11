@@ -10,23 +10,6 @@ import tmdbService from '../services/tmdbService';
 import MovieRow from './MovieRow';
 import { useTranslation } from 'react-i18next';
 
-const CATEGORY_CONFIG = [
-  { key: 'popular', label: 'Popüler', fetch: () => tmdbService.getPopularMovies() },
-  { key: 'trending', label: 'Trend', fetch: () => tmdbService.getTrendingMovies() },
-  { key: 'action', label: 'Aksiyon', fetch: () => tmdbService.getMoviesByGenre(28) },
-  { key: 'comedy', label: 'Komedi', fetch: () => tmdbService.getMoviesByGenre(35) },
-  { key: 'drama', label: 'Drama', fetch: () => tmdbService.getMoviesByGenre(18) },
-];
-
-// JWT decode helper (kopya, diğer admin sayfalarındakiyle aynı)
-function parseJwt(token) {
-  try {
-    return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
-    return null;
-  }
-}
-
 const Header = () => {
   const [searchInput, setSearchInput] = useState('')
   const navigate = useNavigate()
@@ -36,6 +19,23 @@ const Header = () => {
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [categoryError, setCategoryError] = useState(null);
   const { t } = useTranslation();
+
+  const CATEGORY_CONFIG = [
+    { key: 'popular', label: t('Popüler'), fetch: () => tmdbService.getPopularMovies() },
+    { key: 'trending', label: t('Trend'), fetch: () => tmdbService.getTrendingMovies() },
+    { key: 'action', label: t('Aksiyon'), fetch: () => tmdbService.getMoviesByGenre(28) },
+    { key: 'comedy', label: t('Komedi'), fetch: () => tmdbService.getMoviesByGenre(35) },
+    { key: 'drama', label: t('Drama'), fetch: () => tmdbService.getMoviesByGenre(18) },
+  ];
+
+  // JWT decode helper (kopya, diğer admin sayfalarındakiyle aynı)
+  function parseJwt(token) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
 
   // --- Login state management ---
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
@@ -111,9 +111,9 @@ const Header = () => {
     setCategoryError(null);
     selectedCategory.fetch()
       .then(data => setCategoryMovies(data.results || []))
-      .catch(() => setCategoryError('Filmler yüklenemedi.'))
+      .catch(() => setCategoryError(t('Filmler yüklenemedi.')))
       .finally(() => setLoadingMovies(false));
-  }, [selectedCategory]);
+  }, [selectedCategory, t]);
 
   const handleCategoryClick = (cat) => {
     setSelectedCategory(cat);
@@ -195,14 +195,14 @@ const Header = () => {
                 }}
                 className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:from-red-700 hover:to-pink-700 transition-all duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-red-400/60"
               >
-                Çıkış Yap
+                {t('Çıkış Yap')}
               </button>
             ) : (
               <>
                 <form className='flex items-center gap-2' onSubmit={handleSubmit}>
                   <input
                     type='text'
-                    placeholder='Search...'
+                    placeholder={t('Ara...')}
                     className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block transition-all duration-300 focus:bg-white/10 rounded-md'
                     onChange={(e) => setSearchInput(e.target.value)}
                     value={searchInput}

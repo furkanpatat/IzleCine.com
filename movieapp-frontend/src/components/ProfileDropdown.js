@@ -58,7 +58,7 @@ const ProfileDropdown = () => {
         <div className="profile-dropdown-menu">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
-            <h2 className="text-lg font-semibold text-white">Menu</h2>
+            <h2 className="text-lg font-semibold text-white">{t('Menu')}</h2>
             <button
               onClick={() => setIsOpen(false)}
               className="text-gray-400 hover:text-white transition-colors duration-200"
@@ -75,7 +75,7 @@ const ProfileDropdown = () => {
               onClick={() => setIsOpen(false)}
             >
               <FaUser className="text-sm" />
-              <span className="text-sm">Profile</span>
+              <span className="text-sm">{t('Profil')}</span>
             </Link>
             
             <Link
@@ -84,7 +84,7 @@ const ProfileDropdown = () => {
               onClick={() => setIsOpen(false)}
             >
               <FaList className="text-sm" />
-              <span className="text-sm">Watchlist</span>
+              <span className="text-sm">{t('İzleme Listesi')}</span>
             </Link>
 
             <Link
@@ -93,7 +93,7 @@ const ProfileDropdown = () => {
               onClick={() => setIsOpen(false)}
             >
               <FaHeart className="text-sm" />
-              <span className="text-sm">Favorites</span>
+              <span className="text-sm">{t('Favoriler')}</span>
             </Link>
 
             <Link
@@ -102,7 +102,7 @@ const ProfileDropdown = () => {
               onClick={() => setIsOpen(false)}
             >
               <FaCog className="text-sm" />
-              <span className="text-sm">Settings</span>
+              <span className="text-sm">{t('Ayarlar')}</span>
             </Link>
           </div>
 
@@ -113,7 +113,7 @@ const ProfileDropdown = () => {
               className="flex items-center gap-3 w-full px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200"
             >
               <FaSignOutAlt className="text-sm" />
-              <span className="text-sm">Logout</span>
+              <span className="text-sm">{t('Çıkış Yap')}</span>
             </button>
           </div>
         </div>

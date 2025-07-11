@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import apiService from '../services/apiService';
+import i18n from '../i18n';
 
 const SettingsPage = () => {
-  const [form, setForm] = useState({ username: '', city: '', theme: 'light' });
+  const [form, setForm] = useState({ username: '', city: '', theme: 'light', language: 'tr' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  
   // Memoize star and meteor data to prevent re-rendering
   const starElements = useMemo(() => {
     return [...Array(100)].map((_, i) => ({
@@ -38,6 +39,7 @@ const SettingsPage = () => {
           username: user.username || '',
           city: user.city || '',
           theme: user.theme || 'light',
+          language: user.language || (localStorage.getItem('lang') || 'tr'), 
         });
       })
       .catch(() => {});
@@ -58,21 +60,40 @@ const SettingsPage = () => {
     setForm(prev => ({ ...prev, theme: prev.theme === 'light' ? 'dark' : 'light' }));
   };
 
+  const handleLanguageToggle = () => {
+  const newLang = form.language === 'tr' ? 'en' : 'tr';
+  setForm(prev => ({
+    ...prev,
+    language: newLang
+  }));
+
+  i18n.changeLanguage(newLang); // ✅ frontend dili anında değiştir
+  localStorage.setItem('lang', newLang); // opsiyonel, refreshte de hatırlasın
+};
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
-    const token = localStorage.getItem('token');
-    try {
-      await apiService.updateUserProfilePatch(token, form);
-      setSuccess('Bilgileriniz güncellendi');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  setSuccess('');
+  const token = localStorage.getItem('token');
+  try {
+    await apiService.updateUserProfilePatch(token, form);
+
+    // ✅ Dili i18n'e uygula ve localStorage'a yaz
+    if (form.language) {
+      i18n.changeLanguage(form.language);
+      localStorage.setItem('lang', form.language);
     }
-  };
+
+    setSuccess('Bilgileriniz güncellendi');
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative">
@@ -216,7 +237,19 @@ const SettingsPage = () => {
                 </button>
               </div>
             </div>
-
+            {/* Language Toggle */}
+<div className="space-y-2">
+  <label className="block text-sm font-medium text-gray-300 flex items-center">
+    🌐 Dil Seçimi
+  </label>
+  <button
+    type="button"
+    onClick={handleLanguageToggle}
+    className="w-full bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
+  >
+    {form.language === 'tr' ? 'Türkçe' : 'English'}
+  </button>
+</div>
             {/* Submit Button */}
             <button
               type="submit"

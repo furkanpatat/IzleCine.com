@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+
 const resources = {
   tr: {
     translation: {
@@ -80,7 +81,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "tr",
+    // ✅ Buraya ekle:
+    lng: localStorage.getItem('lang') || 'tr',
+    fallbackLng: 'tr',
     interpolation: {
       escapeValue: false
     }

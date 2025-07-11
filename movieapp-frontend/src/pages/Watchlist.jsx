@@ -6,12 +6,14 @@ import { useDispatch } from 'react-redux';
 import { removeFromWatchlist } from '../store/watchlistSlice';
 import UserService from '../services/userService';
 import tmdbService from '../services/tmdbService';
+import { useTranslation } from 'react-i18next';
 
 const Watchlist = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [imageErrors, setImageErrors] = useState({});
   const [watchlist, setWatchlist] = useState([]);
+  const { t } = useTranslation();
 
 useEffect(() => {
   const fetchWatchlist = async () => {
@@ -28,12 +30,12 @@ useEffect(() => {
 
       setWatchlist(detailedMovies);
     } catch (err) {
-      console.error('İzleme listesi alınamadı:', err.message);
+      console.error(t('İzleme listesi alınamadı:'), err.message);
     }
   };
 
   fetchWatchlist();
-}, []);
+}, [t]);
   const handleMovieClick = (movieId) => {
     navigate(`/movie/${movieId}`);
   };
@@ -52,7 +54,7 @@ useEffect(() => {
     await UserService.removeFromWatchlist(movieId); // Backend'den sil
     setWatchlist(prev => prev.filter(movie => movie.id !== movieId)); // Ekrandan da kaldır
   } catch (err) {
-    console.error("Silme başarısız:", err.message);
+    console.error(t("Silme başarısız:"), err.message);
   }
 };
 
@@ -65,14 +67,18 @@ useEffect(() => {
           className="flex items-center text-gray-300 hover:text-white mb-8 transition-all duration-300 hover:scale-105"
         >
           <FaArrowLeft className="mr-2 text-xl" />
-          <span className="text-lg font-medium">Geri Dön</span>
+          <span className="text-lg font-medium">{t('Geri Dön')}</span>
         </button>
 
-        <h1 className="text-4xl font-bold mb-8">İzleme Listem</h1>
+        <h1 className="text-4xl font-bold mb-8">
+          {t('İzleme Listem')}
+        </h1>
 
         {watchlist.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">İzleme listenizde henüz film bulunmuyor.</p>
+            <p className="text-xl text-gray-400">
+              {t('İzleme listenizde henüz film bulunmuyor.')}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
@@ -110,7 +116,7 @@ useEffect(() => {
                 <button
                   onClick={(e) => handleRemoveFromWatchlist(e, movie.id)}
                   className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  title="İzleme Listesinden Kaldır"
+                  title={t('İzleme Listesinden Kaldır')}
                 >
                   <FaTrash className="text-sm" />
                 </button>
