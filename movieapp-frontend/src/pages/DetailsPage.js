@@ -14,7 +14,7 @@ const DetailsPage = () => {
     const fetchDetails = async () => {
       try {
         setLoading(true);
-        const data = type === 'movie' 
+        const data = (type === 'movie' || !type)
           ? await tmdbService.getMovieDetails(id)
           : await tmdbService.getTVShowDetails(id);
         setDetails(data);

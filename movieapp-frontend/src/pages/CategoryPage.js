@@ -13,12 +13,17 @@ const CATEGORY_CONFIG = [
 
 const CategoryPage = () => {
   const { key } = useParams();
-  const category = CATEGORY_CONFIG.find(cat => cat.key === key) || CATEGORY_CONFIG[0];
+  const category = CATEGORY_CONFIG.find(cat => cat.key === key);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!category) {
+      setError('Geçersiz kategori!');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     category.fetch()
@@ -33,9 +38,9 @@ const CategoryPage = () => {
         <div className="text-white py-8">Filmler yükleniyor...</div>
       ) : error ? (
         <div className="text-red-400 py-8">{error}</div>
-      ) : (
+      ) : category ? (
         <MovieRow title={category.label + ' Filmleri'} movies={movies} />
-      )}
+      ) : null}
     </div>
   );
 };

@@ -31,7 +31,7 @@ const Header = () => {
   const [searchInput, setSearchInput] = useState('')
   const navigate = useNavigate()
   const location = useLocation();
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_CONFIG[0]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryMovies, setCategoryMovies] = useState([]);
   const [loadingMovies, setLoadingMovies] = useState(false);
   const [categoryError, setCategoryError] = useState(null);
@@ -91,13 +91,22 @@ const Header = () => {
   }, [searchInput])
 
   useEffect(() => {
-    if (location.pathname === '/') {
-      setSelectedCategory(CATEGORY_CONFIG[0]);
+    const match = location.pathname.match(/^\/category\/(\w+)/);
+    if (match) {
+      const cat = CATEGORY_CONFIG.find(c => c.key === match[1]);
+      setSelectedCategory(cat || null);
+    } else {
+      setSelectedCategory(null);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location.pathname]);
 
   useEffect(() => {
+    if (!selectedCategory) {
+      setCategoryMovies([]);
+      setLoadingMovies(false);
+      return;
+    }
     setLoadingMovies(true);
     setCategoryError(null);
     selectedCategory.fetch()
@@ -163,7 +172,7 @@ const Header = () => {
                   key={cat.key}
                   onClick={() => handleCategoryClick(cat)}
                   className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400/60 border border-transparent backdrop-blur-md
-                        ${selectedCategory.key === cat.key
+                        ${selectedCategory && selectedCategory.key === cat.key
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg scale-105'
                       : 'bg-white/10 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-500 hover:text-white hover:shadow-lg'}
                       `}

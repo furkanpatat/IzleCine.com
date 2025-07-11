@@ -14,8 +14,8 @@ const MovieRow = ({ title, movies = [] }) => {
   const favorites = useSelector(state => state.IzleCineData?.favorites || []);
 
   const handleMovieClick = (movieId) => {
-    if (!movieId) {
-      console.error('Movie ID is missing');
+    if (!movieId || isNaN(Number(movieId))) {
+      console.error('Movie ID is missing or invalid:', movieId);
       return;
     }
     navigate(`/movie/${movieId}`);
@@ -58,8 +58,8 @@ const MovieRow = ({ title, movies = [] }) => {
     }
   };
 
-  // Filter out movies without valid IDs
-  const validMovies = movies.filter(movie => movie && movie.id);
+  // Filter out movies without valid numeric IDs
+  const validMovies = movies.filter(movie => movie && movie.id && !isNaN(Number(movie.id)));
 
   if (!validMovies.length) {
     return null; // Don't render if no valid movies
