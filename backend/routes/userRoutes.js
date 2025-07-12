@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const auth = require('../middleware/auth');
 const { body } = require('express-validator');
+const { forgotPassword, resetPassword } = require('../controllers/userController');
 
 router.post('/', [
   body('username').isLength({ min: 3 }).trim().escape(),

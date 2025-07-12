@@ -147,12 +147,14 @@ exports.forgotPassword = async (req, res) => {
     
     // E-posta adresinin geçerli olup olmadığını kontrol et
     if (!email) {
+      console.log('maili kontrol ediyor')
       return res.status(400).json({ message: 'E-posta adresi gerekli.' });
     }
 
     // Kullanıcının veritabanında olup olmadığını kontrol et
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('kullanıcıyı kontrol ediyor')
       return res.status(404).json({ message: 'Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı.' });
     }
 
@@ -160,8 +162,10 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'secretkey',
-      { expiresIn: '1h' }
+      { expiresIn: '1h' },
+      
     );
+    console.log('Şifre sıfırlama tokeni oluştu')
 
     // Şifre sıfırlama linkini oluştur
     const resetLink = `http://localhost:3000/password-reset?token=${resetToken}`;
@@ -171,6 +175,7 @@ exports.forgotPassword = async (req, res) => {
       email: email,
       resetLink: resetLink
     };
+    console.log('📨 Mail kuyruğuna gönderilen veri:', mailData);
 
     await sendToQueue(mailData);
 

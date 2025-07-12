@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const { connectRabbit } = require('./utils/rabbit');
 
 const app = express();
 app.use(helmet());
@@ -79,13 +80,23 @@ console.log('Connecting to MongoDB...');
 console.log('MONGO_URI:', process.env.MONGO_URI ? 'SET' : 'NOT SET');
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB connected successfully');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+
+    try {
+      await connectRabbit(); // RabbitMQ bağlantısı beklenir
+      console.log('RabbitMQ connected successfully');
+
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    } catch (err) {
+      console.error('RabbitMQ connection error:', err);
+      process.exit(1); // RabbitMQ bağlanmazsa çık
+    }
   })
   .catch(err => {
     console.error('MongoDB connection error:', err);
     process.exit(1);
   });
+
