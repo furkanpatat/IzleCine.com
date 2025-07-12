@@ -40,7 +40,7 @@ router.get('/stats', auth, userController.getUserStats); // /api/users/stats
 router.put('/change-password', auth, userController.changePassword); // /api/users/change-password
 router.delete('/account', auth, userController.deleteAccount); // /api/users/account
 
-// Legacy routes (for backward compatibility) - MOVED TO END
+// Move legacy/dynamic routes to the end to avoid conflicts
 router.get('/:id/comments', userController.getUserComments); // /api/users/:id/comments
 router.post('/:id/watchlist', auth, userController.addToWatchlist); // /api/users/:id/watchlist
 router.get('/:id/watchlist', auth, userController.getWatchlist); // /api/users/:id/watchlist
