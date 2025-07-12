@@ -126,10 +126,20 @@ class UserService {
   // Add movie to watchlist
   async addToWatchlist(movieId) {
     try {
+      console.log('Adding movie to watchlist:', { movieId });
+      console.log('Current token:', localStorage.getItem('token') ? 'exists' : 'missing');
+      console.log('Current user:', localStorage.getItem('user'));
+      
       const response = await this.api.post('/users/watchlist', { movieId });
+      console.log('Watchlist add response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error adding to watchlist:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       throw new Error(error.response?.data?.message || 'Failed to add to watchlist');
     }
   }

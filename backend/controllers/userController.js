@@ -326,26 +326,36 @@ exports.getUserComments = async (req, res) => {
 // Add movie to watchlist
 exports.addToWatchlist = async (req, res) => {
   try {
+    console.log('Add to watchlist request received:', { body: req.body, userId: req.user.userId });
+    
     const { movieId } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     if (!movieId) {
+      console.log('Missing movieId in request');
       return res.status(400).json({ message: 'movieId is required.' });
     }
 
+    console.log('Looking for user with ID:', userId);
     const user = await User.findById(userId);
     if (!user) {
+      console.log('User not found with ID:', userId);
       return res.status(404).json({ message: 'User not found.' });
     }
 
+    console.log('User found:', { userId: user._id, username: user.username });
+    console.log('Current watchlist:', user.watchlist);
+
     const alreadyExists = user.watchlist.some(item => item.movieId.toString() == movieId.toString());
     if (alreadyExists) {
+      console.log('Movie already in watchlist:', movieId);
       return res.status(400).json({ message: 'Film zaten izleme listesinde.' });
     }
 
     user.watchlist.push({ movieId, addedAt: new Date() });
     await user.save();
 
+    console.log('Movie added to watchlist successfully:', { movieId, userId: user._id });
     res.status(200).json({ message: 'Film izleme listesine eklendi.' });
   } catch (err) {
     console.error('Add to watchlist error:', err);
@@ -469,9 +479,9 @@ exports.removeFromWatchlist = async (req, res) => {
     if (!movieId) {
       return res.status(400).json({ message: 'movieId is required.' });
     }
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     const user = await User.findByIdAndUpdate(
-      req.user.userId,
+      userId,
       { $pull: { watchlist: { movieId } } },
       { new: true }
     );
