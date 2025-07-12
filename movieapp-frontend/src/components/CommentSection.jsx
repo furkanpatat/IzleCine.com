@@ -14,6 +14,9 @@ const CommentSection = ({ movieId }) => {
     const [loginAction, setLoginAction] = useState('');
     const { t } = useTranslation();
 
+    // API base URL for production
+    const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
     const handleSubmitComment = async (e) => {
         e.preventDefault();
         if (!newComment.trim()) return;
@@ -29,7 +32,7 @@ const CommentSection = ({ movieId }) => {
         // Backend'e gönderilecek veriyi logla
         console.log('Yorum POST verisi:', { userId: user.id || user._id, movieId, content: newComment });
         try {
-            const response = await axios.post('/api/comments', {
+            const response = await axios.post(`${API_BASE}/comments`, {
                 userId: user.id || user._id, // id veya _id olabilir
                 movieId,
                 content: newComment
@@ -64,7 +67,7 @@ const CommentSection = ({ movieId }) => {
         }
 
         try {
-            const response = await axios.post(`/api/comments/${commentId}/${voteType}`, {}, {
+            const response = await axios.post(`${API_BASE}/comments/${commentId}/${voteType}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
@@ -93,7 +96,7 @@ const CommentSection = ({ movieId }) => {
         }
 
         try {
-            await axios.post(`/api/comments/${commentId}/report`, {}, {
+            await axios.post(`${API_BASE}/comments/${commentId}/report`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert(t('Yorum başarıyla raporlandı!'));

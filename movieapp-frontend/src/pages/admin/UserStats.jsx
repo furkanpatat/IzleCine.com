@@ -18,6 +18,9 @@ const UserStats = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // API base URL for production
+  const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -29,7 +32,7 @@ const UserStats = () => {
       navigate('/login');
       return;
     }
-    axios.get('/api/admin/user-stats', {
+    axios.get(`${API_BASE}/admin/user-stats`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setStats(res.data))

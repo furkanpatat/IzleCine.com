@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaImage, FaHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,21 +13,32 @@ const MovieRow = ({ title, movies = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const rowRef = useRef(null);
-  const favorites = useSelector(state => state.IzleCineData?.favorites || []);
+  
+  // Optimize selector to prevent unnecessary re-renders
+  const favorites = useSelector(state => state.IzleCineData?.favorites || [], (prev, next) => {
+    if (prev.length !== next.length) return false;
+    return prev.every((fav, index) => fav.id === next[index]?.id);
+  });
 
-  const handleMovieClick = (movieId) => {
+  // Filter out movies without valid numeric IDs - memoize to prevent re-renders
+  const validMovies = useMemo(() => 
+    movies.filter(movie => movie && movie.id && !isNaN(Number(movie.id))),
+    [movies]
+  );
+
+  const handleMovieClick = useCallback((movieId) => {
     if (!movieId || isNaN(Number(movieId))) {
       console.error('Movie ID is missing or invalid:', movieId);
       return;
     }
     navigate(`/movie/${movieId}`);
-  };
+  }, [navigate]);
 
-  const handleImageError = (movieId) => {
+  const handleImageError = useCallback((movieId) => {
     setImageErrors(prev => ({ ...prev, [movieId]: true }));
-  };
+  }, []);
 
-  const handleFavoriteClick = async (e, movie) => {
+  const handleFavoriteClick = useCallback(async (e, movie) => {
     e.stopPropagation();
     if (!movie || !movie.id) {
       console.error('Invalid movie data for favorite action');
@@ -54,14 +65,14 @@ const MovieRow = ({ title, movies = [] }) => {
     } catch (err) {
       alert('Favori işlemi sırasında bir hata oluştu!');
     }
-  };
+  }, [favorites, dispatch]);
 
-  const handleContinueAsGuest = () => {
+  const handleContinueAsGuest = useCallback(() => {
     setShowLoginModal(false);
     // User can continue browsing without authentication
-  };
+  }, []);
 
-  const scroll = (direction) => {
+  const scroll = useCallback((direction) => {
     if (rowRef.current) {
       const { scrollLeft, clientWidth } = rowRef.current;
       const scrollTo = direction === 'left' 
@@ -73,10 +84,7 @@ const MovieRow = ({ title, movies = [] }) => {
         behavior: 'smooth'
       });
     }
-  };
-
-  // Filter out movies without valid numeric IDs
-  const validMovies = movies.filter(movie => movie && movie.id && !isNaN(Number(movie.id)));
+  }, []);
 
   if (!validMovies.length) {
     return null; // Don't render if no valid movies

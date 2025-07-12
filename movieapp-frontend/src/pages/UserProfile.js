@@ -21,6 +21,9 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // API base URL for production
+  const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
   useEffect(() => {
     console.log('UserProfile component mounted');
     console.log('localStorage user:', localStorage.getItem('user'));
@@ -172,7 +175,7 @@ const UserProfile = () => {
       setDeletingCommentId(commentId);
       
       // Backend'e silme isteği gönder
-      await axios.delete(`/api/comments/${commentId}`, {
+      await axios.delete(`${API_BASE}/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Create a dedicated axios instance for user profile requests to local backend
+// Create a dedicated axios instance for user profile requests to production backend
 const apiAxios = axios.create({
-  baseURL: '/api', // This will be proxied to http://localhost:5000/api
+  baseURL: process.env.REACT_APP_API_URL || '/api', // Use production URL or fallback to proxy
   headers: {
     'Content-Type': 'application/json'
   }
@@ -29,13 +29,24 @@ const apiService = {
 
   updateUserProfile: async (token, profileData) => {
     try {
+      console.log('Updating user profile with data:', profileData);
+      console.log('Using token:', token ? 'exists' : 'missing');
+      console.log('API URL:', process.env.REACT_APP_API_URL);
+      
       const response = await apiAxios.put('/users/profile', profileData, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
+      console.log('Profile update response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Profile update error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
       if (error.response && error.response.data) {
         throw new Error(error.response.data.message || 'Profile update failed');
       } else {

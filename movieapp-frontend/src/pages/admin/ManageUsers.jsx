@@ -19,6 +19,9 @@ const ManageUsers = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
+  // API base URL for production
+  const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -34,7 +37,7 @@ const ManageUsers = () => {
       return;
     }
     // Gerçek kullanıcıları çek
-    axios.get('/api/admin/users', {
+    axios.get(`${API_BASE}/admin/users`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setUsers(res.data))
@@ -54,7 +57,7 @@ const ManageUsers = () => {
     setIsLoading(true);
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`/api/admin/users/${deleteUserId}`, {
+      await axios.delete(`${API_BASE}/admin/users/${deleteUserId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(prev => prev.filter(u => (u._id || u.id) !== deleteUserId));

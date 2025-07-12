@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import logo from '../assets/logo.png'
 import { href, Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import userIcon from '../assets/user.png'
@@ -20,13 +20,13 @@ const Header = () => {
   const [categoryError, setCategoryError] = useState(null);
   const { t } = useTranslation();
 
-  const CATEGORY_CONFIG = [
+  const CATEGORY_CONFIG = useMemo(() => [
     { key: 'popular', label: t('Popüler'), fetch: () => tmdbService.getPopularMovies() },
     { key: 'trending', label: t('Trend'), fetch: () => tmdbService.getTrendingMovies() },
     { key: 'action', label: t('Aksiyon'), fetch: () => tmdbService.getMoviesByGenre(28) },
     { key: 'comedy', label: t('Komedi'), fetch: () => tmdbService.getMoviesByGenre(35) },
     { key: 'drama', label: t('Drama'), fetch: () => tmdbService.getMoviesByGenre(18) },
-  ];
+  ], [t]);
 
   // JWT decode helper (kopya, diğer admin sayfalarındakiyle aynı)
   function parseJwt(token) {
@@ -41,18 +41,19 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('user'));
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const checkLogin = useCallback(() => {
+    setIsLoggedIn(!!localStorage.getItem('user'));
+    // Admin kontrolü
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = parseJwt(token);
+      setIsAdmin(payload && payload.role === 'admin');
+    } else {
+      setIsAdmin(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const checkLogin = () => {
-      setIsLoggedIn(!!localStorage.getItem('user'));
-      // Admin kontrolü
-      const token = localStorage.getItem('token');
-      if (token) {
-        const payload = parseJwt(token);
-        setIsAdmin(payload && payload.role === 'admin');
-      } else {
-        setIsAdmin(false);
-      }
-    };
     checkLogin();
     window.addEventListener('storage', checkLogin);
     window.addEventListener('userChanged', checkLogin);
@@ -60,7 +61,7 @@ const Header = () => {
       window.removeEventListener('storage', checkLogin);
       window.removeEventListener('userChanged', checkLogin);
     };
-  }, []);
+  }, [checkLogin]);
 
   // Memoize star and meteor data to prevent re-rendering
   const starElements = useMemo(() => {
@@ -88,7 +89,7 @@ const Header = () => {
     if (searchInput) {
       navigate(`/search?q=${searchInput}`)
     }
-  }, [searchInput])
+  }, [searchInput, navigate])
 
   useEffect(() => {
     const match = location.pathname.match(/^\/category\/(\w+)/);
@@ -99,7 +100,7 @@ const Header = () => {
       setSelectedCategory(null);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location.pathname]);
+  }, [location.pathname, CATEGORY_CONFIG]);
 
   useEffect(() => {
     if (!selectedCategory) {
@@ -115,10 +116,10 @@ const Header = () => {
       .finally(() => setLoadingMovies(false));
   }, [selectedCategory, t]);
 
-  const handleCategoryClick = (cat) => {
+  const handleCategoryClick = useCallback((cat) => {
     setSelectedCategory(cat);
     navigate(`/category/${cat.key}`);
-  };
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault()

@@ -13,6 +13,13 @@ function parseJwt(token) {
 
 const ReportedComments = () => {
   const navigate = useNavigate();
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedReason, setSelectedReason] = useState('all');
+
+  // API base URL for production
+  const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -29,17 +36,13 @@ const ReportedComments = () => {
     }
   }, [navigate]);
 
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedReason, setSelectedReason] = useState('all');
-
   useEffect(() => {
     fetchReports();
   }, []);
 
   const fetchReports = async () => {
     try {
-      const response = await axios.get('/api/reports');
+      const response = await axios.get(`${API_BASE}/reports`);
       setReports(response.data);
     } catch (error) {
       console.error('Raporlar alınırken hata:', error);
@@ -51,9 +54,9 @@ const ReportedComments = () => {
   const handleAction = async (commentId, action) => {
     try {
       if (action === 'delete') {
-        await axios.delete(`/api/comments/${commentId}`);
+        await axios.delete(`${API_BASE}/comments/${commentId}`);
       } else if (action === 'hide') {
-        await axios.put(`/api/comments/${commentId}/hide`);
+        await axios.put(`${API_BASE}/comments/${commentId}/hide`);
       }
       fetchReports();
     } catch (error) {

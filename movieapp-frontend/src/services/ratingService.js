@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5002/api/ratings';
+const API_BASE = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/ratings` : 'http://localhost:5002/api/ratings';
 
 const ratingService = {
   addOrUpdateRating: async ({ userId, movieId, rating }) => {

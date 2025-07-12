@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Create a dedicated axios instance for authentication requests to local backend
+// Create a dedicated axios instance for authentication requests to production backend
 const authAxios = axios.create({
-  baseURL: '/api/users', // This will be proxied to http://localhost:5000/api/users
+  baseURL: process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/users` : '/api/users', // Use production URL or fallback to proxy
   headers: {
     'Content-Type': 'application/json'
   }
@@ -11,13 +11,24 @@ const authAxios = axios.create({
 const authService = {
   register: async ({ username, email, password }) => {
     try {
+      console.log('Registering with:', { username, email, password: '***' });
+      console.log('API URL:', process.env.REACT_APP_API_URL);
+      
       const response = await authAxios.post('', { username, email, password });
+      console.log('Register response:', response.data);
       return response.data;
     } catch (error) {
+      console.error('Register error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
+      
       if (error.response && error.response.status === 400) {
         throw new Error(error.response.data.message);
       } else {
-        throw new Error('Server error');
+        throw new Error('Server error during registration');
       }
     }
   },

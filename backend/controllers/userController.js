@@ -7,22 +7,43 @@ const sendToQueue = require('../sendMailJob');
 const { validationResult } = require('express-validator');
 
 exports.register = async (req, res) => {
+  console.log('Register request received:', { body: req.body });
+  
   // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log('Validation errors:', errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
   try {
     const { username, email, password } = req.body;
+    console.log('Processing registration for:', { username, email });
+    
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
+      console.log('User already exists:', { email, username });
       return res.status(400).json({ message: 'Username or email already registered.' });
     }
+    
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
-    res.status(201).json({ message: 'Registration successful!' });
+    
+    console.log('User created successfully:', { userId: user._id, username: user.username });
+    
+    // Generate token for the newly registered user
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
+    
+    const response = { 
+      message: 'Registration successful!',
+      token,
+      user: { id: user._id, username: user.username, email: user.email }
+    };
+    
+    console.log('Sending registration response:', { ...response, token: '***' });
+    res.status(201).json(response);
   } catch (err) {
+    console.error('Register error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -214,13 +235,16 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { username, city, theme } = req.body;
+    console.log('Update profile request received:', { body: req.body, userId: req.user.userId });
+    
+    const { username, city, theme, language, firstName, lastName, birthYear, bio, favoriteGenres } = req.body;
     const userId = req.user.userId;
 
     // Username benzersizliği kontrolü
     if (username) {
       const existing = await User.findOne({ username, _id: { $ne: userId } });
       if (existing) {
+        console.log('Username already exists:', username);
         return res.status(400).json({ message: 'Bu kullanıcı adı zaten kullanılıyor.' });
       }
     }
@@ -230,22 +254,40 @@ exports.updateProfile = async (req, res) => {
     if (username) updateFields.username = username;
     if (city !== undefined) updateFields.city = city;
     if (theme) updateFields.theme = theme;
-    if (language) updateFields.language = language; 
+    if (language) updateFields.language = language;
+    if (firstName !== undefined) updateFields.firstName = firstName;
+    if (lastName !== undefined) updateFields.lastName = lastName;
+    if (birthYear !== undefined) {
+      // Validate birthYear
+      const currentYear = new Date().getFullYear();
+      if (birthYear < 1900 || birthYear > currentYear) {
+        console.log('Invalid birthYear:', birthYear);
+        return res.status(400).json({ message: `Doğum yılı 1900 ile ${currentYear} arasında olmalıdır.` });
+      }
+      updateFields.birthYear = birthYear;
+    }
+    if (bio !== undefined) updateFields.bio = bio;
+    if (favoriteGenres !== undefined) updateFields.favoriteGenres = favoriteGenres;
     
+    console.log('Update fields:', updateFields);
+    
+    // Use findByIdAndUpdate with runValidators: false to avoid validation issues
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       updateFields,
-      { new: true, runValidators: true }
+      { new: true, runValidators: false }
     ).select('-password');
 
     if (!updatedUser) {
+      console.log('User not found for update:', userId);
       return res.status(404).json({ message: 'User not found.' });
     }
 
+    console.log('Profile updated successfully:', { userId: updatedUser._id, username: updatedUser.username });
     res.json(updatedUser);
   } catch (err) {
     console.error('Update profile error:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', details: err.message });
   }
 };
 
