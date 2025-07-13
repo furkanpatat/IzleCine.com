@@ -83,20 +83,21 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('MongoDB connected successfully');
 
+    // RabbitMQ bağlantısı dene ama hata olursa uygulamayı durdurma
     try {
-      await connectRabbit(); // RabbitMQ bağlantısı beklenir
+      await connectRabbit();
       console.log('RabbitMQ connected successfully');
-
-      app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-      });
     } catch (err) {
-      console.error('RabbitMQ connection error:', err);
-      process.exit(1); // RabbitMQ bağlanmazsa çık
+      console.warn('⚠️ RabbitMQ connection failed, continuing without it:', err.message);
     }
+
+    // Uygulama her halükarda başlasın
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
   .catch(err => {
     console.error('MongoDB connection error:', err);
-    process.exit(1);
+    process.exit(1); // MongoDB bağlanmazsa çık
   });
 
