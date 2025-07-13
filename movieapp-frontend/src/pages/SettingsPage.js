@@ -3,7 +3,13 @@ import apiService from '../services/apiService';
 import i18n from '../i18n';
 
 const SettingsPage = () => {
-  const [form, setForm] = useState({ username: '', city: '', theme: 'light', language: 'tr' });
+  // Initialize theme from localStorage or default to 'light'
+  const [form, setForm] = useState({ 
+    username: '', 
+    city: '', 
+    theme: localStorage.getItem('theme') || 'light', 
+    language: localStorage.getItem('lang') || 'tr' 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -35,20 +41,35 @@ const SettingsPage = () => {
     if (!token) return;
     apiService.getUserProfile(token)
       .then(user => {
+        // Use localStorage theme if available, otherwise use user's theme from backend
+        const savedTheme = localStorage.getItem('theme') || user.theme || 'light';
+        const savedLang = localStorage.getItem('lang') || user.language || 'tr';
+        
         setForm({
           username: user.username || '',
           city: user.city || '',
-          theme: user.theme || 'light',
-          language: user.language || (localStorage.getItem('lang') || 'tr'), 
+          theme: savedTheme,
+          language: savedLang, 
         });
+        
+        // Apply theme immediately
+        document.body.classList.remove('theme-light', 'theme-dark');
+        document.body.classList.add(`theme-${savedTheme}`);
       })
-      .catch(() => {});
+      .catch(() => {
+        // If API fails, still apply saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.classList.remove('theme-light', 'theme-dark');
+        document.body.classList.add(`theme-${savedTheme}`);
+      });
   }, []);
 
   // Apply theme to body on mount and when theme changes
   useEffect(() => {
     document.body.classList.remove('theme-light', 'theme-dark');
     document.body.classList.add(`theme-${form.theme}`);
+    // Save theme to localStorage
+    localStorage.setItem('theme', form.theme);
   }, [form.theme]);
 
   const handleChange = (e) => {
@@ -57,7 +78,10 @@ const SettingsPage = () => {
   };
 
   const handleThemeToggle = () => {
-    setForm(prev => ({ ...prev, theme: prev.theme === 'light' ? 'dark' : 'light' }));
+    const newTheme = form.theme === 'light' ? 'dark' : 'light';
+    setForm(prev => ({ ...prev, theme: newTheme }));
+    // Save to localStorage immediately
+    localStorage.setItem('theme', newTheme);
   };
 
   const handleLanguageToggle = () => {
@@ -96,7 +120,7 @@ const SettingsPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative">
+    <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative">
       {/* Animated Background - Full Height */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
         {meteorElements.map((meteor) => (
@@ -127,7 +151,7 @@ const SettingsPage = () => {
         ))}
       </div>
       {/* Settings Form */}
-      <div className="relative z-10 flex justify-center items-start min-h-screen pt-24 px-4">
+      <div className="relative z-10 flex justify-center items-start pt-24 px-4 pb-8">
         <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/50 p-8 w-full max-w-lg">
           {/* Header */}
           <div className="text-center mb-8">

@@ -228,8 +228,8 @@ const UserProfile = () => {
                 : userData?.username || 'User'
               }
             </h2>
-            <p className="text-gray-400">{userData?.email}</p>
-            <p className="text-sm text-gray-500 flex items-center mt-1">
+            <p className="text-gray-300">{userData?.email}</p>
+            <p className="text-sm text-gray-300 flex items-center mt-1">
               <FaCalendar className="mr-1" />
               {t('Member since')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : t('Recently')}
             </p>
@@ -239,13 +239,13 @@ const UserProfile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {userData?.city && (
             <div className="bg-gray-700/30 rounded-lg p-4">
-              <h3 className="text-gray-400 text-sm font-medium">{t('City')}</h3>
+              <h3 className="text-gray-300 text-sm font-medium">{t('City')}</h3>
               <p className="text-white text-lg">{userData.city}</p>
             </div>
           )}
           {userData?.birthYear && (
             <div className="bg-gray-700/30 rounded-lg p-4">
-              <h3 className="text-gray-400 text-sm font-medium">{t('Birth Year')}</h3>
+              <h3 className="text-gray-300 text-sm font-medium">{t('Birth Year')}</h3>
               <p className="text-white text-lg">{userData.birthYear}</p>
             </div>
           )}
@@ -257,7 +257,7 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">{t('Liked Movies')}</p>
+              <p className="text-gray-300 text-sm">{t('Liked Movies')}</p>
               <p className="text-2xl font-bold text-white">{likedMovies.length}</p>
             </div>
             <FaHeart className="text-2xl text-pink-500" />
@@ -267,7 +267,7 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-xl p-4 border border-blue-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">{t('Comments')}</p>
+              <p className="text-gray-300 text-sm">{t('Comments')}</p>
               <p className="text-2xl font-bold text-white">{userComments.length}</p>
             </div>
             <FaComment className="text-2xl text-blue-500" />
@@ -277,7 +277,7 @@ const UserProfile = () => {
         <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-xl p-4 border border-yellow-500/30">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">{t('Average Rating')}</p>
+              <p className="text-gray-300 text-sm">{t('Average Rating')}</p>
               <p className="text-2xl font-bold text-white">
                 {userComments.length > 0 
                   ? (userComments.reduce((sum, comment) => sum + (comment.rating || 0), 0) / userComments.length).toFixed(1)
@@ -321,7 +321,7 @@ const UserProfile = () => {
               </div>
               <div className="p-4">
                 <h4 className="text-white font-semibold mb-2 line-clamp-2">{movie.title}</h4>
-                <p className="text-gray-400 text-xs">
+                <p className="text-gray-300 text-xs">
                   {t('Liked on')} {movie.likedAt ? new Date(movie.likedAt).toLocaleDateString() : t('Recently')}
                 </p>
               </div>
@@ -331,8 +331,8 @@ const UserProfile = () => {
       ) : (
         <div className="text-center py-12">
           <FaHeart className="text-6xl text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">{t('No liked movies yet')}</p>
-          <p className="text-gray-500 text-sm">{t('Start liking movies to see them here')}</p>
+          <p className="text-gray-300 text-lg">{t('No liked movies yet')}</p>
+          <p className="text-gray-300 text-sm">{t('Start liking movies to see them here')}</p>
         </div>
       )}
     </div>
@@ -358,12 +358,13 @@ const UserProfile = () => {
                   isDeleting 
                     ? 'opacity-0 scale-95 -translate-y-2 pointer-events-none' 
                     : 'opacity-100 scale-100 translate-y-0'
-                }`}
+                } cursor-pointer`}
+                onClick={() => navigate(`/movie/${comment.movieId}`)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h4 className="text-white font-semibold">{comment.movieTitle || t('Movie')}</h4>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-300 text-sm">
                       {comment.commentedAt ? new Date(comment.commentedAt).toLocaleDateString() : t('Recently')}
                     </p>
                   </div>
@@ -397,8 +398,8 @@ const UserProfile = () => {
       ) : (
         <div className="text-center py-12">
           <FaComment className="text-6xl text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">{t('No comments yet')}</p>
-          <p className="text-gray-500 text-sm">{t('Start commenting on movies to see them here')}</p>
+          <p className="text-gray-300 text-lg">{t('No comments yet')}</p>
+          <p className="text-gray-300 text-sm">{t('Start commenting on movies to see them here')}</p>
         </div>
       )}
     </div>
@@ -412,24 +413,24 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-20 px-4">
+      <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-8 px-4 min-h-screen">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="loading-spinner mx-auto mb-4"></div>
               <p className="text-gray-400">{t('Loading profile data...')}</p>
             </div>
           </div>
         </div>
-            </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-20 px-4">
+      <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-8 px-4 min-h-screen">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <IoClose className="text-6xl text-red-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-white mb-2">{t('Error Loading Profile')}</h2>
@@ -448,7 +449,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-20 px-4">
+    <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-black pt-8 px-4 min-h-screen">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

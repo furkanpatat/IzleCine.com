@@ -40,7 +40,7 @@ const CategoryPage = () => {
   }, [category?.key, t]); // category.key değiştiğinde çalışsın
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white pt-24 px-4">
+    <div className="bg-gradient-to-b from-gray-900 to-black text-white pt-24 px-4">
       {loading ? (
         <div className="text-white py-8">{t('Filmler yükleniyor...')}</div>
       ) : error ? (

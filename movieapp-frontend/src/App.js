@@ -20,19 +20,28 @@ function App() {
     }
   };
 
+  // Initialize theme on app load
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.classList.remove('theme-light', 'theme-dark');
+    document.body.classList.add(`theme-${savedTheme}`);
+  }, []);
+
   useEffect(() => {
     fetchTrendingData();
   }, []);
 
   return (
-    <main className="pb-14 lg:pb-0">
+    <div className="app-container bg-gradient-to-b from-gray-900 to-black">
       <Header />
-      <div className="pt-16">
-        <Outlet />
-      </div>
+      <main className="main-content">
+        <div className="page-content">
+          <Outlet />
+        </div>
+      </main>
       <Footer />
       <MobileNavigation />
-    </main>
+    </div>
   );
 }
 

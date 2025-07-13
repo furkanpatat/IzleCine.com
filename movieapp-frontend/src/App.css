@@ -30,4 +30,34 @@
       opacity: 0;
     }
   }
+
+  /* Footer Layout Styles */
+  .app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, #111827, #000000);
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 64px; /* Header height */
+    background: linear-gradient(to bottom, #111827, #000000);
+  }
+
+  .page-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, #111827, #000000);
+  }
+
+  /* Ensure footer stays at bottom */
+  footer {
+    margin-top: auto;
+    flex-shrink: 0;
+    background: #111827;
+  }
   

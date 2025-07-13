@@ -13,8 +13,16 @@ exports.addComment = async (req, res) => {
     }
     const comment = new Comment({ userId, movieId, content });
     await comment.save();
-    res.status(201).json({ message: 'Yorum eklendi.' });
+    
+    // Yeni yorumu populate ederek döndür
+    const populatedComment = await Comment.findById(comment._id).populate('userId', 'username profileImage');
+    
+    res.status(201).json({ 
+      message: 'Yorum eklendi.',
+      comment: populatedComment
+    });
   } catch (err) {
+    console.error('Add comment error:', err);
     res.status(500).json({ message: 'Sunucu hatası.' });
   }
 };
@@ -22,9 +30,12 @@ exports.addComment = async (req, res) => {
 exports.getCommentsByMovie = async (req, res) => {
   try {
     const { movieId } = req.params;
-    const comments = await Comment.find({ movieId }).populate('userId', 'username');
+    const comments = await Comment.find({ movieId })
+      .populate('userId', 'username profileImage')
+      .sort({ createdAt: -1 }); // En yeni yorumlar üstte
     res.json(comments);
   } catch (err) {
+    console.error('Get comments error:', err);
     res.status(500).json({ message: 'Sunucu hatası.' });
   }
 };

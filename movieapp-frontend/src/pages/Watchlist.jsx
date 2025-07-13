@@ -60,7 +60,7 @@ useEffect(() => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <div className="bg-gradient-to-b from-gray-900 to-gray-800 text-white">
       <div className="container mx-auto px-4 py-8">
         <button
           onClick={() => navigate(-1)}
@@ -81,45 +81,42 @@ useEffect(() => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {watchlist.map((movie) => (
               <div
                 key={movie.id}
                 onClick={() => handleMovieClick(movie.id)}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-pointer group relative"
+                className="group relative aspect-[2/3] rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl"
               >
-                <div className="relative aspect-[2/3]">
-                  {imageErrors[movie.id] ? (
-                    <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                      <FaImage className="text-4xl text-gray-500" />
-                    </div>
-                  ) : (
-                    <img
-                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/default-image.png'}
-                      alt={movie.title}
-                      className="w-full h-full object-cover"
-                      onError={() => handleImageError(movie.id)}
-                    />
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2 text-white">{movie.title}</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-300">
-                    <span>{movie.year}</span>
-                    <span>{movie.category}</span>
-                    <div className="flex items-center">
-                      <FaStar className="text-yellow-400 mr-1" />
-                      <span>{movie.rating}</span>
+                {imageErrors[movie.id] ? (
+                  <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                    <FaImage className="text-4xl text-gray-600" />
+                  </div>
+                ) : (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    alt={movie.title}
+                    className="w-full h-full object-cover"
+                    onError={() => handleImageError(movie.id)}
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 p-4 w-full">
+                    <h3 className="text-lg font-semibold mb-2 text-white">{movie.title}</h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <FaStar className="text-yellow-400 mr-1" />
+                        <span className="text-white font-medium">{movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => handleRemoveFromWatchlist(e, movie.id)}
+                        className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors duration-200"
+                      >
+                        <FaTrash />
+                      </button>
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={(e) => handleRemoveFromWatchlist(e, movie.id)}
-                  className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  title={t('İzleme Listesinden Kaldır')}
-                >
-                  <FaTrash className="text-sm" />
-                </button>
               </div>
             ))}
           </div>

@@ -320,7 +320,7 @@ const CompleteProfile = () => {
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative flex items-center justify-center">
+      <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative flex items-center justify-center py-20">
         <div className="text-center">
           <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
             <span className="text-4xl">✅</span>
@@ -333,7 +333,7 @@ const CompleteProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative">
+    <div className="bg-gradient-to-r from-indigo-900 via-purple-800 to-black bg-opacity-90 relative">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
         {meteorElements.map((meteor) => (
@@ -365,9 +365,8 @@ const CompleteProfile = () => {
       </div>
 
       {/* Complete Profile Form */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
-        <div className="w-full max-w-lg">
-          <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-gray-700/50 transition-all duration-500 ease-out opacity-100">
+      <div className="relative z-10 flex justify-center items-start pt-24 px-4 pb-8">
+        <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700/50 p-8 w-full max-w-lg">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-white mb-2">Profilinizi Tamamlayın</h2>
               <p className="text-gray-300">Hesabınızı tamamlamak için aşağıdaki adımları takip edin.</p>
@@ -392,7 +391,6 @@ const CompleteProfile = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

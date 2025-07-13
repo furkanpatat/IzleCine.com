@@ -172,10 +172,11 @@ const BannerHome = ({ movies }) => {
                   <div className="flex gap-3">
                     <button
                       onClick={() => handleOpenTrailer(movie.id)}
-                      className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-md hover:bg-opacity-80 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow"
+                      className="flex items-center gap-2 bg-white hover:bg-gray-100 px-6 py-2 rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow"
+                      style={{ color: '#000000' }}
                     >
-                      <FaPlay className="text-lg" />
-                      <span className="font-semibold">{t('Fragmanı İzle')}</span>
+                      <FaPlay className="text-lg" style={{ color: '#000000' }} />
+                      <span className="font-semibold" style={{ color: '#000000' }}>{t('Fragmanı İzle')}</span>
                     </button>
                     <Link 
                       to={`/movie/${movie.id}`}

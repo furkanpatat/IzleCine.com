@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, Flag, MessageSquare, Send } from 'lucide-react';
 import Comment from './Comment';
 import LoginPromptModal from './LoginPromptModal';
@@ -6,16 +6,52 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 const CommentSection = ({ movieId }) => {
-    // Yorumlar başlangıçta boş olacak
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [isAdmin] = useState(false); // This would come from user context in a real app
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [loginAction, setLoginAction] = useState('');
+    const [loading, setLoading] = useState(true);
     const { t } = useTranslation();
 
     // API base URL for production
     const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
+    // Yorumları backend'den çek
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`${API_BASE}/comments/${movieId}`);
+                
+                // Backend'den gelen yorumları frontend formatına çevir
+                const formattedComments = response.data.map(comment => ({
+                    _id: comment._id,
+                    content: comment.content,
+                    createdAt: comment.createdAt,
+                    likes: comment.likes || 0,
+                    dislikes: comment.dislikes || 0,
+                    status: comment.status || 'active',
+                    user: {
+                        username: comment.userId?.username || 'Anonim',
+                        profileImage: comment.userId?.profileImage || '/default-avatar.png'
+                    }
+                }));
+                
+                setComments(formattedComments);
+            } catch (err) {
+                console.error('Yorumlar yüklenirken hata:', err);
+                // Hata durumunda boş array bırak
+                setComments([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (movieId) {
+            fetchComments();
+        }
+    }, [movieId, API_BASE]);
 
     const handleSubmitComment = async (e) => {
         e.preventDefault();
@@ -39,18 +75,24 @@ const CommentSection = ({ movieId }) => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            const comment = response.data.comment || {
-                _id: Date.now().toString(),
-                content: newComment,
-                user: { username: user.username, profileImage: '/default-avatar.png' },
-                createdAt: new Date().toISOString(),
+            
+            // Backend'den gelen yorumu frontend formatına çevir
+            const newCommentObj = {
+                _id: response.data.comment._id,
+                content: response.data.comment.content,
+                createdAt: response.data.comment.createdAt,
                 likes: 0,
                 dislikes: 0,
-                status: 'active'
+                status: 'active',
+                user: {
+                    username: response.data.comment.userId?.username || user.username,
+                    profileImage: response.data.comment.userId?.profileImage || '/default-avatar.png'
+                }
             };
-            setComments([comment, ...comments]);
+            setComments([newCommentObj, ...comments]);
             setNewComment('');
         } catch (err) {
+            console.error('Yorum ekleme hatası:', err);
             alert(t('Yorum eklenirken bir hata oluştu!'));
         }
     };
@@ -143,7 +185,7 @@ const CommentSection = ({ movieId }) => {
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder={t('Filim hakkında düşüncelerinizi paylaşın...')}
-                            className="w-full h-32 bg-gray-700/30 rounded-xl p-4 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none transition-all duration-200"
+                            className="w-full h-32 bg-gray-700/30 rounded-xl p-4 text-gray-200 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none transition-all duration-200"
                         />
                         <div className="flex justify-end mt-4">
                             <button
@@ -159,90 +201,96 @@ const CommentSection = ({ movieId }) => {
 
                 {/* Comments List */}
                 <div className="space-y-6">
-                    {comments.map(comment => (
-                        <div
-                            key={comment._id}
-                            className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
-                        >
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="flex items-center space-x-3">
-                                    <div className="relative">
-                                        <img
-                                            src={comment.user.profileImage}
-                                            alt={comment.user.username}
-                                            className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-500/30 shadow-lg"
-                                        />
-                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-800"></div>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-white text-lg">{comment.user.username}</h3>
-                                        <p className="text-sm text-gray-400">
-                                            {new Date(comment.createdAt).toLocaleDateString('tr-TR', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                                {comment.status === 'reported' && (
-                                    <span className="px-3 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
-                                        {t('Rapor Edildi')}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="bg-gray-700/30 rounded-xl p-4 mb-4">
-                                <p className="text-gray-200 leading-relaxed text-lg">{comment.content}</p>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <button
-                                        onClick={() => handleVote(comment._id, 'likes')}
-                                        className="flex items-center text-gray-300 hover:text-green-400 transition-colors duration-200 group"
-                                    >
-                                        <ThumbsUp className="w-4 h-4 mr-1" />
-                                        <span>{t('Beğen')}</span>
-                                        <span className="ml-1">{comment.likes || 0}</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleVote(comment._id, 'dislikes')}
-                                        className="flex items-center text-gray-300 hover:text-red-400 transition-colors duration-200 group"
-                                    >
-                                        <ThumbsDown className="w-4 h-4 mr-1" />
-                                        <span>{t('Beğenme')}</span>
-                                        <span className="ml-1">{comment.dislikes || 0}</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleReport(comment._id)}
-                                        className="flex items-center text-gray-300 hover:text-yellow-400 transition-colors duration-200 group"
-                                    >
-                                        <Flag className="w-4 h-4 mr-1" />
-                                        <span>{t('Raporla')}</span>
-                                    </button>
-                                </div>
-                                {isAdmin && (
+                    {loading ? (
+                        <p className="text-center text-gray-300">{t('Yorumlar yükleniyor...')}</p>
+                    ) : comments.length === 0 ? (
+                        <p className="text-center text-gray-300">{t('Henüz yorum yapılmamış.')}</p>
+                    ) : (
+                        comments.map(comment => (
+                            <div
+                                key={comment._id}
+                                className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-lg hover:shadow-purple-500/10 transition-all duration-300"
+                            >
+                                <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center space-x-3">
+                                        <div className="relative">
+                                            <img
+                                                src={comment.user.profileImage}
+                                                alt={comment.user.username}
+                                                className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-500/30 shadow-lg"
+                                            />
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-800"></div>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-white text-lg">{comment.user.username}</h3>
+                                            <p className="text-sm text-gray-300">
+                                                {new Date(comment.createdAt).toLocaleDateString('tr-TR', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {comment.status === 'reported' && (
+                                        <span className="px-3 py-1 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
+                                            {t('Rapor Edildi')}
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="bg-gray-700/30 rounded-xl p-4 mb-4">
+                                    <p className="text-gray-200 leading-relaxed text-lg">{comment.content}</p>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-4">
                                         <button
-                                            onClick={() => handleDelete(comment._id)}
-                                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
+                                            onClick={() => handleVote(comment._id, 'likes')}
+                                            className="flex items-center text-gray-300 hover:text-green-400 transition-colors duration-200 group"
                                         >
-                                            <span>{t('Sil')}</span>
+                                            <ThumbsUp className="w-4 h-4 mr-1" />
+                                            <span>{t('Beğen')}</span>
+                                            <span className="ml-1">{comment.likes || 0}</span>
                                         </button>
                                         <button
-                                            onClick={() => handleHide(comment._id)}
-                                            className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
+                                            onClick={() => handleVote(comment._id, 'dislikes')}
+                                            className="flex items-center text-gray-300 hover:text-red-400 transition-colors duration-200 group"
                                         >
-                                            <span>{t('Gizle')}</span>
+                                            <ThumbsDown className="w-4 h-4 mr-1" />
+                                            <span>{t('Beğenme')}</span>
+                                            <span className="ml-1">{comment.dislikes || 0}</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleReport(comment._id)}
+                                            className="flex items-center text-gray-300 hover:text-yellow-400 transition-colors duration-200 group"
+                                        >
+                                            <Flag className="w-4 h-4 mr-1" />
+                                            <span>{t('Raporla')}</span>
                                         </button>
                                     </div>
-                                )}
+                                    {isAdmin && (
+                                        <div className="flex items-center space-x-3">
+                                            <button
+                                                onClick={() => handleDelete(comment._id)}
+                                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
+                                            >
+                                                <span>{t('Sil')}</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleHide(comment._id)}
+                                                className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
+                                            >
+                                                <span>{t('Gizle')}</span>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </div>
             <LoginPromptModal

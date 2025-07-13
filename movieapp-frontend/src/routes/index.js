@@ -21,11 +21,15 @@ import StatisticsPage from '../pages/StatisticsPage';
 import SystemLogsPage from '../pages/SystemLogsPage';
 import PlatformSettings from '../pages/admin/PlatformSettings';
 import ReportedComments from '../pages/admin/ReportedComments';
+import FeedbackManagement from '../pages/admin/FeedbackManagement';
 import MovieDetails from '../components/MovieDetails';
 import Watchlist from '../pages/Watchlist';
 import UserProfile from '../pages/UserProfile';
 import CategoryPage from "../pages/CategoryPage";
 import SettingsPage from "../pages/SettingsPage";
+import Privacy from "../pages/Privacy";
+import Terms from "../pages/Terms";
+import Contact from "../pages/Contact";
 
 const router = createBrowserRouter([
     {
@@ -75,6 +79,18 @@ const router = createBrowserRouter([
             {
                 path: "settings",
                 element: <SettingsPage />
+            },
+            {
+                path: "privacy",
+                element: <Privacy />
+            },
+            {
+                path: "terms",
+                element: <Terms />
+            },
+            {
+                path: "contact",
+                element: <Contact />
             },
             {
                 path: ":explore",
@@ -135,6 +151,10 @@ const router = createBrowserRouter([
                     {
                         path: 'reported-comments',
                         element: <ReportedComments />,
+                    },
+                    {
+                        path: 'feedback',
+                        element: <FeedbackManagement />,
                     },
                 ],
             }

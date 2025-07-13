@@ -59,7 +59,7 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
+      <div className="bg-gradient-to-b from-gray-900 to-black flex items-center justify-center py-20">
         <div className="loading-spinner"></div>
       </div>
     );
@@ -67,17 +67,17 @@ const Home = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center text-red-500">
+      <div className="bg-gradient-to-b from-gray-900 to-black flex items-center justify-center py-20 text-red-500">
         <p className="text-xl font-semibold">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+    <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
       {trendingMovies.length > 0 && <BannerHome movies={trendingMovies} />}
       
-      <div className="container mx-auto px-4 py-8 space-y-16">
+      <div className="container mx-auto px-4 py-16 space-y-16">
         {trendingMovies.length > 0 && (
           <div className="category-section animate-fade-in">
             <MovieRow title={t('Trend Filmler')} movies={trendingMovies} />
