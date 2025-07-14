@@ -39,11 +39,8 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-gray-900 text-white">
       {/* Sidebar */}
-      <div className="hidden md:block w-64 bg-gray-800 fixed h-full transition-all duration-300 ease-in-out border-r border-gray-700 z-40">
-        <div className="p-6 border-b border-gray-700">
-          <h1 className="text-2xl font-bold text-white">İzleCine Admin</h1>
-        </div>
-        <nav className="mt-6">
+      <div className="hidden md:block w-64 bg-gray-800 fixed top-0 left-0 h-screen border-r border-gray-700 z-40">
+        <nav className="mt-0">
           {menuItems.map((item, idx) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;

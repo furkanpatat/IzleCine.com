@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+//import { ArrowLeft } from 'lucide-react';
+import api from '../../services/apiService';
 
 function parseJwt(token) {
   try {
@@ -49,11 +50,24 @@ const AddMovie = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Form gönderme işlemi burada yapılacak
-    console.log('Form data:', formData);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const payload = {
+      ...formData,
+      cast: formData.cast.split(',').map(actor => actor.trim())
+    };
+
+    const token = localStorage.getItem('token');
+    await api.addMovie(token, payload);
+    alert('Film başarıyla eklendi!');
+    navigate('/admin'); // veya film listesi
+  } catch (err) {
+    console.error('Film ekleme hatası:', err);
+    alert('Film eklenemedi: ' + (err.response?.data?.message || err.message));
+  }
+};
 
   return (
     <div className="space-y-6">

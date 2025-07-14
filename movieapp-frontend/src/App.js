@@ -2,7 +2,7 @@ import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import MobileNavigation from './components/MobileNavigation';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import tmdbService from './services/tmdbService';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,6 +10,10 @@ import { setBannerData } from './store/izleCine';
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  // Admin sayfalarında footer'ı gizle
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   const fetchTrendingData = async () => {
     try {
@@ -33,13 +37,13 @@ function App() {
 
   return (
     <div className="app-container bg-gradient-to-b from-gray-900 to-black">
-      <Header />
+      {!isAdminPage && <Header />}
       <main className="main-content">
         <div className="page-content">
           <Outlet />
         </div>
       </main>
-      <Footer />
+      {!isAdminPage && <Footer />}
       <MobileNavigation />
     </div>
   );

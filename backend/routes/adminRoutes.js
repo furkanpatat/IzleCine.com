@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const adminAuth = require('../middleware/adminAuth');
+const movieController = require('../controllers/movieController');
 
 // Admin login
 router.post('/login', (req, res) => {
@@ -23,5 +24,9 @@ const userController = require('../controllers/userController');
 router.get('/user-stats', adminAuth, userController.getGeneralUserStats);
 router.get('/users', adminAuth, userController.getAllUsers);
 router.delete('/users/:id', adminAuth, userController.deleteUser);
+
+// Yeni film ekleme
+router.post('/add-movie', adminAuth, movieController.addMovie);
+
 
 module.exports = router; 

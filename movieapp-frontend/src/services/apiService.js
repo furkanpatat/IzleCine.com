@@ -81,6 +81,20 @@ const apiService = {
       console.error('Error checking profile completion:', error);
       return false;
     }
+  },
+  addMovie: async (token, movieData) => {
+    try {
+      const response = // YENİ (doğru)
+    await apiAxios.post('/admin/add-movie', movieData, {
+    headers: {
+    Authorization: `Bearer ${token}`
+  }
+});
+
+      return response.data;
+    }   catch (error) {
+      throw new Error(error.response?.data?.message || 'Film eklenemedi');
+    }
   }
 };
 
