@@ -157,7 +157,7 @@ const Header = () => {
           ))}
         </div>
 
-        <div className='container mx-auto px-3 flex items-center h-full'>
+        <div className="container mx-auto px-3 flex items-center h-full">
           <Link to={isAdmin ? "/admin" : "/"} className="transition-transform duration-300 hover:scale-105">
             <img
               src={logo}

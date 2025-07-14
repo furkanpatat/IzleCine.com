@@ -4,22 +4,29 @@ import { NavLink } from 'react-router-dom'
 
 const MobileNavigation = () => {
   return (
-    <section className='lg:hidden h-14 bg-neutral-600 bg-opacity-40 fixed bottom-0 w-full'>
-      <div className='flex items-center justify-between h-full text-neutral-400'> 
+    <section className='lg:hidden h-16 fixed bottom-0 w-full z-50 shadow-2xl border-t border-gray-800 bg-white/10 backdrop-blur-xl rounded-t-2xl overflow-hidden' style={{boxShadow: '0 -8px 32px 0 rgba(80,0,120,0.10)'}}> 
+      <div className='flex items-center justify-around h-full text-neutral-300'> 
         {
           mobileNavigation.map((nav,index) => {
             return(
               <NavLink
                key={nav.label+"mobilenavigation"}
                to = {nav.href}
-               className={({isActive}) => `px-3 flex h-full items-center flex-col justify-center ${isActive && "text-white"}`}
-
-               >
-
-                <div className='text-2xl'>
+               className={({ isActive }) =>
+                 [
+                   'flex flex-col items-center justify-center px-2 py-1 h-full relative group transition-all duration-200',
+                   isActive ? 'text-purple-400 font-bold' : 'text-neutral-400'
+                 ].join(' ')
+               }
+              >
+                <div className='text-3xl flex items-center justify-center mb-0.5 transition-all duration-200 group-hover:scale-110 group-hover:text-purple-300'>
                   {nav.icon}
                 </div>
-                <p>{nav.label}</p>
+                <span className='text-[11px] sm:text-xs font-semibold tracking-wide transition-all duration-200 group-hover:scale-105 group-hover:text-purple-300'>{nav.label}</span>
+                {/* Aktif menüde animasyonlu gradient alt bar */}
+                {({ isActive }) => (
+                  <span className={`absolute left-1/2 -translate-x-1/2 bottom-1 w-8 h-1.5 rounded-full transition-all duration-500 ${isActive ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 shadow-[0_0_12px_2px_rgba(168,85,247,0.3)] animate-pulse' : 'bg-transparent'}`}></span>
+                )}
               </NavLink>
             )
           }

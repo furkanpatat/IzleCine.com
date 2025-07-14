@@ -173,7 +173,7 @@ const CommentSection = ({ movieId }) => {
             <div className="mt-12 max-w-4xl mx-auto">
                 <div className="flex items-center gap-2 mb-8">
                     <MessageSquare className="w-6 h-6 text-purple-500" />
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    <h2 className="text-2xl md:text-3xl font-bold text-white">
                         {t('Yorumlar')}
                     </h2>
                 </div>

@@ -95,11 +95,11 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-gray-700 mt-6 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-gray-200 text-xs mb-3 md:mb-0">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+            <div className="text-gray-200 text-xs mb-3 md:mb-0 text-center md:text-left">
               © 2024 İzleCine. Tüm hakları saklıdır.
             </div>
-            <div className="flex items-center space-x-2 text-gray-200 text-xs">
+            <div className="flex items-center justify-center space-x-2 text-gray-200 text-xs">
               <span>Made with</span>
               <FaHeart className="text-pink-500 animate-pulse" />
               <span>for movie lovers</span>

@@ -89,13 +89,6 @@ const UserStats = () => {
           );
         })}
       </div>
-      {/* Placeholder for future charts */}
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
-        <h2 className="text-xl font-semibold text-white mb-4">User Growth</h2>
-        <div className="h-64 bg-gray-700 rounded-lg flex items-center justify-center">
-          <p className="text-gray-400">Chart visualization coming soon</p>
-        </div>
-      </div>
     </div>
   );
 };

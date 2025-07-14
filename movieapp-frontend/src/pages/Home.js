@@ -77,7 +77,7 @@ const Home = () => {
     <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
       {trendingMovies.length > 0 && <BannerHome movies={trendingMovies} />}
       
-      <div className="container mx-auto px-4 py-16 space-y-16">
+      <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-16 space-y-8 sm:space-y-16">
         {trendingMovies.length > 0 && (
           <div className="category-section animate-fade-in">
             <MovieRow title={t('Trend Filmler')} movies={trendingMovies} />

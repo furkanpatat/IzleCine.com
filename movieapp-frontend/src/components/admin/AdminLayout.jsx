@@ -39,7 +39,7 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen bg-gray-900 text-white">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 fixed h-full transition-all duration-300 ease-in-out border-r border-gray-700">
+      <div className="hidden md:block w-64 bg-gray-800 fixed h-full transition-all duration-300 ease-in-out border-r border-gray-700 z-40">
         <div className="p-6 border-b border-gray-700">
           <h1 className="text-2xl font-bold text-white">İzleCine Admin</h1>
         </div>
@@ -71,7 +71,7 @@ const AdminLayout = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-64 p-8 bg-gray-900">
+      <div className="flex-1 md:ml-64 p-4 md:p-8 bg-gray-900 min-w-0">
         <Outlet />
       </div>
     </div>

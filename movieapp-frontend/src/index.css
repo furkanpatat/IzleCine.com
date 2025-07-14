@@ -555,3 +555,11 @@ body.theme-dark .text-black {
   color: #e0e0e0 !important;
 }
 /* Yıldızlar ve meteorlar uzay teması için olduğu gibi kalacak! */
+body.theme-dark .title-gradient {
+  background: linear-gradient(90deg, #fff, #e0e0e0, #fff, #b993f7, #f7797d);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleGradient 3s linear infinite;
+  text-shadow: 0 0 32px #fff, 0 0 8px #b993f7;
+}
