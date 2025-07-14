@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   city: { type: String, required: false },
   birthYear: { type: Number, required: false, min: 1900, max: new Date().getFullYear() },
   bio: { type: String, required: false },
+  photo: { type: String, required: false }, // Kullanıcı profil fotoğrafı
   favoriteGenres: [{ type: String, required: false }],
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   theme: { type: String, enum: ['light', 'dark'], default: 'light' },

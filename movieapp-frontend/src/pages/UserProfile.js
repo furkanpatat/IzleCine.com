@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar, FaTrash } from 'react-icons/fa';
+import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar, FaTrash, FaEdit } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import userService from '../services/userService';
 import tmdbService from '../services/tmdbService';
@@ -20,6 +20,67 @@ const UserProfile = () => {
   const [deletingCommentId, setDeletingCommentId] = useState(null); // Added state for animating comment deletion
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // Profil düzenleme için state
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    photo: ''
+  });
+  const [saving, setSaving] = useState(false);
+  const [photoEditMode, setPhotoEditMode] = useState(false);
+  const [photoInput, setPhotoInput] = useState('');
+
+  // userData değişince formu doldur
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        username: userData.username || '',
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        email: userData.email || '',
+        photo: userData.photo || ''
+      });
+    }
+  }, [userData]);
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const updated = await userService.updateProfile(formData);
+      setUserData(updated);
+      setEditMode(false);
+    } catch (err) {
+      alert('Profil güncellenemedi: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Fotoğraf güncelleme işlemi
+  const handlePhotoEdit = () => {
+    setPhotoInput(userData?.photo || '');
+    setPhotoEditMode(true);
+  };
+  const handlePhotoSave = async (e) => {
+    e.preventDefault();
+    try {
+      const updated = await userService.updateProfile({ photo: photoInput });
+      setUserData(updated);
+      setPhotoEditMode(false);
+    } catch (err) {
+      alert('Fotoğraf güncellenemedi: ' + err.message);
+    }
+  };
 
   // API base URL for production
   const API_BASE = process.env.REACT_APP_API_URL || '/api';
@@ -215,27 +276,134 @@ const UserProfile = () => {
 
   const renderProfileTab = () => (
     <div className="space-y-6">
-      {/* User Info Card */}
-      <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700/50">
-        <div className="flex items-center space-x-4 mb-6">
-          <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-            <FaUser className="text-3xl text-white" />
+      <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700/50 relative">
+        {/* Sağ üstte genel düzenle butonu */}
+        {!editMode && (
+          <button
+            className="absolute top-4 right-4 bg-pink-700 hover:bg-pink-800 text-white p-2 rounded-full shadow transition-all duration-200 flex items-center justify-center"
+            onClick={() => setEditMode(true)}
+            title="Profili Düzenle"
+          >
+            <FaEdit className="text-lg" />
+          </button>
+        )}
+        <div className="flex items-center space-x-4 mb-6 relative">
+          <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center overflow-hidden relative">
+            {editMode ? (
+              formData.photo ? (
+                <img src={formData.photo} alt="Profil" className="w-full h-full object-cover" />
+              ) : (
+                <FaUser className="text-3xl text-white" />
+              )
+            ) : (
+              userData?.photo ? (
+                <img src={userData.photo} alt="Profil" className="w-full h-full object-cover" />
+              ) : (
+                <FaUser className="text-3xl text-white" />
+              )
+            )}
+            {/* Fotoğrafın üzerinde ayrı düzenle butonu */}
+            {!editMode && (
+              <button
+                className="absolute bottom-1 right-1 bg-gray-900/80 hover:bg-blue-600 text-white p-1 rounded-full shadow transition-all duration-200 flex items-center justify-center border border-white border-opacity-20"
+                onClick={handlePhotoEdit}
+                title="Fotoğrafı Düzenle"
+              >
+                <FaEdit className="text-xs" />
+              </button>
+            )}
           </div>
+          {/* Fotoğraf düzenleme alanı (modal gibi) */}
+          {photoEditMode && !editMode && (
+            <div className="absolute left-24 top-0 bg-gray-900 border border-gray-700 rounded-lg p-4 z-20 shadow-xl flex flex-col items-start">
+              <form onSubmit={handlePhotoSave} className="flex flex-col space-y-2">
+                <input
+                  type="text"
+                  value={photoInput}
+                  onChange={e => setPhotoInput(e.target.value)}
+                  placeholder="Yeni fotoğraf URL"
+                  className="px-2 py-1 rounded bg-gray-700 text-white w-48"
+                />
+                <div className="flex space-x-2">
+                  <button type="submit" className="bg-green-600 text-white px-3 py-1 rounded">Kaydet</button>
+                  <button type="button" className="bg-gray-600 text-white px-3 py-1 rounded" onClick={() => setPhotoEditMode(false)}>İptal</button>
+                </div>
+              </form>
+            </div>
+          )}
           <div>
-            <h2 className="text-2xl font-bold text-white">
-              {userData?.firstName && userData?.lastName 
-                ? `${userData.firstName} ${userData.lastName}`
-                : userData?.username || 'User'
-              }
-            </h2>
-            <p className="text-gray-300">{userData?.email}</p>
+            {editMode ? (
+              <form onSubmit={handleProfileSave} className="space-y-3">
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleEditChange}
+                  placeholder="Kullanıcı Adı"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 mb-1 shadow-sm"
+                  required
+                  autoComplete="off"
+                  style={{fontFamily: 'Inter, sans-serif', fontSize: '1rem'}}
+                />
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleEditChange}
+                    placeholder="Ad"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
+                    required
+                    autoComplete="off"
+                    style={{fontFamily: 'Inter, sans-serif', fontSize: '1rem'}}
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleEditChange}
+                    placeholder="Soyad"
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
+                    required
+                    autoComplete="off"
+                    style={{fontFamily: 'Inter, sans-serif', fontSize: '1rem'}}
+                  />
+                </div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleEditChange}
+                  placeholder="Email"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 shadow-sm"
+                  required
+                  autoComplete="off"
+                  style={{fontFamily: 'Inter, sans-serif', fontSize: '1rem'}}
+                />
+                <div className="flex space-x-2 mt-2 items-center">
+                  <button type="submit" className="flex-1 h-10 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-sm" disabled={saving}>{saving ? 'Kaydediliyor...' : 'Kaydet'}</button>
+                  <button type="button" className="flex-1 h-10 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all shadow-sm" onClick={() => setEditMode(false)}>İptal</button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <h2 className="text-2xl font-light font-sans text-white">
+                  {userData?.firstName && userData?.lastName 
+                    ? `${userData.firstName} ${userData.lastName}`
+                    : userData?.username || 'User'
+                  }
+                </h2>
+                <p className="text-pink-700 font-normal font-sans">@{userData?.username}</p>
+                <p className="text-gray-300 font-light font-sans">{userData?.email}</p>
+              </>
+            )}
             <p className="text-sm text-gray-300 flex items-center mt-1">
               <FaCalendar className="mr-1" />
               {t('Member since')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : t('Recently')}
             </p>
           </div>
         </div>
-        
+        {/* Şehir ve doğum yılı kartları aynı kalacak */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {userData?.city && (
             <div className="bg-gray-700/30 rounded-lg p-4">
@@ -251,8 +419,7 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-
-      {/* Statistics Cards */}
+      {/* İstatistik kartları aynı kalacak */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
           <div className="flex items-center justify-between">

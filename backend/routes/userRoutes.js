@@ -5,11 +5,15 @@ const auth = require('../middleware/auth');
 const { body } = require('express-validator');
 const { forgotPassword, resetPassword } = require('../controllers/userController');
 
-router.post('/', [
-  body('username').isLength({ min: 3 }).trim().escape(),
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 6 })
-], userController.register); // /api/users
+const { check } = require('express-validator');
+
+const registerValidation = [
+  check('username').notEmpty().withMessage('Username is required.'),
+  check('email').isEmail().withMessage('Valid email is required.'),
+  check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters.')
+];
+
+router.post('/', registerValidation, userController.register);
 router.post('/login', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 })

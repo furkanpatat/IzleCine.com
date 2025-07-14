@@ -242,7 +242,7 @@ exports.updateProfile = async (req, res) => {
   try {
     console.log('Update profile request received:', { body: req.body, userId: req.user.userId });
     
-    const { username, city, theme, language, firstName, lastName, birthYear, bio, favoriteGenres } = req.body;
+    const { username, city, theme, language, firstName, lastName, birthYear, bio, favoriteGenres, photo } = req.body;
     const userId = req.user.userId;
 
     // Username benzersizliği kontrolü
@@ -272,6 +272,7 @@ exports.updateProfile = async (req, res) => {
       updateFields.birthYear = birthYear;
     }
     if (bio !== undefined) updateFields.bio = bio;
+    if (photo !== undefined) updateFields.photo = photo;
     if (favoriteGenres !== undefined) updateFields.favoriteGenres = favoriteGenres;
     
     console.log('Update fields:', updateFields);

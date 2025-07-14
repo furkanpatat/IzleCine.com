@@ -35,33 +35,36 @@ const SignUpPage = () => {
     }, []);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+  e.preventDefault();
 
-        if (password !== confirmPassword) {
-            setError(t('Şifreler eşleşmiyor'));
-            return;
-        }
-        try {
-            const response = await authService.register({ username, email, password });
-            
-            // Register response'unda token ve user bilgileri var
-            if (response.token && response.user) {
-                // Token ve user bilgilerini localStorage'a kaydet
-                localStorage.setItem('token', response.token);
-                localStorage.setItem('user', JSON.stringify(response.user));
-                
-                // User changed event'ini tetikle
-                window.dispatchEvent(new Event('userChanged'));
-                
-                alert(t('Registration successful!'));
-                navigate('/complete-profile');
-            } else {
-                throw new Error('Registration response is missing token or user data');
-            }
-        } catch (err) {
-            setError(err.message);
-        }
-    };
+  if (password !== confirmPassword) {
+    setError(t('Şifreler eşleşmiyor'));
+    return;
+  }
+
+  try {
+    const response = await authService.register({ username, email, password });
+
+    if (response.token && response.user) {
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      window.dispatchEvent(new Event('userChanged'));
+      alert(t('Registration successful!'));
+      navigate('/complete-profile');
+    } else {
+      throw new Error('Registration response is missing token or user data');
+    }
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.errors) {
+      // express-validator'dan gelen mesajları sırayla göster
+      const firstValidationError = err.response.data.errors[0]?.msg;
+      setError(firstValidationError || 'Geçersiz bilgi');
+    } else {
+      setError(err.message || 'Kayıt sırasında bir hata oluştu.');
+    }
+  }
+};
+
 
     return (
         <>
