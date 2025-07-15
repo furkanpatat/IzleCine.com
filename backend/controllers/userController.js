@@ -8,7 +8,7 @@ const { validationResult } = require('express-validator');
 
 exports.register = async (req, res) => {
   console.log('Register request received:', { body: req.body });
-  
+
   // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -16,30 +16,30 @@ exports.register = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, favoriteGenres } = req.body;
     console.log('Processing registration for:', { username, email });
-    
+
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       console.log('User already exists:', { email, username });
       return res.status(400).json({ message: 'Username or email already registered.' });
     }
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, email, password: hashedPassword });
+    const user = new User({ username, email, password: hashedPassword, favoriteGenres });
     await user.save();
-    
+
     console.log('User created successfully:', { userId: user._id, username: user.username });
-    
+
     // Generate token for the newly registered user
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
-    
-    const response = { 
+
+    const response = {
       message: 'Registration successful!',
       token,
       user: { id: user._id, username: user.username, email: user.email }
     };
-    
+
     console.log('Sending registration response:', { ...response, token: '***' });
     res.status(201).json(response);
   } catch (err) {
@@ -102,7 +102,8 @@ exports.login = async (req, res) => {
         id: user._id,
         email: user.email,
         username: user.username,
-        role: user.role || 'user'
+        role: user.role || 'user',
+        favoriteGenres: user.favoriteGenres || []
       },
       redirectTo: user.role === 'admin' ? '/admin' : '/'
     });
@@ -183,7 +184,7 @@ exports.rateMovie = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     // E-posta adresinin geçerli olup olmadığını kontrol et
     if (!email) {
       console.log('maili kontrol ediyor')
@@ -202,7 +203,7 @@ exports.forgotPassword = async (req, res) => {
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET || 'secretkey',
       { expiresIn: '1h' },
-      
+
     );
     console.log('Şifre sıfırlama tokeni oluştu')
 
@@ -218,8 +219,8 @@ exports.forgotPassword = async (req, res) => {
 
     await sendToQueue(mailData);
 
-    res.status(200).json({ 
-      message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.' 
+    res.status(200).json({
+      message: 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.'
     });
 
   } catch (err) {
@@ -246,7 +247,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
     }
 
-     console.log('👤 Kullanıcı bulundu:', user.email);
+    console.log('👤 Kullanıcı bulundu:', user.email);
     console.log('Eski şifre (DB\'den):', user.password); // Mevcut şifreyi de loglayalım
     console.log('Yeni gelen şifre (plain):', newPassword);
 
@@ -293,7 +294,7 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     console.log('Update profile request received:', { body: req.body, userId: req.user.userId });
-    
+
     const { username, city, theme, language, firstName, lastName, birthYear, bio, favoriteGenres, photo } = req.body;
     const userId = req.user.userId;
 
@@ -326,9 +327,9 @@ exports.updateProfile = async (req, res) => {
     if (bio !== undefined) updateFields.bio = bio;
     if (photo !== undefined) updateFields.photo = photo;
     if (favoriteGenres !== undefined) updateFields.favoriteGenres = favoriteGenres;
-    
+
     console.log('Update fields:', updateFields);
-    
+
     // Use findByIdAndUpdate with runValidators: false to avoid validation issues
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -357,7 +358,7 @@ exports.getUserComments = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    
+
     // Get comments from Comment collection for better data structure
     const comments = await Comment.find({ userId })
       .sort({ createdAt: -1 })
@@ -385,7 +386,7 @@ exports.getUserComments = async (req, res) => {
 exports.addToWatchlist = async (req, res) => {
   try {
     console.log('Add to watchlist request received:', { body: req.body, userId: req.user.userId });
-    
+
     const { movieId } = req.body;
     const userId = req.user.userId;
 
@@ -477,7 +478,7 @@ exports.getLikedMovies = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    
+
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ message: 'Current password and new password are required.' });
     }
@@ -537,7 +538,7 @@ exports.removeFromWatchlist = async (req, res) => {
     if (!movieId) {
       return res.status(400).json({ message: 'movieId is required.' });
     }
-    const userId = req.user.userId; 
+    const userId = req.user.userId;
     const user = await User.findByIdAndUpdate(
       userId,
       { $pull: { watchlist: { movieId } } },
@@ -560,7 +561,7 @@ exports.getUserStats = async (req, res) => {
   try {
     const userId = req.user.userId;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -595,7 +596,7 @@ exports.getUserStats = async (req, res) => {
     console.error('Get user stats error:', err);
     res.status(500).json({ message: 'Server error' });
   }
-}; 
+};
 
 // Admin için genel kullanıcı istatistikleri
 exports.getGeneralUserStats = async (req, res) => {
@@ -614,7 +615,19 @@ exports.getGeneralUserStats = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
-}; 
+};
+
+exports.getGeneralUserStatsPromise = async () => {
+  const totalUsers = await User.countDocuments();
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+  const newSignups = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+  return {
+    totalUsers,
+    newSignups,
+    activeUsers: newSignups
+  };
+};
 
 // Admin için tüm kullanıcıları dönen endpoint
 exports.getAllUsers = async (req, res) => {
@@ -624,7 +637,7 @@ exports.getAllUsers = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
-}; 
+};
 
 // Admin için kullanıcı silme
 exports.deleteUser = async (req, res) => {

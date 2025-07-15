@@ -62,3 +62,39 @@ exports.getUserRating = async (req, res) => {
   }
 };
 
+exports.getGlobalRatingStats = async (req, res) => {
+  try {
+    const result = await Rating.aggregate([
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: '$rating' },
+          totalRatings: { $sum: 1 }
+        }
+      }
+    ]);
+    if (result.length === 0) {
+      return res.json({ averageRating: 0, totalRatings: 0 });
+    }
+    res.json({ averageRating: result[0].avgRating, totalRatings: result[0].totalRatings });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getGlobalRatingStatsPromise = async () => {
+  const result = await Rating.aggregate([
+    {
+      $group: {
+        _id: null,
+        avgRating: { $avg: '$rating' },
+        totalRatings: { $sum: 1 }
+      }
+    }
+  ]);
+  if (result.length === 0) {
+    return { averageRating: 0, totalRatings: 0 };
+  }
+  return { averageRating: result[0].avgRating, totalRatings: result[0].totalRatings };
+};
+

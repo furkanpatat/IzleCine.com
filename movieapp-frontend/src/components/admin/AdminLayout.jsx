@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
   Film,
@@ -16,9 +16,11 @@ import {
   Flag,
   MessageSquare
 } from 'lucide-react';
+import authService from '../../services/authService';
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { path: '/admin', icon: Home, label: 'Dashboard', isActive: true },
@@ -33,8 +35,13 @@ const AdminLayout = () => {
     { path: '/admin/reported-comments', icon: Flag, label: 'Raporlanan Yorumlar', isActive: true },
     { path: '/admin/feedback', icon: MessageSquare, label: 'Geri Bildirimler', isActive: true },
     { path: '#', icon: Bell, label: 'Notifications', isActive: false },
-    { path: '#', icon: Shield, label: 'Admin Management', isActive: false },
+    { path: '/admin/admin-management', icon: Shield, label: 'Admin Management', isActive: true },
   ];
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
@@ -60,7 +67,7 @@ const AdminLayout = () => {
           })}
         </nav>
         <div className="absolute bottom-0 w-full p-4 border-t border-gray-700">
-          <button className="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 rounded-md">
+          <button className="flex items-center w-full px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 rounded-md" onClick={handleLogout}>
             <LogOut className="w-5 h-5 mr-3" />
             <span>Logout</span>
           </button>

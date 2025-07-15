@@ -32,7 +32,7 @@ const apiService = {
       console.log('Updating user profile with data:', profileData);
       console.log('Using token:', token ? 'exists' : 'missing');
       console.log('API URL:', process.env.REACT_APP_API_URL);
-      
+
       const response = await apiAxios.put('/users/profile', profileData, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -85,15 +85,39 @@ const apiService = {
   addMovie: async (token, movieData) => {
     try {
       const response = // YENİ (doğru)
-    await apiAxios.post('/admin/add-movie', movieData, {
-    headers: {
-    Authorization: `Bearer ${token}`
-  }
-});
+        await apiAxios.post('/admin/add-movie', movieData, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
       return response.data;
-    }   catch (error) {
+    } catch (error) {
       throw new Error(error.response?.data?.message || 'Film eklenemedi');
+    }
+  },
+  getAdminGeneralStats: async (token) => {
+    try {
+      const response = await apiAxios.get('/admin/general-stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Genel istatistikler alınamadı');
+    }
+  },
+  getAdminUsers: async (token) => {
+    try {
+      const response = await apiAxios.get('/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return response.data.filter(u => u.role === 'admin');
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Admin kullanıcılar alınamadı');
     }
   }
 };

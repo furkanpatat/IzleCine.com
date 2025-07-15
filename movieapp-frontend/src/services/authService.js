@@ -13,7 +13,7 @@ const authService = {
     try {
       console.log('Registering with:', { username, email, password: '***' });
       console.log('API URL:', process.env.REACT_APP_API_URL);
-      
+
       const response = await authAxios.post('', { username, email, password });
       console.log('Register response:', response.data);
       return response.data;
@@ -24,7 +24,7 @@ const authService = {
         status: error.response?.status,
         config: error.config
       });
-      
+
       if (error.response && error.response.status === 400) {
         throw new Error(error.response.data.message);
       } else {
@@ -69,6 +69,10 @@ const authService = {
         throw new Error('Şifre sıfırlama işlemi başarısız!');
       }
     }
+  },
+  logout: () => {
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
   }
 };
 

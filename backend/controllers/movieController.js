@@ -33,3 +33,17 @@ exports.addMovie = async (req, res) => {
     res.status(500).json({ message: 'Film eklenirken sunucu hatası.' });
   }
 };
+
+exports.getMovieStats = async (req, res) => {
+  try {
+    const totalMovies = await Movie.countDocuments();
+    res.json({ totalMovies });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getMovieStatsPromise = async () => {
+  const totalMovies = await Movie.countDocuments();
+  return { totalMovies };
+};

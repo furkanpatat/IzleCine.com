@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import apiService from '../services/apiService';
@@ -21,6 +21,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const errorRef = useRef(null);
   const { t } = useTranslation();
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(true);
+  const [adminError, setAdminError] = useState(null);
 
   // Memoize star and meteor data to prevent re-rendering
   const starElements = useMemo(() => {
@@ -42,6 +45,24 @@ const LoginPage = () => {
       animationDelay: `${Math.random() * 5}s`,
       animationDuration: `${4 + Math.random() * 2}s`
     }));
+  }, []);
+
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      setAdminLoading(true);
+      setAdminError(null);
+      try {
+        // Admin endpointi için bir token gerekebilir, gerekirse buraya bir sabit admin tokenı eklenebilir
+        const token = localStorage.getItem('token');
+        const admins = await apiService.getAdminUsers(token);
+        setAdminUsers(admins);
+      } catch (err) {
+        setAdminError('Admin bilgileri alınamadı');
+      } finally {
+        setAdminLoading(false);
+      }
+    };
+    fetchAdmins();
   }, []);
 
   // Clear error on input change

@@ -22,8 +22,10 @@ const CommentSection = ({ movieId }) => {
         const fetchComments = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${API_BASE}/comments/${movieId}`);
-                
+                const token = localStorage.getItem('token');
+                const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                const response = await axios.get(`${API_BASE}/comments/${movieId}`, { headers });
+
                 // Backend'den gelen yorumları frontend formatına çevir
                 const formattedComments = response.data.map(comment => ({
                     _id: comment._id,
@@ -31,13 +33,14 @@ const CommentSection = ({ movieId }) => {
                     createdAt: comment.createdAt,
                     likes: comment.likes || 0,
                     dislikes: comment.dislikes || 0,
+                    userVote: comment.userVote || null,
                     status: comment.status || 'active',
                     user: {
                         username: comment.userId?.username || 'Anonim',
                         profileImage: comment.userId?.profileImage || '/default-avatar.png'
                     }
                 }));
-                
+
                 setComments(formattedComments);
             } catch (err) {
                 console.error('Yorumlar yüklenirken hata:', err);
@@ -75,7 +78,7 @@ const CommentSection = ({ movieId }) => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             // Backend'den gelen yorumu frontend formatına çevir
             const newCommentObj = {
                 _id: response.data.comment._id,
@@ -83,6 +86,7 @@ const CommentSection = ({ movieId }) => {
                 createdAt: response.data.comment.createdAt,
                 likes: 0,
                 dislikes: 0,
+                userVote: null,
                 status: 'active',
                 user: {
                     username: response.data.comment.userId?.username || user.username,
@@ -98,29 +102,31 @@ const CommentSection = ({ movieId }) => {
     };
 
     const handleVote = async (commentId, voteType) => {
-        // Check if user is authenticated
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const token = localStorage.getItem('token');
-        
         if (!user || !token) {
             setLoginAction(t('Oy vermek'));
             setShowLoginModal(true);
             return;
         }
-
+        let endpoint = '';
+        if (voteType === 'likes') endpoint = 'like';
+        else if (voteType === 'dislikes') endpoint = 'dislike';
+        else return;
         try {
-            const response = await axios.post(`${API_BASE}/comments/${commentId}/${voteType}`, {}, {
+            const response = await axios.post(`${API_BASE}/comments/${commentId}/${endpoint}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
-            // Update local state
-            setComments(prevComments => 
-                prevComments.map(comment => 
-                    comment._id === commentId 
-                        ? { ...comment, [voteType]: response.data[voteType] }
-                        : comment
-                )
-            );
+            setComments(prevComments => prevComments.map(comment =>
+                comment._id === commentId
+                    ? {
+                        ...comment,
+                        likes: response.data.likes,
+                        dislikes: response.data.dislikes,
+                        userVote: endpoint === 'like' ? 'like' : 'dislike'
+                    }
+                    : comment
+            ));
         } catch (err) {
             console.error('Oy verme hatası:', err);
         }
@@ -130,7 +136,7 @@ const CommentSection = ({ movieId }) => {
         // Check if user is authenticated
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const token = localStorage.getItem('token');
-        
+
         if (!user || !token) {
             setLoginAction(t('Yorum raporlamak'));
             setShowLoginModal(true);
@@ -249,7 +255,7 @@ const CommentSection = ({ movieId }) => {
                                     <div className="flex items-center space-x-4">
                                         <button
                                             onClick={() => handleVote(comment._id, 'likes')}
-                                            className="flex items-center text-gray-300 hover:text-green-400 transition-colors duration-200 group"
+                                            className={`flex items-center text-gray-300 hover:text-green-400 transition-colors duration-200 group ${comment.userVote === 'like' ? 'text-green-400 font-bold' : ''}`}
                                         >
                                             <ThumbsUp className="w-4 h-4 mr-1" />
                                             <span>{t('Beğen')}</span>
@@ -257,7 +263,7 @@ const CommentSection = ({ movieId }) => {
                                         </button>
                                         <button
                                             onClick={() => handleVote(comment._id, 'dislikes')}
-                                            className="flex items-center text-gray-300 hover:text-red-400 transition-colors duration-200 group"
+                                            className={`flex items-center text-gray-300 hover:text-red-400 transition-colors duration-200 group ${comment.userVote === 'dislike' ? 'text-red-400 font-bold' : ''}`}
                                         >
                                             <ThumbsDown className="w-4 h-4 mr-1" />
                                             <span>{t('Beğenme')}</span>

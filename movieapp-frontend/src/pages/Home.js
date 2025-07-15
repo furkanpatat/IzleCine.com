@@ -4,6 +4,20 @@ import MovieRow from '../components/MovieRow';
 import tmdbService from '../services/tmdbService';
 import { useTranslation } from 'react-i18next';
 
+// Genre name to TMDb genre id map
+const GENRE_NAME_TO_ID = {
+  'Aksiyon': 28,
+  'Komedi': 35,
+  'Drama': 18,
+  'Korku': 27,
+  'Bilim Kurgu': 878,
+  'Romantik': 10749,
+  'Gerilim': 53,
+  'Belgesel': 99,
+  'Animasyon': 16,
+  'Fantastik': 14
+};
+
 const Home = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [newMovies, setNewMovies] = useState([]);
@@ -14,6 +28,9 @@ const Home = () => {
   const [horrorMovies, setHorrorMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [customMovies, setCustomMovies] = useState([]);
+  const [customLoading, setCustomLoading] = useState(false);
+  const [customError, setCustomError] = useState(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -57,6 +74,33 @@ const Home = () => {
     fetchMovies();
   }, [t]);
 
+  // Kullanıcı favori türlerine göre filmleri çek
+  useEffect(() => {
+    const fetchCustomMovies = () => {
+      const user = JSON.parse(localStorage.getItem('user') || 'null');
+      const favoriteGenres = user && Array.isArray(user.favoriteGenres) ? user.favoriteGenres : [];
+      if (!user || !favoriteGenres.length) {
+        setCustomMovies([]);
+        return;
+      }
+      // Genre isimlerini id'ye çevir
+      const genreIds = favoriteGenres.map(name => GENRE_NAME_TO_ID[name]).filter(Boolean);
+      if (!genreIds.length) {
+        setCustomMovies([]);
+        return;
+      }
+      setCustomLoading(true);
+      setCustomError(null);
+      tmdbService.getMoviesByGenre(genreIds.join(','), 1)
+        .then(res => setCustomMovies(res.results || []))
+        .catch(() => setCustomError(t('Filmler yüklenirken bir hata oluştu.')))
+        .finally(() => setCustomLoading(false));
+    };
+    fetchCustomMovies();
+    window.addEventListener('userChanged', fetchCustomMovies);
+    return () => window.removeEventListener('userChanged', fetchCustomMovies);
+  }, [t]);
+
   if (loading) {
     return (
       <div className="bg-gradient-to-b from-gray-900 to-black flex items-center justify-center py-20">
@@ -76,8 +120,21 @@ const Home = () => {
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
       {trendingMovies.length > 0 && <BannerHome movies={trendingMovies} />}
-      
+
       <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-16 space-y-8 sm:space-y-16">
+        {/* Seçimlerinize Göre Row */}
+        {customMovies.length > 0 && !customLoading && !customError && (
+          <div className="category-section animate-fade-in">
+            <MovieRow title={t('Seçimlerinize Göre')} movies={customMovies} />
+          </div>
+        )}
+        {customLoading && (
+          <div className="text-center text-gray-400 py-8">{t('Yükleniyor...')}</div>
+        )}
+        {customError && (
+          <div className="text-center text-red-400 py-8">{customError}</div>
+        )}
+
         {trendingMovies.length > 0 && (
           <div className="category-section animate-fade-in">
             <MovieRow title={t('Trend Filmler')} movies={trendingMovies} />

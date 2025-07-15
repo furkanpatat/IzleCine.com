@@ -1,15 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import apiService from '../services/apiService';
+import tmdbService from '../services/tmdbService';
 
 const StatisticsPage = () => {
-  // Mock veriler
-  const statistics = {
-    totalUsers: 1250,
-    totalMovies: 850,
-    averageTimeSpent: '45 dakika',
-    dailyActiveUsers: 320,
-    totalReviews: 2500,
-    averageRating: 4.2,
-  };
+  const [stats, setStats] = useState(null);
+  const [tmdbTotalMovies, setTmdbTotalMovies] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem('token');
+        const [adminStats, tmdbData] = await Promise.all([
+          apiService.getAdminGeneralStats(token),
+          tmdbService.getPopularMovies(1)
+        ]);
+        setStats(adminStats);
+        setTmdbTotalMovies(tmdbData.total_results);
+      } catch (err) {
+        setError(err.message || 'İstatistikler alınamadı');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center text-gray-400 py-16">Yükleniyor...</div>;
+  }
+  if (error) {
+    return <div className="text-center text-red-400 py-16">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -17,27 +42,27 @@ const StatisticsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
           <h3 className="text-xl font-semibold mb-2 text-gray-300">Toplam Kullanıcı</h3>
-          <p className="text-3xl font-bold text-blue-400">{statistics.totalUsers}</p>
+          <p className="text-3xl font-bold text-blue-400">{stats.totalUsers}</p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
-          <h3 className="text-xl font-semibold mb-2 text-gray-300">Toplam Film</h3>
-          <p className="text-3xl font-bold text-green-400">{statistics.totalMovies}</p>
-        </div>
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
-          <h3 className="text-xl font-semibold mb-2 text-gray-300">Ortalama Zaman</h3>
-          <p className="text-3xl font-bold text-purple-400">{statistics.averageTimeSpent}</p>
+          <h3 className="text-xl font-semibold mb-2 text-gray-300">Toplam Film (TMDb)</h3>
+          <p className="text-3xl font-bold text-green-400">{tmdbTotalMovies}</p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
           <h3 className="text-xl font-semibold mb-2 text-gray-300">Günlük Aktif Kullanıcı</h3>
-          <p className="text-3xl font-bold text-orange-400">{statistics.dailyActiveUsers}</p>
+          <p className="text-3xl font-bold text-orange-400">{stats.activeUsers}</p>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
+          <h3 className="text-xl font-semibold mb-2 text-gray-300">Yeni Kayıtlar (7 gün)</h3>
+          <p className="text-3xl font-bold text-purple-400">{stats.newSignups}</p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
           <h3 className="text-xl font-semibold mb-2 text-gray-300">Toplam İnceleme</h3>
-          <p className="text-3xl font-bold text-red-400">{statistics.totalReviews}</p>
+          <p className="text-3xl font-bold text-red-400">{stats.totalReviews}</p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
           <h3 className="text-xl font-semibold mb-2 text-gray-300">Ortalama Puan</h3>
-          <p className="text-3xl font-bold text-yellow-400">{statistics.averageRating}</p>
+          <p className="text-3xl font-bold text-yellow-400">{stats.averageRating ? stats.averageRating.toFixed(2) : 0}</p>
         </div>
       </div>
 

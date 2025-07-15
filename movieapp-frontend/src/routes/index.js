@@ -30,6 +30,7 @@ import SettingsPage from "../pages/SettingsPage";
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms";
 import Contact from "../pages/Contact";
+import AdminManagement from '../pages/admin/AdminManagement';
 
 const router = createBrowserRouter([
     {
@@ -155,6 +156,10 @@ const router = createBrowserRouter([
                     {
                         path: 'feedback',
                         element: <FeedbackManagement />,
+                    },
+                    {
+                        path: 'admin-management',
+                        element: <AdminManagement />,
                     },
                 ],
             }
