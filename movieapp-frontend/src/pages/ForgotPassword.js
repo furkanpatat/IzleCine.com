@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './PasswordReset.css';
 import authService from '../services/authService';
 import { useTranslation } from 'react-i18next';
-import normalizeEmail from 'normalize-email';
+//mport normalizeEmail from 'normalize-email';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -17,8 +17,8 @@ const ForgotPassword = () => {
         setMessage('');
 
         try {
-            const normalizedEmail = normalizeEmail(email); 
-            const response = await authService.forgotPassword({ email: normalizedEmail });
+            //const normalizedEmail = normalizeEmail(email); 
+            const response = await authService.forgotPassword({ email });
             setMessage(response.message);
             setEmail(''); // Formu temizle
         } catch (error) {

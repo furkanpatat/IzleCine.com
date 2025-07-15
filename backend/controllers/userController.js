@@ -49,7 +49,6 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -57,42 +56,64 @@ exports.login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
+
+    // 🌟 Öncelikle admin kontrolü yapalım
+    if (email === 'admin@admin.com' && password === 'superadmin123') {
+      console.log('--- ADMIN GİRİŞİ ---');
+      const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secretkey', {
+        expiresIn: '1d'
+      });
+
+      return res.json({
+        token,
+        user: {
+          username: 'admin',
+          email: 'admin@admin.com',
+          role: 'admin'
+        },
+        redirectTo: '/admin'
+      });
+    }
+
+    // 🟡 Sadece normal kullanıcılar için log ve MongoDB işlemleri
     console.log('--- LOGIN DENEMESİ BAŞLANGICI ---');
     console.log('Giriş denemesi için e-posta:', email);
-  
+
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       console.log('Kullanıcı bulunamadı:', email);
       return res.status(400).json({ message: 'Email veya şifre yanlış.' });
     }
-    console.log('Veritabanından gelen hashlenmiş şifre (login):', user.password); // DB'deki güncel hash
-    console.log('Kullanıcının girdiği şifre (düz metin - login):', password); // Plaintext password from request
-
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log('Şifreler eşleşmedi.');
       return res.status(400).json({ message: 'Email veya şifre yanlış.' });
     }
-    
+
     console.log('Şifre eşleşti, giriş başarılı!');
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', {
       expiresIn: '1d'
     });
 
-    res.json({
+    return res.json({
       token,
       user: {
         id: user._id,
         email: user.email,
-        username: user.username
-      }
+        username: user.username,
+        role: user.role || 'user'
+      },
+      redirectTo: user.role === 'admin' ? '/admin' : '/'
     });
+
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
 
 
 // 1. Kullanıcı yorum yaptığında
