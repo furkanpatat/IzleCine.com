@@ -54,28 +54,46 @@ exports.login = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
+
   try {
     const { email, password } = req.body;
-    // Admin girişi
-    if (email === 'admin@admin.com' && password === 'superadmin123') {
-      const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
-      return res.json({ token, user: { username: 'admin', email: 'admin@admin.com', role: 'admin' } });
-    }
-    // Normal kullanıcılar
-    const user = await User.findOne({ email });
+    console.log('--- LOGIN DENEMESİ BAŞLANGICI ---');
+    console.log('Giriş denemesi için e-posta:', email);
+  
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      console.log('Kullanıcı bulunamadı:', email);
+      return res.status(400).json({ message: 'Email veya şifre yanlış.' });
     }
+    console.log('Veritabanından gelen hashlenmiş şifre (login):', user.password); // DB'deki güncel hash
+    console.log('Kullanıcının girdiği şifre (düz metin - login):', password); // Plaintext password from request
+
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      console.log('Şifreler eşleşmedi.');
+      return res.status(400).json({ message: 'Email veya şifre yanlış.' });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+    
+    console.log('Şifre eşleşti, giriş başarılı!');
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', {
+      expiresIn: '1d'
+    });
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username
+      }
+    });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 // 1. Kullanıcı yorum yaptığında
 exports.addUserComment = async (req, res) => {
@@ -193,36 +211,49 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
-    
+
     if (!token || !newPassword) {
       return res.status(400).json({ message: 'Token ve yeni şifre gerekli.' });
     }
 
     // Token'ı doğrula
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
+    console.log('✅ Token çözüldü. Kullanıcı ID:', decoded.userId);
+
     const user = await User.findById(decoded.userId);
-    
     if (!user) {
       return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
     }
 
-    // Yeni şifreyi hash'le
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // Kullanıcının şifresini güncelle
-    user.password = hashedPassword;
-    await user.save();
+     console.log('👤 Kullanıcı bulundu:', user.email);
+    console.log('Eski şifre (DB\'den):', user.password); // Mevcut şifreyi de loglayalım
+    console.log('Yeni gelen şifre (plain):', newPassword);
 
-    res.status(200).json({ message: 'Şifreniz başarıyla sıfırlandı.' });
+    // Yeni şifreyi hashle
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log('Hashlenmiş şifre:', hashedPassword);
+
+    // Güncelle ve kaydet
+    user.password = hashedPassword;
+    try {
+      await user.save();
+      console.log('💾 Yeni şifre başarıyla MongoDB\'ye kaydedildi. Kaydedilen hash:', user.password);
+    } catch (saveError) {
+      console.error('❌ Şifre kaydetme sırasında Mongoose hatası:', saveError);
+      return res.status(500).json({ message: 'Şifre güncellenirken veritabanı hatası oluştu.' });
+    }
+
+    return res.status(200).json({ message: 'Şifreniz başarıyla sıfırlandı.' });
 
   } catch (err) {
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
       return res.status(400).json({ message: 'Geçersiz veya süresi dolmuş token.' });
     }
-    console.error('Reset password error:', err);
-    res.status(500).json({ message: 'Sunucu hatası oluştu.' });
+    console.error('❌ Reset password error:', err);
+    return res.status(500).json({ message: 'Sunucu hatası oluştu.' });
   }
-}; 
+};
+
 
 // Get current user profile
 exports.getProfile = async (req, res) => {
@@ -421,7 +452,7 @@ exports.getLikedMovies = async (req, res) => {
   }
 };
 
-// Change password
+//Change password
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;

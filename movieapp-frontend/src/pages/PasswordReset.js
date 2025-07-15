@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './PasswordReset.css';  // Bileşene özel stil dosyasını import et
+import './PasswordReset.css';
 import { useTranslation } from 'react-i18next';
+import authService from '../services/authService';
 
-  // Global stilleri import et
 const PasswordReset = () => {
-  // State'ler: E-posta, yeni şifre ve şifre doğrulaması
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -49,21 +48,27 @@ const PasswordReset = () => {
     }
   }, [newPassword, t]);
 
-  // Form gönderildiğinde çalışacak fonksiyon
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Şifrelerin uyuşup uyuşmadığını kontrol et
     if (newPassword !== confirmPassword) {
       setError(t('Şifreler uyuşmuyor.'));
       return;
     }
 
-    // Burada şifre sıfırlama işlemini yapacak API çağrısı olabilir.
-    // Örneğin, API'ye e-posta ve yeni şifreyi gönderiyorsanız, bu aşamada veri gönderebilirsiniz.
+    try {
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) {
+        setError(t('Geçersiz bağlantı.'));
+        return;
+      }
 
-    setSuccess(true);
-    setError('');
+      await authService.resetPassword({ token, newPassword });
+      setSuccess(true);
+      setError('');
+    } catch (err) {
+      setError(err.message || t('Şifre sıfırlama başarısız.'));
+    }
   };
 
   return (
@@ -78,7 +83,7 @@ const PasswordReset = () => {
       ) : (
         <form onSubmit={handleSubmit}>
           {error && <p className="error-message">{error}</p>}
-          
+
           <div className="form-group">
             <label htmlFor="email">{t('E-posta Adresiniz:')}</label>
             <input
@@ -137,7 +142,7 @@ const PasswordReset = () => {
           <button type="submit">{t('Şifreyi Sıfırla')}</button>
         </form>
       )}
-      
+
       <p className="back-to-login">
         {t('Zaten şifreni hatırlıyor musun?')} <a href="/login">{t('Giriş yap')}</a>
       </p>
