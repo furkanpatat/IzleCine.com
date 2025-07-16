@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import apiService from '../services/apiService';
 import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 const SettingsPage = () => {
+  const { t } = useTranslation();
   // Initialize theme from localStorage or default to 'light'
   const [form, setForm] = useState({ 
     username: '', 
@@ -85,14 +87,13 @@ const SettingsPage = () => {
   };
 
   const handleLanguageToggle = () => {
-  const newLang = form.language === 'tr' ? 'en' : 'tr';
-  setForm(prev => ({
-    ...prev,
-    language: newLang
-  }));
-
-  i18n.changeLanguage(newLang); // ✅ frontend dili anında değiştir
-  localStorage.setItem('lang', newLang); // opsiyonel, refreshte de hatırlasın
+    const newLang = form.language === 'tr' ? 'en' : 'tr';
+    setForm(prev => ({
+      ...prev,
+      language: newLang
+    }));
+    i18n.changeLanguage(newLang);
+    localStorage.setItem('lang', newLang);
 };
 
   const handleSubmit = async (e) => {
@@ -166,9 +167,9 @@ const SettingsPage = () => {
                 ? 'text-white' 
                 : 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent'
             }`}>
-              Profil Ayarları
+              {t('Profil Ayarları')}
             </h2>
-            <p className="text-gray-400 mt-2">Hesap bilgilerinizi güncelleyin</p>
+            <p className="text-gray-400 mt-2">{t('Hesap bilgilerinizi güncelleyin')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -195,7 +196,7 @@ const SettingsPage = () => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                Kullanıcı Adı
+                {t('Kullanıcı Adı')}
               </label>
               <div className="relative">
                 <input
@@ -204,7 +205,7 @@ const SettingsPage = () => {
                   value={form.username}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-700/50 border border-gray-600/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Kullanıcı adınızı girin"
+                  placeholder={t('Kullanıcı adınızı girin')}
                   required
                 />
               </div>
@@ -217,7 +218,7 @@ const SettingsPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                Şehir (Opsiyonel)
+                {t('Şehir (Opsiyonel)')}
               </label>
               <div className="relative">
                 <input
@@ -226,7 +227,7 @@ const SettingsPage = () => {
                   value={form.city}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl bg-gray-700/50 border border-gray-600/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Şehrinizi girin"
+                  placeholder={t('Şehrinizi girin')}
                 />
               </div>
             </div>
@@ -237,12 +238,12 @@ const SettingsPage = () => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
-                Tema
+                {t('Tema')}
               </label>
               <div className="flex items-center justify-between p-4 rounded-xl bg-gray-700/30 border border-gray-600/30">
                 <div className="flex items-center space-x-3">
-                  <span className="text-white font-medium">{form.theme === 'light' ? 'Açık Tema' : 'Koyu Tema'}</span>
-                  <span className="text-gray-400 text-sm">{form.theme === 'light' ? 'Parlak görünüm' : 'Göz dostu görünüm'}</span>
+                  <span className="text-white font-medium">{form.theme === 'light' ? t('Açık Tema') : t('Koyu Tema')}</span>
+                  <span className="text-gray-400 text-sm">{form.theme === 'light' ? t('Parlak görünüm') : t('Göz dostu görünüm')}</span>
                 </div>
                 <button
                   type="button"
@@ -264,14 +265,14 @@ const SettingsPage = () => {
             {/* Language Toggle */}
 <div className="space-y-2">
   <label className="block text-sm font-medium text-gray-300 flex items-center">
-    🌐 Dil Seçimi
+    🌐 {t('Dil Seçimi')}
   </label>
   <button
     type="button"
     onClick={handleLanguageToggle}
     className="w-full bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
   >
-    {form.language === 'tr' ? 'Türkçe' : 'English'}
+    {form.language === 'tr' ? t('Türkçe') : t('English')}
   </button>
 </div>
             {/* Submit Button */}
@@ -286,14 +287,14 @@ const SettingsPage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Kaydediliyor...</span>
+                  <span>{t('Kaydediliyor...')}</span>
                 </>
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Değişiklikleri Kaydet</span>
+                  <span>{t('Değişiklikleri Kaydet')}</span>
                 </>
               )}
             </button>

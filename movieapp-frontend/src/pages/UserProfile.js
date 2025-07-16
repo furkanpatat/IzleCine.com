@@ -282,7 +282,7 @@ const UserProfile = () => {
           <button
             className="absolute top-4 right-4 bg-pink-700 hover:bg-pink-800 text-white p-2 rounded-full shadow transition-all duration-200 flex items-center justify-center"
             onClick={() => setEditMode(true)}
-            title="Profili Düzenle"
+            title={t('Profili Düzenle')}
           >
             <FaEdit className="text-lg" />
           </button>
@@ -339,7 +339,7 @@ const UserProfile = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleEditChange}
-                  placeholder="Kullanıcı Adı"
+                  placeholder={t('Kullanıcı Adı')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 mb-1 shadow-sm"
                   required
                   autoComplete="off"
@@ -351,7 +351,7 @@ const UserProfile = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleEditChange}
-                    placeholder="Ad"
+                    placeholder={t('Ad')}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
                     required
                     autoComplete="off"
@@ -362,7 +362,7 @@ const UserProfile = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleEditChange}
-                    placeholder="Soyad"
+                    placeholder={t('Soyad')}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
                     required
                     autoComplete="off"
@@ -374,15 +374,15 @@ const UserProfile = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleEditChange}
-                  placeholder="Email"
+                  placeholder={t('Email')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 shadow-sm"
                   required
                   autoComplete="off"
                   style={{fontFamily: 'Inter, sans-serif', fontSize: '1rem'}}
                 />
                 <div className="flex space-x-2 mt-2 items-center">
-                  <button type="submit" className="flex-1 h-10 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-sm" disabled={saving}>{saving ? 'Kaydediliyor...' : 'Kaydet'}</button>
-                  <button type="button" className="flex-1 h-10 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all shadow-sm" onClick={() => setEditMode(false)}>İptal</button>
+                  <button type="submit" className="flex-1 h-10 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-sm" disabled={saving}>{saving ? t('Kaydediliyor...') : t('Kaydet')}</button>
+                  <button type="button" className="flex-1 h-10 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all shadow-sm" onClick={() => setEditMode(false)}>{t('İptal')}</button>
                 </div>
               </form>
             ) : (

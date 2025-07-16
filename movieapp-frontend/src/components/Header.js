@@ -161,7 +161,7 @@ const Header = () => {
           <Link to={isAdmin ? "/admin" : "/"} className="transition-transform duration-300 hover:scale-105">
             <img
               src={logo}
-              alt='logo'
+              alt={t('Logo')}
               width={240}
             />
           </Link>

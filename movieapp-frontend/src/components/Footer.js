@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next';
 import { FaHeart, FaGithub, FaTwitter, FaInstagram, FaYoutube, FaFilm, FaStar } from 'react-icons/fa';
+import i18n from '../i18n';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -17,14 +18,13 @@ const Footer = () => {
               </div>
               <div>
                 <a href="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors duration-200">
-                  İzleCine
+                  {t('İzleCine')}
                 </a>
-                <p className="text-gray-200 text-xs">Film izleme platformu</p>
+                <p className="text-gray-200 text-xs">{t('Film izleme platformu')}</p>
               </div>
             </div>
             <p className="text-gray-200 mb-4 max-w-md text-sm">
-              En yeni filmler için İzleCine'ye hoş geldiniz. 
-              Kaliteli eğlence deneyimi için buradayız.
+              {t("En yeni filmler için İzleCine'ye hoş geldiniz. Kaliteli eğlence deneyimi için buradayız.")}
             </p>
             <div className="flex space-x-3">
               <a href="#" className="text-gray-300 hover:text-purple-400 transition-colors duration-200">
@@ -46,22 +46,22 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-3 flex items-center text-sm">
               <FaStar className="mr-2 text-purple-400" />
-              Hızlı Linkler
+              {t('Hızlı Linkler')}
             </h4>
             <ul className="space-y-1">
               <li>
                 <a href="/" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  Ana Sayfa
+                  {t('Ana Sayfa')}
                 </a>
               </li>
               <li>
                 <a href="/movies" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  Filmler
+                  {t('Filmler')}
                 </a>
               </li>
               <li>
                 <a href="/watchlist" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  İzleme Listesi
+                  {t('İzleme Listesi')}
                 </a>
               </li>
             </ul>
@@ -71,22 +71,22 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-3 flex items-center text-sm">
               <FaHeart className="mr-2 text-pink-400" />
-              Destek
+              {t('Destek')}
             </h4>
             <ul className="space-y-1">
               <li>
                 <a href="/contact" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  İletişim
+                  {t('İletişim')}
                 </a>
               </li>
               <li>
                 <a href="/privacy" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  Gizlilik Politikası
+                  {t('Gizlilik Politikası')}
                 </a>
               </li>
               <li>
                 <a href="/terms" className="text-gray-200 hover:text-purple-400 transition-colors duration-200 text-sm">
-                  Kullanım Şartları
+                  {t('Kullanım Şartları')}
                 </a>
               </li>
             </ul>
@@ -97,12 +97,12 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-6 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
             <div className="text-gray-200 text-xs mb-3 md:mb-0 text-center md:text-left">
-              © 2024 İzleCine. Tüm hakları saklıdır.
+              © 2024 {t('İzleCine')}. {t('Tüm hakları saklıdır.')}
             </div>
             <div className="flex items-center justify-center space-x-2 text-gray-200 text-xs">
-              <span>Made with</span>
+              <span>{t('Made with')}</span>
               <FaHeart className="text-pink-500 animate-pulse" />
-              <span>for movie lovers</span>
+              <span>{t('for movie lovers')}</span>
             </div>
           </div>
         </div>
