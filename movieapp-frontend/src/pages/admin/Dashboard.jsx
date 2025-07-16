@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Film, Users, Plus, Trash2, BarChart2, User, FileText, Settings } from 'lucide-react';
+import { Film, Users, Plus, Trash2, BarChart2, User, FileText, Settings, MessageSquare, Shield } from 'lucide-react';
 
 // JWT decode helper
 function parseJwt(token) {
@@ -71,18 +71,18 @@ const Dashboard = () => {
       hoverColor: 'hover:bg-indigo-700'
     },
     {
-      title: 'System Logs',
-      icon: FileText,
-      path: '/admin/system-logs',
-      color: 'bg-gray-600',
-      hoverColor: 'hover:bg-gray-700'
-    },
-    {
-      title: 'Platform Settings',
-      icon: Settings,
-      path: '/admin/platform-settings',
+      title: 'Geri Bildirimler',
+      icon: MessageSquare,
+      path: '/admin/feedback',
       color: 'bg-pink-600',
       hoverColor: 'hover:bg-pink-700'
+    },
+    {
+      title: 'Admin Management',
+      icon: Shield,
+      path: '/admin/admin-management',
+      color: 'bg-gray-600',
+      hoverColor: 'hover:bg-gray-700'
     },
   ];
 

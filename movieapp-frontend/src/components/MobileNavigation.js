@@ -9,7 +9,7 @@ const MobileNavigation = () => {
   if (isHiddenOnThisPage) return null; // belirli sayfalarda alt bar'ı gizle
 
   return (
-    <section className='h-16 fixed bottom-0 w-full z-50 shadow-2xl border-t border-gray-800 bg-white/10 backdrop-blur-xl rounded-t-2xl overflow-hidden' 
+    <section className='block md:hidden h-16 fixed bottom-0 w-full z-50 shadow-2xl border-t border-gray-800 bg-white/10 backdrop-blur-xl rounded-t-2xl overflow-hidden' 
       style={{boxShadow: '0 -8px 32px 0 rgba(80,0,120,0.10)'}}> 
       <div className='flex items-center justify-around h-full text-neutral-300'> 
         {

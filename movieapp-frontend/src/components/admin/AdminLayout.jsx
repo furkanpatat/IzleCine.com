@@ -30,8 +30,6 @@ const AdminLayout = () => {
     { path: '/admin/delete-movies', icon: Trash2, label: 'Delete Movie', isActive: true },
     { path: '/admin/statistics', icon: BarChart2, label: 'General Stats', isActive: true },
     { path: '/admin/manage-users', icon: User, label: 'Manage Users', isActive: true },
-    { path: '/admin/system-logs', icon: FileText, label: 'System Logs', isActive: true },
-    { path: '/admin/platform-settings', icon: Settings, label: 'Platform Settings', isActive: true },
     { path: '/admin/reported-comments', icon: Flag, label: 'Raporlanan Yorumlar', isActive: true },
     { path: '/admin/feedback', icon: MessageSquare, label: 'Geri Bildirimler', isActive: true },
     { path: '#', icon: Bell, label: 'Notifications', isActive: false },
