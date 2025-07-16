@@ -25,6 +25,8 @@ router.get('/dashboard', adminAuth, (req, res) => {
 // Genel kullanıcı istatistikleri (admin paneli için)
 router.get('/user-stats', adminAuth, userController.getGeneralUserStats);
 router.get('/users', adminAuth, userController.getAllUsers);
+
+//Kullanıcı silme
 router.delete('/users/:id', adminAuth, userController.deleteUser);
 
 // Yeni film ekleme

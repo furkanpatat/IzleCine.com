@@ -143,6 +143,7 @@ const resources = {
       "Tekrarlanan uyarılar": "Tekrarlanan uyarılar",
       "Platform güvenliğine tehdit": "Platform güvenliğine tehdit",
       "Kötüye kullanım": "Kötüye kullanım",
+      "Sadece İzleCine.com'da": "Sadece İzleCine.com'da",
     }
   },
   en: {
@@ -285,6 +286,7 @@ const resources = {
       "Tekrarlanan uyarılar": "Repeated warnings",
       "Platform güvenliğine tehdit": "Threat to platform security",
       "Kötüye kullanım": "Abuse",
+      "Sadece İzleCine.com'da": "Only on IzleCine.com",
     }
   }
 };

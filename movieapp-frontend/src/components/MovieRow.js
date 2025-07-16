@@ -13,7 +13,7 @@ const MovieRow = ({ title, movies = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const rowRef = useRef(null);
-  
+
   // Optimize selector to prevent unnecessary re-renders
   const favorites = useSelector(state => state.IzleCineData?.favorites || [], (prev, next) => {
     if (prev.length !== next.length) return false;
@@ -21,10 +21,11 @@ const MovieRow = ({ title, movies = [] }) => {
   });
 
   // Filter out movies without valid numeric IDs - memoize to prevent re-renders
-  const validMovies = useMemo(() => 
-    movies.filter(movie => movie && movie.id && !isNaN(Number(movie.id))),
+  const validMovies = useMemo(() =>
+    movies.filter(movie => movie && movie.id),
     [movies]
   );
+  console.log('MovieRow validMovies:', validMovies);
 
   const handleMovieClick = useCallback((movieId) => {
     if (!movieId || isNaN(Number(movieId))) {
@@ -48,7 +49,7 @@ const MovieRow = ({ title, movies = [] }) => {
     // Check if user is authenticated
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    
+
     if (!user || !token) {
       setShowLoginModal(true);
       return;
@@ -75,10 +76,10 @@ const MovieRow = ({ title, movies = [] }) => {
   const scroll = useCallback((direction) => {
     if (rowRef.current) {
       const { scrollLeft, clientWidth } = rowRef.current;
-      const scrollTo = direction === 'left' 
-        ? scrollLeft - clientWidth 
+      const scrollTo = direction === 'left'
+        ? scrollLeft - clientWidth
         : scrollLeft + clientWidth;
-      
+
       rowRef.current.scrollTo({
         left: scrollTo,
         behavior: 'smooth'
@@ -94,7 +95,7 @@ const MovieRow = ({ title, movies = [] }) => {
     <>
       <div className="mb-16 relative group">
         <h2 className="text-3xl font-bold mb-6 text-white pl-4 border-l-4 border-red-600">{title}</h2>
-        
+
         <div className="relative">
           <button
             onClick={() => scroll('left')}
@@ -110,6 +111,7 @@ const MovieRow = ({ title, movies = [] }) => {
             onMouseLeave={() => setIsHovered(false)}
           >
             {validMovies.map((movie) => (
+              console.log('MovieRow poster_path:', movie.poster_path),
               <div
                 key={movie.id}
                 onClick={() => handleMovieClick(movie.id)}
@@ -122,12 +124,18 @@ const MovieRow = ({ title, movies = [] }) => {
                     </div>
                   ) : (
                     <img
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      src={
+                        movie.poster_path && movie.poster_path.startsWith('http')
+                          ? movie.poster_path
+                          : movie.posterUrl || (movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '')
+                      }
                       alt={movie.title || 'Movie'}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       onError={() => handleImageError(movie.id)}
                     />
+
                   )}
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <div className="absolute bottom-0 left-0 p-4 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                       <h3 className="text-lg font-semibold mb-2 text-white line-clamp-2">{movie.title || 'Unknown Title'}</h3>
@@ -164,11 +172,10 @@ const MovieRow = ({ title, movies = [] }) => {
                         </div>
                         <button
                           onClick={(e) => handleFavoriteClick(e, movie)}
-                          className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
-                            favorites.some(fav => fav.id === movie.id)
-                              ? 'bg-red-500 text-white'
-                              : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
-                          }`}
+                          className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${favorites.some(fav => fav.id === movie.id)
+                            ? 'bg-red-500 text-white'
+                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }`}
                         >
                           <FaHeart />
                         </button>

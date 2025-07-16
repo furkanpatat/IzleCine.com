@@ -26,13 +26,15 @@ const Home = () => {
   const [comedyMovies, setComedyMovies] = useState([]);
   const [dramaMovies, setDramaMovies] = useState([]);
   const [horrorMovies, setHorrorMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [customMovies, setCustomMovies] = useState([]);
+  const [manualMovies, setManualMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [customLoading, setCustomLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [customError, setCustomError] = useState(null);
   const { t } = useTranslation();
 
+  // 📌 TMDb verilerini çek
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -49,10 +51,10 @@ const Home = () => {
           tmdbService.getPopularMovies(1),
           tmdbService.getPopularMovies(2),
           tmdbService.getPopularMovies(3),
-          tmdbService.getMoviesByGenre(28, 1), // Action
-          tmdbService.getMoviesByGenre(35, 1), // Comedy
-          tmdbService.getMoviesByGenre(18, 1), // Drama
-          tmdbService.getMoviesByGenre(27, 1)  // Horror
+          tmdbService.getMoviesByGenre(28, 1),
+          tmdbService.getMoviesByGenre(35, 1),
+          tmdbService.getMoviesByGenre(18, 1),
+          tmdbService.getMoviesByGenre(27, 1)
         ]);
 
         setTrendingMovies(popularMovies.results || []);
@@ -74,33 +76,67 @@ const Home = () => {
     fetchMovies();
   }, [t]);
 
-  // Kullanıcı favori türlerine göre filmleri çek
+  // 📌 Elle eklenen filmleri çek
+  useEffect(() => {
+    const fetchManualMovies = async () => {
+      try {
+        const res = await fetch('/api/movies/custom');
+        const text = await res.text();
+        console.log('API response text:', text);
+        const data = JSON.parse(text);
+        const transformed = data.map(movie => ({
+          id: movie._id,
+          title: movie.title,
+          poster_path: movie.posterUrl,
+          vote_average: movie.rating,
+          release_date: `${movie.year || '2020'}-01-01`,
+          genre_ids: [],
+        }));
+        setManualMovies(transformed);
+        console.log('manualMovies:', transformed);
+      } catch (err) {
+        console.error('Elle eklenen filmler alınamadı:', err);
+      }
+    };
+
+    fetchManualMovies();
+  }, []);
+
+  // 📌 Kullanıcı favori türlerine göre önerilenleri çek
   useEffect(() => {
     const fetchCustomMovies = () => {
       const user = JSON.parse(localStorage.getItem('user') || 'null');
-      const favoriteGenres = user && Array.isArray(user.favoriteGenres) ? user.favoriteGenres : [];
+      const favoriteGenres = user?.favoriteGenres || [];
+
       if (!user || !favoriteGenres.length) {
         setCustomMovies([]);
         return;
       }
-      // Genre isimlerini id'ye çevir
-      const genreIds = favoriteGenres.map(name => GENRE_NAME_TO_ID[name]).filter(Boolean);
+
+      const genreIds = favoriteGenres
+        .map(name => GENRE_NAME_TO_ID[name])
+        .filter(Boolean);
+
       if (!genreIds.length) {
         setCustomMovies([]);
         return;
       }
+
       setCustomLoading(true);
       setCustomError(null);
+
       tmdbService.getMoviesByGenre(genreIds.join(','), 1)
         .then(res => setCustomMovies(res.results || []))
         .catch(() => setCustomError(t('Filmler yüklenirken bir hata oluştu.')))
         .finally(() => setCustomLoading(false));
     };
+
     fetchCustomMovies();
     window.addEventListener('userChanged', fetchCustomMovies);
     return () => window.removeEventListener('userChanged', fetchCustomMovies);
   }, [t]);
 
+  // 📌 Yükleniyor
   if (loading) {
     return (
       <div className="bg-gradient-to-b from-gray-900 to-black flex items-center justify-center py-20">
@@ -109,6 +145,7 @@ const Home = () => {
     );
   }
 
+  // 📌 Hata
   if (error) {
     return (
       <div className="bg-gradient-to-b from-gray-900 to-black flex items-center justify-center py-20 text-red-500">
@@ -117,17 +154,18 @@ const Home = () => {
     );
   }
 
+  // 📌 Ana render
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
       {trendingMovies.length > 0 && <BannerHome movies={trendingMovies} />}
 
       <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-16 space-y-8 sm:space-y-16">
-        {/* Seçimlerinize Göre Row */}
         {customMovies.length > 0 && !customLoading && !customError && (
           <div className="category-section animate-fade-in">
             <MovieRow title={t('Seçimlerinize Göre')} movies={customMovies} />
           </div>
         )}
+
         {customLoading && (
           <div className="text-center text-gray-400 py-8">{t('Yükleniyor...')}</div>
         )}
@@ -176,6 +214,14 @@ const Home = () => {
             <MovieRow title={t('İlginizi Çekebilir')} movies={recommendedMovies} />
           </div>
         )}
+
+        {/* Özel Eklenen Filmler */}
+        <>
+          {console.log('manualMovies render:', manualMovies)}
+          <div className="category-section animate-fade-in" style={{ animationDelay: '1.4s' }}>
+            <MovieRow title={t('Sadece İzleCine.com\'da')} movies={manualMovies} />
+          </div>
+        </>
       </div>
     </div>
   );

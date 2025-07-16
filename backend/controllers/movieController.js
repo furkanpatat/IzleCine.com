@@ -101,3 +101,16 @@ exports.searchMovies = async (req, res) => {
     res.status(500).json({ message: 'Sunucu hatası.' });
   }
 };
+
+exports.getCustomMovies = async (req, res) => {
+  try {
+    const movies = await Movie.find({}); // tüm filmleri getir (geçici çözüm)
+    res.json(movies);
+  } catch (err) {
+    res.status(500).json({ message: 'Özel filmler alınamadı.' });
+  }
+};
+
+
+
+

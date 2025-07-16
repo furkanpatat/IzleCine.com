@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path'); 
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -11,6 +12,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const movieRoutes = require('./routes/movieRoutes'); // ✅ yeni eklendi
 const { connectRabbit } = require('./utils/rabbit');
+const movieController = require('./controllers/movieController');
 
 const app = express();
 app.use(helmet());
