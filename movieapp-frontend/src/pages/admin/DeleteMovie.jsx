@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2 } from 'lucide-react';
+import apiService from '../../services/apiService';
 
 function parseJwt(token) {
   try {
@@ -30,37 +31,12 @@ const DeleteMovie = () => {
       return;
     }
 
-    // In a real app, this would fetch from an API
     const fetchMovies = async () => {
       try {
-        // Simulating API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data - replace with actual API call
-        const mockMovies = [
-          {
-            id: 1,
-            title: 'Inception',
-            genre: 'Sci-Fi',
-            year: 2010,
-          },
-          {
-            id: 2,
-            title: 'The Dark Knight',
-            genre: 'Action',
-            year: 2008,
-          },
-          {
-            id: 3,
-            title: 'Interstellar',
-            genre: 'Sci-Fi',
-            year: 2014,
-          },
-        ];
-        
-        setMovies(mockMovies);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
+        const data = await apiService.getAdminMovies(token); // MongoDB'den admin filmleri
+        setMovies(data || []);
+      } catch (err) {
+        console.error('Filmler alınamadı:', err.message);
       } finally {
         setIsLoading(false);
       }
@@ -68,24 +44,21 @@ const DeleteMovie = () => {
 
     fetchMovies();
   }, [navigate]);
+        
 
   const handleDelete = async (movieId) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete this movie?`);
-    
-    if (confirmDelete) {
-      try {
-        setIsLoading(true);
-        // In a real app, this would make an API call to delete the movie
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Simulate successful deletion
-        setMovies(prevMovies => prevMovies.filter(movie => movie.id !== movieId));
-        console.log(`Movie with id ${movieId} deleted successfully`);
-      } catch (error) {
-        console.error('Error deleting movie:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    const confirmDelete = window.confirm('Bu filmi silmek istediğinize emin misiniz?');
+    if (!confirmDelete) return;
+
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      await apiService.deleteAdminMovie(token, movieId);
+      setMovies(prev => prev.filter(m => m._id !== movieId)); // anında güncelle
+    } catch (err) {
+      alert('Silme işlemi başarısız: ' + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -129,7 +102,7 @@ const DeleteMovie = () => {
               </thead>
               <tbody className="bg-gray-800 divide-y divide-gray-700">
                 {movies.map((movie) => (
-                  <tr key={movie.id} className="hover:bg-gray-700 transition-colors duration-200">
+                  <tr key={movie._id} className="hover:bg-gray-700 transition-colors duration-200">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                       {movie.title}
                     </td>
@@ -141,7 +114,7 @@ const DeleteMovie = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => handleDelete(movie.id)}
+                        onClick={() => handleDelete(movie._id)}
                         disabled={isLoading}
                         className="text-red-400 hover:text-red-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       >

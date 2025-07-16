@@ -119,7 +119,21 @@ const apiService = {
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Admin kullanıcılar alınamadı');
     }
-  }
+  },
+  getAdminMovies: async (token) => {
+  const response = await apiAxios.get('/admin/all-movies', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+},
+
+deleteAdminMovie: async (token, movieId) => {
+  const response = await apiAxios.delete(`/admin/delete-movie/${movieId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+}
 };
+
 
 export default apiService; 

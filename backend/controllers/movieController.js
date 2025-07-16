@@ -1,4 +1,5 @@
 const Movie = require('../models/Movie');
+const mongoose = require('mongoose');
 
 exports.addMovie = async (req, res) => {
   try {
@@ -46,4 +47,22 @@ exports.getMovieStats = async (req, res) => {
 exports.getMovieStatsPromise = async () => {
   const totalMovies = await Movie.countDocuments();
   return { totalMovies };
+};
+
+exports.getAllMovies = async (req, res) => {
+  const movies = await Movie.find(); // filtre gerekiyorsa buraya eklenir
+  res.json(movies);
+};
+
+exports.deleteMovie = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Geçersiz film ID formatı.' });
+  }
+  const movie = await Movie.findById(id);
+  if (!movie) {
+    return res.status(404).json({ message: 'Film bulunamadı.' });
+  }
+  await movie.deleteOne();
+  res.json({ message: 'Film başarıyla silindi.' });
 };

@@ -30,6 +30,9 @@ router.delete('/users/:id', adminAuth, userController.deleteUser);
 // Yeni film ekleme
 router.post('/add-movie', adminAuth, movieController.addMovie);
 
+router.get('/all-movies', adminAuth, movieController.getAllMovies);
+router.delete('/delete-movie/:id', adminAuth, movieController.deleteMovie);
+
 // Genel istatistikler (admin paneli için)
 router.get('/general-stats', adminAuth, async (req, res) => {
   try {
