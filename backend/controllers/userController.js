@@ -81,6 +81,8 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
+      console.log("Raw gelen email:", `"${email}"`);
+      console.log("Email typeof:", typeof email); 
       console.log('Kullanıcı bulunamadı:', email);
       return res.status(400).json({ message: 'Email veya şifre yanlış.' });
     }
