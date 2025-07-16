@@ -9,6 +9,7 @@ const commentRoutes = require('./routes/commentRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const movieRoutes = require('./routes/movieRoutes'); // ✅ yeni eklendi
 const { connectRabbit } = require('./utils/rabbit');
 
 const app = express();
@@ -64,6 +65,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/movies', movieRoutes); // ✅ yeni route tanımı
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -102,4 +104,3 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('MongoDB connection error:', err);
     process.exit(1); // MongoDB bağlanmazsa çık
   });
-

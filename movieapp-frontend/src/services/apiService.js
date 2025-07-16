@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a dedicated axios instance for user profile requests to production backend
 const apiAxios = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api', // Use production URL or fallback to proxy
+  baseURL: process.env.REACT_APP_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -72,7 +72,6 @@ const apiService = {
     }
   },
 
-  // Check if user profile is complete
   checkProfileComplete: async (token) => {
     try {
       const userProfile = await apiService.getUserProfile(token);
@@ -82,20 +81,18 @@ const apiService = {
       return false;
     }
   },
+
   addMovie: async (token, movieData) => {
     try {
-      const response = // YENİ (doğru)
-        await apiAxios.post('/admin/add-movie', movieData, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
+      const response = await apiAxios.post('/admin/add-movie', movieData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Film eklenemedi');
     }
   },
+
   getAdminGeneralStats: async (token) => {
     try {
       const response = await apiAxios.get('/admin/general-stats', {
@@ -108,6 +105,7 @@ const apiService = {
       throw new Error(error.response?.data?.message || 'Genel istatistikler alınamadı');
     }
   },
+
   getAdminUsers: async (token) => {
     try {
       const response = await apiAxios.get('/admin/users', {
@@ -120,20 +118,32 @@ const apiService = {
       throw new Error(error.response?.data?.message || 'Admin kullanıcılar alınamadı');
     }
   },
-  getAdminMovies: async (token) => {
-  const response = await apiAxios.get('/admin/all-movies', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
-},
 
-deleteAdminMovie: async (token, movieId) => {
-  const response = await apiAxios.delete(`/admin/delete-movie/${movieId}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return response.data;
-}
+  getAdminMovies: async (token) => {
+    const response = await apiAxios.get('/admin/all-movies', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  deleteAdminMovie: async (token, movieId) => {
+    const response = await apiAxios.delete(`/admin/delete-movie/${movieId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  },
+
+  // 🎯 Film arama fonksiyonu
+  searchMovies: async (query, filters = {}) => {
+    try {
+      const response = await apiAxios.get('/movies/search', {
+        params: { query, ...filters }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Film arama başarısız');
+    }
+  }
 };
 
-
-export default apiService; 
+export default apiService;

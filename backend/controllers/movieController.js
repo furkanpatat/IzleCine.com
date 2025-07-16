@@ -50,7 +50,7 @@ exports.getMovieStatsPromise = async () => {
 };
 
 exports.getAllMovies = async (req, res) => {
-  const movies = await Movie.find(); // filtre gerekiyorsa buraya eklenir
+  const movies = await Movie.find();
   res.json(movies);
 };
 
@@ -65,4 +65,39 @@ exports.deleteMovie = async (req, res) => {
   }
   await movie.deleteOne();
   res.json({ message: 'Film başarıyla silindi.' });
+};
+
+// 🔍 Gelişmiş film arama fonksiyonu
+exports.searchMovies = async (req, res) => {
+  try {
+    const { query, genre, director, cast, sortBy = 'title', sortOrder = 'asc' } = req.query;
+
+    const searchConditions = [];
+
+    if (query) {
+      const regex = new RegExp(query, 'i');
+      searchConditions.push({
+        $or: [
+          { title: regex },
+          { director: regex },
+          { genre: regex },
+          { cast: { $in: [regex] } }
+        ]
+      });
+    }
+
+    if (genre) searchConditions.push({ genre: new RegExp(genre, 'i') });
+    if (director) searchConditions.push({ director: new RegExp(director, 'i') });
+    if (cast) searchConditions.push({ cast: { $in: [new RegExp(cast, 'i')] } });
+
+    const filter = searchConditions.length > 0 ? { $and: searchConditions } : {};
+    const sortOptions = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
+
+    const movies = await Movie.find(filter).sort(sortOptions);
+
+    res.json(movies);
+  } catch (err) {
+    console.error('Search movies error:', err);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
 };
