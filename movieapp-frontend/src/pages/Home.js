@@ -18,7 +18,7 @@ const GENRE_NAME_TO_ID = {
   'Fantastik': 14
 };
 
-const Home = () => {
+const Home = (props) => {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [newMovies, setNewMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
@@ -33,6 +33,14 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [customError, setCustomError] = useState(null);
   const { t } = useTranslation();
+
+  // Arama kutusu için filtre fonksiyonu (props.searchQuery ile)
+  const filterMovies = (movies) => {
+    if (!props?.searchQuery || !props.searchQuery.trim()) return movies;
+    return movies.filter(movie =>
+      movie.title && movie.title.toLowerCase().includes(props.searchQuery.toLowerCase())
+    );
+  };
 
   // 📌 TMDb verilerini çek
   useEffect(() => {
@@ -157,71 +165,76 @@ const Home = () => {
   // 📌 Ana render
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
-      {trendingMovies.length > 0 && <BannerHome movies={trendingMovies} />}
-
+      {/* Banner sadece arama yoksa gösterilsin */}
+      {(!props?.searchQuery && trendingMovies.length > 0) && <BannerHome movies={trendingMovies} />}
       <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-16 space-y-8 sm:space-y-16">
-        {customMovies.length > 0 && !customLoading && !customError && (
+        {customMovies.length > 0 && !customLoading && !customError && filterMovies(customMovies).length > 0 && (
           <div className="category-section animate-fade-in">
-            <MovieRow title={t('Seçimlerinize Göre')} movies={customMovies} />
+            <MovieRow title={t('Seçimlerinize Göre')} movies={filterMovies(customMovies)} />
           </div>
         )}
-
         {customLoading && (
           <div className="text-center text-gray-400 py-8">{t('Yükleniyor...')}</div>
         )}
         {customError && (
           <div className="text-center text-red-400 py-8">{customError}</div>
         )}
-
-        {trendingMovies.length > 0 && (
+        {trendingMovies.length > 0 && filterMovies(trendingMovies).length > 0 && (
           <div className="category-section animate-fade-in">
-            <MovieRow title={t('Trend Filmler')} movies={trendingMovies} />
+            <MovieRow title={t('Trend Filmler')} movies={filterMovies(trendingMovies)} />
           </div>
         )}
-
-        {newMovies.length > 0 && (
+        {newMovies.length > 0 && filterMovies(newMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <MovieRow title={t('Yeni Gelenler')} movies={newMovies} />
+            <MovieRow title={t('Yeni Gelenler')} movies={filterMovies(newMovies)} />
           </div>
         )}
-
-        {actionMovies.length > 0 && (
+        {actionMovies.length > 0 && filterMovies(actionMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <MovieRow title={t('Aksiyon Filmleri')} movies={actionMovies} />
+            <MovieRow title={t('Aksiyon Filmleri')} movies={filterMovies(actionMovies)} />
           </div>
         )}
-
-        {comedyMovies.length > 0 && (
+        {comedyMovies.length > 0 && filterMovies(comedyMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <MovieRow title={t('Komedi Filmleri')} movies={comedyMovies} />
+            <MovieRow title={t('Komedi Filmleri')} movies={filterMovies(comedyMovies)} />
           </div>
         )}
-
-        {dramaMovies.length > 0 && (
+        {dramaMovies.length > 0 && filterMovies(dramaMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <MovieRow title={t('Drama Filmleri')} movies={dramaMovies} />
+            <MovieRow title={t('Drama Filmleri')} movies={filterMovies(dramaMovies)} />
           </div>
         )}
-
-        {horrorMovies.length > 0 && (
+        {horrorMovies.length > 0 && filterMovies(horrorMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '1s' }}>
-            <MovieRow title={t('Korku Filmleri')} movies={horrorMovies} />
+            <MovieRow title={t('Korku Filmleri')} movies={filterMovies(horrorMovies)} />
           </div>
         )}
-
-        {recommendedMovies.length > 0 && (
+        {recommendedMovies.length > 0 && filterMovies(recommendedMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '1.2s' }}>
-            <MovieRow title={t('İlginizi Çekebilir')} movies={recommendedMovies} />
+            <MovieRow title={t('İlginizi Çekebilir')} movies={filterMovies(recommendedMovies)} />
           </div>
         )}
-
         {/* Özel Eklenen Filmler */}
-        <>
-          {console.log('manualMovies render:', manualMovies)}
+        {manualMovies.length > 0 && filterMovies(manualMovies).length > 0 && (
           <div className="category-section animate-fade-in" style={{ animationDelay: '1.4s' }}>
-            <MovieRow title={t('Sadece İzleCine.com\'da')} movies={manualMovies} />
+            <MovieRow title={t('Sadece İzleCine.com\'da')} movies={filterMovies(manualMovies)} />
           </div>
-        </>
+        )}
+        {/* Hiçbir sonuç yoksa */}
+        {props?.searchQuery &&
+          filterMovies([
+            ...customMovies,
+            ...trendingMovies,
+            ...newMovies,
+            ...actionMovies,
+            ...comedyMovies,
+            ...dramaMovies,
+            ...horrorMovies,
+            ...recommendedMovies,
+            ...manualMovies
+          ]).length === 0 && (
+            <div className="text-center text-gray-400 py-8 text-xl">Aradığınız film bulunamadı.</div>
+        )}
       </div>
     </div>
   );

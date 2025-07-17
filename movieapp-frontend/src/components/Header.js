@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useMemo, useCallback, useState } from 'react'
 import logo from '../assets/logo.png'
 import { href, Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import userIcon from '../assets/user.png'
@@ -10,8 +10,7 @@ import tmdbService from '../services/tmdbService';
 import MovieRow from './MovieRow';
 import { useTranslation } from 'react-i18next';
 
-const Header = () => {
-  const [searchInput, setSearchInput] = useState('')
+const Header = (props) => {
   const navigate = useNavigate()
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -85,11 +84,7 @@ const Header = () => {
     }));
   }, []);
 
-  useEffect(() => {
-    if (searchInput) {
-      navigate(`/search?q=${searchInput}`)
-    }
-  }, [searchInput, navigate])
+  // Arama kutusu Home.js'de filtreleme için kullanılacak, search sayfasına yönlendirme kaldırıldı
 
   useEffect(() => {
     const match = location.pathname.match(/^\/category\/(\w+)/);
@@ -205,10 +200,10 @@ const Header = () => {
                     type='text'
                     placeholder={t('Ara...')}
                     className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block transition-all duration-300 focus:bg-white/10 rounded-md'
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    value={searchInput}
+                    onChange={(e) => props.setSearchQuery(e.target.value)}
+                    value={props.searchQuery}
                   />
-                  <button className='text-2xl text-white transition-all duration-300 hover:scale-110'>
+                  <button className='text-2xl text-white transition-all duration-300 hover:scale-110' type="submit">
                     <IoSearchOutline />
                   </button>
                 </form>

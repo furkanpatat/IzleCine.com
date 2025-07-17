@@ -1,14 +1,16 @@
 import './App.css';
 import Header from './components/Header';
+import Home from './pages/Home';
 import Footer from './components/Footer';
 import MobileNavigation from './components/MobileNavigation';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useMatch } from 'react-router-dom';
 import tmdbService from './services/tmdbService';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setBannerData } from './store/izleCine';
 
 function App() {
+  const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useDispatch();
   const location = useLocation();
 
@@ -35,12 +37,19 @@ function App() {
     fetchTrendingData();
   }, []);
 
+  // Ana sayfa mı kontrolü
+  const isHomePage = useMatch({ path: '/', end: true });
+
   return (
     <div className="app-container bg-gradient-to-b from-gray-900 to-black">
-      {!isAdminPage && <Header />}
+      {!isAdminPage && <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}
       <main className="main-content">
         <div className="page-content">
-          <Outlet />
+          {isHomePage ? (
+            <Home searchQuery={searchQuery} />
+          ) : (
+            <Outlet />
+          )}
         </div>
       </main>
       {!isAdminPage && <Footer />}
