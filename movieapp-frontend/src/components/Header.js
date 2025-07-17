@@ -9,6 +9,7 @@ import ProfileDropdown from './ProfileDropdown';
 import tmdbService from '../services/tmdbService';
 import MovieRow from './MovieRow';
 import { useTranslation } from 'react-i18next';
+import { useRef } from 'react';
 
 const Header = (props) => {
   const navigate = useNavigate()
@@ -86,6 +87,26 @@ const Header = (props) => {
 
   // Arama kutusu Home.js'de filtreleme için kullanılacak, search sayfasına yönlendirme kaldırıldı
 
+  // --- ARAMA ÇUBUĞU STATE ---
+  const [searchInput, setSearchInput] = useState("");
+  const searchTimeout = useRef();
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      if (value.trim()) {
+        if (!location.pathname.startsWith('/search')) {
+          navigate(`/search?query=${encodeURIComponent(value.trim())}`);
+        } else {
+          // SearchPage'deysek sadece query parametresini güncelle
+          window.history.replaceState(null, '', `/search?query=${encodeURIComponent(value.trim())}`);
+        }
+      }
+    }, 400);
+  };
+
   useEffect(() => {
     const match = location.pathname.match(/^\/category\/(\w+)/);
     if (match) {
@@ -116,9 +137,18 @@ const Header = (props) => {
     navigate(`/category/${cat.key}`);
   }, [navigate]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
+
+  useEffect(() => {
+    const syncHandler = (e) => setSearchInput(e.detail);
+    window.addEventListener('searchInputSync', syncHandler);
+    return () => window.removeEventListener('searchInputSync', syncHandler);
+  }, []);
 
   return (
     <>
@@ -195,15 +225,17 @@ const Header = (props) => {
               </button>
             ) : (
               <>
-                <form className='flex items-center gap-2' onSubmit={handleSubmit}>
+                <form className='flex items-center gap-2 h-10' onSubmit={handleSearchSubmit}>
                   <input
                     type='text'
                     placeholder={t('Ara...')}
-                    className='bg-transparent px-4 py-1 outline-none border-none hidden lg:block transition-all duration-300 focus:bg-white/10 rounded-md'
-                    onChange={(e) => props.setSearchQuery(e.target.value)}
-                    value={props.searchQuery}
+                    className='h-10 px-3 sm:px-5 bg-white/20 text-white placeholder-white/70 font-medium rounded-full border border-purple-400/40 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400/60 focus:bg-white/30 transition-all duration-300 backdrop-blur-md hover:bg-white/30 hover:shadow-lg placeholder:italic placeholder:transition-colors placeholder:duration-300 text-sm sm:text-base'
+                    onChange={handleSearchInputChange}
+                    value={searchInput}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(e); }}
                   />
-                  <button className='text-2xl text-white transition-all duration-300 hover:scale-110' type="submit">
+                  <button 
+                    className='h-10 w-10 flex items-center justify-center text-2xl text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full shadow-md ml-2 transition-all duration-300 hover:from-purple-700 hover:to-indigo-700 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400/60' type="submit">
                     <IoSearchOutline />
                   </button>
                 </form>
@@ -219,7 +251,7 @@ const Header = (props) => {
                   ) : (
                     <Link
                       to="/login"
-                      className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                      className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-md w-auto"
                     >
                       {t('Giriş Yap')}
                     </Link>

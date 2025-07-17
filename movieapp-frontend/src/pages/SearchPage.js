@@ -1,104 +1,144 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import apiService from '../services/apiService';
- // ✅ Doğru path
-import './SearchPage.css'; // ❗ CSS'ine dokunmadım
+import { FaImage } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
+import tmdbService from '../services/tmdbService';
+import './SearchPage.css';
+
+const GENRE_MAP = {
+  28: 'Aksiyon', 12: 'Macera', 16: 'Animasyon', 35: 'Komedi', 80: 'Suç', 99: 'Belgesel',
+  18: 'Drama', 10751: 'Aile', 14: 'Fantastik', 36: 'Tarih', 27: 'Korku', 10402: 'Müzik',
+  9648: 'Gizem', 10749: 'Romantik', 878: 'Bilim Kurgu', 10770: 'TV Filmi', 53: 'Gerilim',
+  10752: 'Savaş', 37: 'Western'
+};
+
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
 
 const SearchPage = () => {
   const { t } = useTranslation();
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState({
-    genre: '',
-    director: '',
-    cast: '',
-    sortBy: 'title',
-    sortOrder: 'asc'
-  });
+  const location = useLocation();
+  // URL'den query parametresini al
+  const params = new URLSearchParams(location.search);
+  const initialQuery = params.get('query') || '';
+
+  const [searchInput, setSearchInput] = useState(initialQuery);
+  const debouncedQuery = useDebounce(searchInput, 400);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const handleSearch = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await apiService.searchMovies(query, filters);
-      setResults(data);
-    } catch (error) {
-      console.error('Arama hatası:', error);
-    }
-    setLoading(false);
-  }, [query, filters]);
+  const [error, setError] = useState("");
+  const [imageErrors, setImageErrors] = useState({});
 
   useEffect(() => {
-    handleSearch(); // Sayfa yüklenince ilk arama
-  }, [handleSearch]);
+    // Eğer URL'deki query parametresi değişirse inputu güncelle
+    setSearchInput(initialQuery);
+    // eslint-disable-next-line
+  }, [initialQuery]);
 
-  const handleInputChange = (e) => setQuery(e.target.value);
+  useEffect(() => {
+    if (!debouncedQuery.trim()) {
+      setResults([]);
+      setError("");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    tmdbService.search(debouncedQuery)
+      .then(data => {
+        setResults(data.results || []);
+        setError("");
+      })
+      .catch(() => setError(t('Arama sırasında hata oluştu.')))
+      .finally(() => setLoading(false));
+  }, [debouncedQuery, t]);
 
-  const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
+  const handleImageError = useCallback((movieId) => {
+    setImageErrors(prev => ({ ...prev, [movieId]: true }));
+  }, []);
+
+  const handleMovieClick = useCallback((movieId) => {
+    if (!movieId) return;
+    window.location.href = `/movie/${movieId}`;
+  }, []);
 
   return (
-    <div className="search-page">
-      <h2>{t('SearchPage')}</h2>
-
-      <div className="search-form">
-        <input
-          type="text"
-          placeholder="Film adı, yönetmen, oyuncu..."
-          value={query}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="genre"
-          placeholder="Tür (örnek: Aksiyon)"
-          value={filters.genre}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="text"
-          name="director"
-          placeholder="Yönetmen"
-          value={filters.director}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="text"
-          name="cast"
-          placeholder="Oyuncu"
-          value={filters.cast}
-          onChange={handleFilterChange}
-        />
-
-        <select name="sortBy" value={filters.sortBy} onChange={handleFilterChange}>
-          <option value="title">Başlık</option>
-          <option value="year">Yıl</option>
-          <option value="rating">Puan</option>
-        </select>
-
-        <select name="sortOrder" value={filters.sortOrder} onChange={handleFilterChange}>
-          <option value="asc">Artan</option>
-          <option value="desc">Azalan</option>
-        </select>
-
-        <button onClick={handleSearch}>{t('Search')}</button>
-      </div>
-
-      <div className="search-results">
+    <div className="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen">
+      <div className="container mx-auto px-2 sm:px-4 py-8 sm:py-16">
+        <h2 className="text-2xl font-bold mb-6">{t('Arama Sonuçları')}</h2>
+        <div className="flex justify-center mb-8">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={e => {
+              setSearchInput(e.target.value);
+              window.dispatchEvent(new CustomEvent('searchInputSync', { detail: e.target.value }));
+            }}
+            placeholder={t('Film, dizi veya kişi ara...')}
+            className="w-full max-w-xl h-12 px-5 bg-white/20 text-white placeholder-white/70 font-medium rounded-full border border-purple-400/40 shadow-md focus:outline-none focus:ring-2 focus:ring-purple-400/60 focus:bg-white/30 transition-all duration-300 backdrop-blur-md hover:bg-white/30 hover:shadow-lg placeholder:italic placeholder:transition-colors placeholder:duration-300 text-base"
+            autoFocus
+          />
+        </div>
         {loading ? (
-          <p>{t('Loading')}...</p>
-        ) : results.length === 0 ? (
-          <p>{t('No results found')}</p>
+          <p className="text-center text-lg py-8">{t('Loading')}...</p>
+        ) : error ? (
+          <p className="text-center text-red-500 py-8">{error}</p>
+        ) : (!results || results.length === 0) ? (
+          <p className="text-center text-gray-400 py-8 text-xl">{t('No results found')}</p>
         ) : (
-          results.map((movie) => (
-            <div key={movie._id} className="movie-card">
-              <h3>{movie.title}</h3>
-              <p><strong>{t('Director')}:</strong> {movie.director}</p>
-              <p><strong>{t('Genre')}:</strong> {movie.genre}</p>
-              <p><strong>{t('Year')}:</strong> {movie.year}</p>
-            </div>
-          ))
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {results.map((movie) => {
+              const isMovie = movie.media_type === 'movie' || movie.media_type === undefined;
+              return (
+                <div
+                  key={movie.id}
+                  onClick={() => isMovie && handleMovieClick(movie.id)}
+                  className={`group transform transition-all duration-300 hover:scale-105 hover:z-10 ${isMovie ? 'cursor-pointer' : 'cursor-default opacity-60'}`}
+                >
+                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-2xl group">
+                    {imageErrors[movie.id] ? (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                        <FaImage className="text-4xl text-gray-600" />
+                      </div>
+                    ) : (
+                      <img
+                        src={
+                          movie.poster_path && movie.poster_path.startsWith('http')
+                            ? movie.poster_path
+                            : movie.posterUrl || (movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '')
+                        }
+                        alt={movie.title || 'Movie'}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={() => handleImageError(movie.id)}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="absolute bottom-0 left-0 p-4 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        <h3 className="text-lg font-semibold mb-2 text-white line-clamp-2">{movie.title || movie.name || 'Unknown Title'}</h3>
+                        <p className="text-sm text-gray-300 mb-2">
+                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
+                          {movie.genre_ids && movie.genre_ids.length > 0 &&
+                            ' • ' + movie.genre_ids.map(id => GENRE_MAP[id] || '').filter(Boolean).join(', ')
+                          }
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <span className="text-yellow-400">★</span>
+                            <span className="ml-1 text-white font-medium">{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
