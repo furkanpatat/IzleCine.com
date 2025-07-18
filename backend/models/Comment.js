@@ -14,7 +14,8 @@ const commentSchema = new mongoose.Schema({
       userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       type: { type: String, enum: ['like', 'dislike'] }
     }
-  ]
+  ],
+  reported: { type: Boolean, default: false } // Yorumun raporlanıp raporlanmadığını belirtir
 });
 
 module.exports = mongoose.model('Comment', commentSchema); 

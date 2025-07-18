@@ -41,26 +41,29 @@ const ReportedComments = () => {
   }, []);
 
   const fetchReports = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE}/reports`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE}/comments/admin/reportedComments`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setReports(response.data);
     } catch (error) {
-      console.error('Raporlar alınırken hata:', error);
+      console.error('Raporlanan yorumlar alınırken hata:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAction = async (commentId, action) => {
+  const handleDelete = async (commentId) => {
     try {
-      if (action === 'delete') {
-        await axios.delete(`${API_BASE}/comments/${commentId}`);
-      } else if (action === 'hide') {
-        await axios.put(`${API_BASE}/comments/${commentId}/hide`);
-      }
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_BASE}/comments/admin/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       fetchReports();
     } catch (error) {
-      console.error('İşlem sırasında hata:', error);
+      console.error('Yorum silinirken hata:', error);
     }
   };
 
@@ -130,72 +133,39 @@ const ReportedComments = () => {
             <p className="text-gray-400">Şu anda incelenmesi gereken rapor bulunmuyor.</p>
           </div>
         ) : (
-          reports.map((report) => (
-            <div key={report._id} className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/30 transition-all duration-300 shadow-lg hover:shadow-purple-500/10">
+          reports.map((comment) => (
+            <div key={comment._id} className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/30 transition-all duration-300 shadow-lg hover:shadow-purple-500/10">
               <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <img
-                      src={report.reporterId.profileImage || '/default-avatar.png'}
-                      alt={report.reporterId.username}
-                      className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-500/30"
-                    />
-                    <div>
-                      <h3 className="font-semibold text-white">{report.reporterId.username}</h3>
-                      <p className="text-sm text-gray-400">
-                        {new Date(report.createdAt).toLocaleDateString('tr-TR', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
+                <div className="flex items-center space-x-3 mb-2">
+                  <img
+                    src={comment.userId?.profileImage || '/default-avatar.png'}
+                    alt={comment.userId?.username || 'Kullanıcı'}
+                    className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-500/30"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-white">{comment.userId?.username || 'Kullanıcı'}</h3>
+                    <p className="text-sm text-gray-400">
+                      {new Date(comment.createdAt).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
                   </div>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getReasonColor(report.reason)}`}>
-                    {getReasonText(report.reason)}
-                  </span>
                 </div>
-                <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                  report.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'
-                }`}>
-                  {report.status === 'pending' ? 'Beklemede' : 'İncelendi'}
-                </span>
               </div>
-
               <div className="bg-gray-700/30 rounded-lg p-4 mb-4">
-                <p className="text-gray-200 leading-relaxed">{report.commentId.content}</p>
+                <p className="text-gray-200 leading-relaxed">{comment.content}</p>
               </div>
-
-              {report.description && (
-                <div className="bg-gray-700/30 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-gray-400">Rapor Açıklaması:</p>
-                  <p className="text-gray-300 mt-1">{report.description}</p>
-                </div>
-              )}
-
               <div className="flex items-center justify-end space-x-4">
                 <button
-                  onClick={() => handleAction(report.commentId._id, 'delete')}
+                  onClick={() => handleDelete(comment._id)}
                   className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors duration-200 hover:bg-red-500/10 rounded-lg"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   <span>Sil</span>
-                </button>
-                <button
-                  onClick={() => handleAction(report.commentId._id, 'hide')}
-                  className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-yellow-400 transition-colors duration-200 hover:bg-yellow-500/10 rounded-lg"
-                >
-                  <EyeOff className="w-4 h-4 mr-2" />
-                  <span>Gizle</span>
-                </button>
-                <button
-                  onClick={() => handleAction(report.commentId._id, 'resolve')}
-                  className="flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-green-400 transition-colors duration-200 hover:bg-green-500/10 rounded-lg"
-                >
-                  <Check className="w-4 h-4 mr-2" />
-                  <span>Çözüldü</span>
                 </button>
               </div>
             </div>

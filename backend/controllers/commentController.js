@@ -124,4 +124,47 @@ exports.voteComment = async (req, res) => {
     console.error('Vote comment error:', err);
     res.status(500).json({ message: 'Sunucu hatası.' });
   }
+};
+
+exports.reportComment = async (req, res) => {
+  try {
+    const { id } = req.params; // Yorumun ID'si
+    const comment = await Comment.findById(id);
+    if (!comment) {
+      return res.status(404).json({ message: 'Yorum bulunamadı.' });
+    }
+    comment.reported = true;
+    await comment.save();
+    res.json({ message: 'Yorum başarıyla raporlandı.' });
+  } catch (err) {
+    console.error('Report comment error:', err);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
+};
+
+// Sadece raporlanan yorumları getirir (admin için)
+exports.getReportedComments = async (req, res) => {
+  try {
+    const reportedComments = await Comment.find({ reported: true }).populate('userId', 'username profileImage');
+    res.json(reportedComments);
+  } catch (err) {
+    console.error('Get reported comments error:', err);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
+};
+
+// Adminin yorumu silmesi için fonksiyon (tamamen siler)
+exports.adminDeleteComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const comment = await Comment.findById(id);
+    if (!comment) {
+      return res.status(404).json({ message: 'Yorum bulunamadı.' });
+    }
+    await Comment.findByIdAndDelete(id);
+    res.json({ message: 'Yorum başarıyla silindi.' });
+  } catch (err) {
+    console.error('Admin delete comment error:', err);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
 }; 
