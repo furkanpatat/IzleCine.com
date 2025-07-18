@@ -28,34 +28,34 @@ const EditMovieDetails = () => {
   const [previewUrl, setPreviewUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock data - in a real app, this would come from an API
   useEffect(() => {
-    const mockMovies = {
-      1: {
-        title: 'Inception',
-        description: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.',
-        cast: 'Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page',
-        year: '2010',
-        duration: '148',
-        category: 'Sci-Fi',
-        posterUrl: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg',
-        trailerUrl: 'https://www.youtube.com/watch?v=YoHD9XEInc0',
-      },
+    const fetchMovie = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/admin/movie/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Film bulunamadı');
+        const data = await response.json();
+        setMovie({
+          title: data.title || '',
+          description: data.description || '',
+          cast: Array.isArray(data.cast) ? data.cast.join(', ') : (data.cast || ''),
+          year: data.year || '',
+          duration: data.duration || '',
+          category: data.genre || '',
+          posterUrl: data.posterUrl || '',
+          trailerUrl: data.trailerUrl || '',
+        });
+        setPreviewUrl(data.posterUrl || '');
+      } catch (err) {
+        setMovie({
+          title: '', description: '', cast: '', year: '', duration: '', category: '', posterUrl: '', trailerUrl: ''
+        });
+        setPreviewUrl('');
+      }
     };
-
-    const mockMovie = mockMovies[id] || {
-      title: '',
-      description: '',
-      cast: '',
-      year: '',
-      duration: '',
-      category: '',
-      posterUrl: '',
-      trailerUrl: '',
-    };
-
-    setMovie(mockMovie);
-    setPreviewUrl(mockMovie.posterUrl);
+    fetchMovie();
   }, [id]);
 
   useEffect(() => {
@@ -89,13 +89,33 @@ const EditMovieDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log('Saving movie:', movie);
-    setIsLoading(false);
-    navigate('/admin/edit-movies');
+    try {
+      const token = localStorage.getItem('token');
+      const body = {
+        title: movie.title,
+        description: movie.description,
+        cast: movie.cast.split(',').map(s => s.trim()),
+        year: movie.year,
+        duration: movie.duration,
+        genre: movie.category,
+        posterUrl: movie.posterUrl,
+        trailerUrl: movie.trailerUrl,
+      };
+      const response = await fetch(`/api/admin/movie/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(body)
+      });
+      if (!response.ok) throw new Error('Güncelleme başarısız');
+      setIsLoading(false);
+      navigate('/admin/edit-movies');
+    } catch (err) {
+      setIsLoading(false);
+      alert('Film güncellenemedi!');
+    }
   };
 
   return (

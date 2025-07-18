@@ -111,6 +111,32 @@ exports.getCustomMovies = async (req, res) => {
   }
 };
 
+exports.getMovieById = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Geçersiz film ID formatı.' });
+  }
+  const movie = await Movie.findById(id);
+  if (!movie) {
+    return res.status(404).json({ message: 'Film bulunamadı.' });
+  }
+  res.json(movie);
+};
+
+exports.updateMovie = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Geçersiz film ID formatı.' });
+  }
+  const movie = await Movie.findById(id);
+  if (!movie) {
+    return res.status(404).json({ message: 'Film bulunamadı.' });
+  }
+  Object.assign(movie, req.body);
+  await movie.save();
+  res.json({ message: 'Film başarıyla güncellendi.', movie });
+};
+
 
 
 

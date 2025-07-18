@@ -34,6 +34,8 @@ router.post('/add-movie', adminAuth, movieController.addMovie);
 
 router.get('/all-movies', adminAuth, movieController.getAllMovies);
 router.delete('/delete-movie/:id', adminAuth, movieController.deleteMovie);
+router.get('/movie/:id', adminAuth, movieController.getMovieById);
+router.put('/movie/:id', adminAuth, movieController.updateMovie);
 
 // Genel istatistikler (admin paneli için)
 router.get('/general-stats', adminAuth, async (req, res) => {
