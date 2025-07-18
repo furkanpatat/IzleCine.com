@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/izleCine';
 import userService from '../services/userService';
 import LoginPromptModal from './LoginPromptModal';
+import FavoriteButton from './FavoriteButton';
 
 const MovieRow = ({ title, movies = [] }) => {
   const navigate = useNavigate();
@@ -170,15 +171,8 @@ const MovieRow = ({ title, movies = [] }) => {
                           <span className="text-yellow-400">★</span>
                           <span className="ml-1 text-white font-medium">{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
                         </div>
-                        <button
-                          onClick={(e) => handleFavoriteClick(e, movie)}
-                          className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${favorites.some(fav => fav.id === movie.id)
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
-                            }`}
-                        >
-                          <FaHeart />
-                        </button>
+                        {/* Favori butonu (localStorage tabanlı) */}
+                        <FavoriteButton movie={movie} />
                       </div>
                     </div>
                   </div>

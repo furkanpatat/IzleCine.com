@@ -31,6 +31,7 @@ import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms";
 import Contact from "../pages/Contact";
 import AdminManagement from '../pages/admin/AdminManagement';
+import FavoritesPage from '../pages/FavoritesPage';
 
 const router = createBrowserRouter([
     {
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
             {
                 path: "watchlist",
                 element: <Watchlist />
+            },
+            {
+                path: "favorites",
+                element: <FavoritesPage />
             },
             {
                 path: "category/:key",

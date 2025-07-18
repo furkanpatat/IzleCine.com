@@ -4,6 +4,7 @@ import { FaImage } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import tmdbService from '../services/tmdbService';
 import './SearchPage.css';
+import FavoriteButton from '../components/FavoriteButton';
 
 const GENRE_MAP = {
   28: 'Aksiyon', 12: 'Macera', 16: 'Animasyon', 35: 'Komedi', 80: 'Suç', 99: 'Belgesel',
@@ -131,6 +132,8 @@ const SearchPage = () => {
                             <span className="text-yellow-400">★</span>
                             <span className="ml-1 text-white font-medium">{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
                           </div>
+                          {/* Favori butonu (localStorage tabanlı) */}
+                          <FavoriteButton movie={movie} />
                         </div>
                       </div>
                     </div>
