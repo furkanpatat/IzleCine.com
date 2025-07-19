@@ -134,6 +134,21 @@ const tmdbService = {
       console.error('Error fetching trending movies:', error);
       throw error;
     }
+  },
+
+  // Yakında gelecek filmleri getir
+  getUpcomingMovies: async (page = 1) => {
+    try {
+      const response = await tmdbAxios.get('/movie/upcoming', {
+        params: {
+          page: page
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching upcoming movies:', error);
+      throw error;
+    }
   }
 };
 

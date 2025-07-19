@@ -58,7 +58,7 @@ const Home = (props) => {
         ] = await Promise.all([
           tmdbService.getPopularMovies(1),
           tmdbService.getPopularMovies(2),
-          tmdbService.getPopularMovies(3),
+          tmdbService.getUpcomingMovies(1),
           tmdbService.getMoviesByGenre(28, 1),
           tmdbService.getMoviesByGenre(35, 1),
           tmdbService.getMoviesByGenre(18, 1),
