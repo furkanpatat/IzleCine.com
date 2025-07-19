@@ -92,6 +92,8 @@ const BannerHome = ({ movies }) => {
     setTrailerError('');
   };
 
+  const movie = featuredMovies[currentSlide];
+
   return (
     <div 
       ref={bannerRef}
@@ -99,107 +101,101 @@ const BannerHome = ({ movies }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {featuredMovies.map((movie, index) => (
-        <div
-          key={movie.id}
-          className={`absolute w-full h-full transition-all duration-1000 ${
-            index === currentSlide 
-              ? 'opacity-100 scale-100' 
-              : 'opacity-0 scale-110'
-          }`}
-        >
-          {/* Full Screen Backdrop with Parallax Effect */}
-          <div className="absolute inset-0 transform transition-transform duration-1000 hover:scale-105">
-            <img
-              src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-            />
-            {/* Poster as soft background overlay */}
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover opacity-30 blur-lg pointer-events-none select-none"
-              style={{zIndex:1}}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
-          </div>
+      <div
+        key={movie.id}
+        className="absolute w-full h-full transition-all duration-1000 opacity-100 scale-100"
+      >
+        {/* Full Screen Backdrop with Parallax Effect */}
+        <div className="absolute inset-0 transform transition-transform duration-1000 hover:scale-105">
+          <img
+            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+            alt={movie.title}
+            className="w-full h-full object-cover"
+          />
+          {/* Poster as soft background overlay */}
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover opacity-30 blur-lg pointer-events-none select-none"
+            style={{zIndex:1}}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
+        </div>
 
-          {/* Content Container */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="container mx-auto px-4">
-              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 max-w-6xl mx-auto">
-                {/* Poster with 3D Effect */}
-                <div className="w-40 sm:w-56 md:w-72 mb-4 md:mb-0 relative flex flex-col items-center">{/* mobilde daha küçük poster */}
-                  <div className="relative transform transition-transform duration-500 group-hover:rotate-y-10 z-10">
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title}
-                      className="w-full h-auto rounded-xl shadow-2xl"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
-                      <button className="bg-white/20 backdrop-blur-sm p-3 rounded-full transform hover:scale-110 transition-all duration-300 glow">
-                        <FaPlay className="text-white text-xl" />
-                      </button>
-                    </div>
+        {/* Content Container */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 max-w-6xl mx-auto">
+              {/* Poster with 3D Effect */}
+              <div className="w-40 sm:w-56 md:w-72 mb-4 md:mb-0 relative flex flex-col items-center">{/* mobilde daha küçük poster */}
+                <div className="relative transform transition-transform duration-500 group-hover:rotate-y-10 z-10">
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    alt={movie.title}
+                    className="w-full h-auto rounded-xl shadow-2xl"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
+                    <button className="bg-white/20 backdrop-blur-sm p-3 rounded-full transform hover:scale-110 transition-all duration-300 glow">
+                      <FaPlay className="text-white text-xl" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Movie Info with Glassmorphism */}
+              <div className="flex-1 text-white max-w-xl backdrop-blur-sm bg-black/20 p-3 sm:p-6 rounded-2xl">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-white">
+                  {movie.title}
+                </h1>
+
+                {/* Meta Info with Hover Effects */}
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
+                    <FaStar className="text-yellow-400 mr-2 animate-pulse" />
+                    <span className="font-medium">{movie.vote_average.toFixed(1)}</span>
+                  </div>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
+                    <FaClock className="text-gray-400 mr-2" />
+                    <span className="font-medium">{new Date(movie.release_date).getFullYear()}</span>
+                  </div>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
+                    <FaFilm className="text-gray-400 mr-2" />
+                    <span className="font-medium">{movie.genre_ids?.map(id => {
+                      return genres[id] || '';
+                    }).filter(Boolean).join(', ')}</span>
                   </div>
                 </div>
 
-                {/* Movie Info with Glassmorphism */}
-                <div className="flex-1 text-white max-w-xl backdrop-blur-sm bg-black/20 p-3 sm:p-6 rounded-2xl">
-                  <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-white">
-                    {movie.title}
-                  </h1>
+                {/* Overview with Fade Effect */}
+                <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 text-gray-300 line-clamp-2 leading-relaxed">
+                  {movie.overview}
+                </p>
 
-                  {/* Meta Info with Hover Effects */}
-                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
-                      <FaStar className="text-yellow-400 mr-2 animate-pulse" />
-                      <span className="font-medium">{movie.vote_average.toFixed(1)}</span>
-                    </div>
-                    <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
-                      <FaClock className="text-gray-400 mr-2" />
-                      <span className="font-medium">{new Date(movie.release_date).getFullYear()}</span>
-                    </div>
-                    <div className="flex items-center bg-white/10 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg transform hover:scale-105 transition-all duration-300">
-                      <FaFilm className="text-gray-400 mr-2" />
-                      <span className="font-medium">{movie.genre_ids?.map(id => {
-                        return genres[id] || '';
-                      }).filter(Boolean).join(', ')}</span>
-                    </div>
-                  </div>
-
-                  {/* Overview with Fade Effect */}
-                  <p className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 text-gray-300 line-clamp-2 leading-relaxed">
-                    {movie.overview}
-                  </p>
-
-                  {/* Action Buttons with Glassmorphism */}
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button
-                      onClick={() => handleOpenTrailer(movie.id)}
-                      className="flex items-center gap-2 bg-white hover:bg-gray-100 px-4 sm:px-6 py-2 rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow text-xs sm:text-base"
-                      style={{ color: '#000000' }}
-                    >
-                      <FaPlay className="text-lg" style={{ color: '#000000' }} />
-                      <span className="font-semibold" style={{ color: '#000000' }}>{t('Fragmanı İzle')}</span>
-                    </button>
-                    <Link 
-                      to={`/movie/${movie.id}`}
-                      className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 sm:px-6 py-2 rounded-md hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover text-xs sm:text-base"
-                    >
-                      <FaInfoCircle className="text-lg" />
-                      <span className="font-semibold">{t('Film Hakkında')}</span>
-                    </Link>
-                  </div>
+                {/* Action Buttons with Glassmorphism */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                  <button
+                    onClick={() => handleOpenTrailer(movie.id)}
+                    className="flex items-center gap-2 bg-white hover:bg-gray-100 px-4 sm:px-6 py-2 rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover glow text-xs sm:text-base"
+                    style={{ color: '#000000' }}
+                  >
+                    <FaPlay className="text-lg" style={{ color: '#000000' }} />
+                    <span className="font-semibold" style={{ color: '#000000' }}>{t('Fragmanı İzle')}</span>
+                  </button>
+                  <Link 
+                    to={`/movie/${movie.id}`}
+                    className="flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white px-4 sm:px-6 py-2 rounded-md hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-lg button-hover text-xs sm:text-base"
+                  >
+                    <FaInfoCircle className="text-lg" />
+                    <span className="font-semibold">{t('Film Hakkında')}</span>
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      ))}
+      </div>
 
       {/* Navigation Buttons with Glassmorphism */}
       <div className="absolute inset-y-0 left-0 flex items-center">

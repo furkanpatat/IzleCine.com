@@ -95,8 +95,8 @@ const Home = (props) => {
         const transformed = data.map(movie => ({
           id: movie._id,
           title: movie.title,
-          poster_path: movie.posterUrl,
-          vote_average: movie.rating,
+          poster_path: movie.posterUrl || '', // fallback boş string
+          vote_average: typeof movie.rating === 'number' ? movie.rating : 0, // fallback 0
           release_date: `${movie.year || '2020'}-01-01`,
           genre_ids: [],
         }));
