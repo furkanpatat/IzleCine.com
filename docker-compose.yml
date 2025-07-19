@@ -11,8 +11,10 @@ services:
       - ./backend/.env
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - rabbitmq
+      - redis
     restart: unless-stopped
 
   frontend:
@@ -33,3 +35,11 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --appendonly yes

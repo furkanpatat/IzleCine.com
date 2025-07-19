@@ -1,64 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FaUser, FaHeart, FaComment, FaArrowLeft, FaStar, FaCalendar, FaTrash, FaEdit } from 'react-icons/fa';
+import { FaUser, FaHeart, FaComment, FaTrash, FaEdit, FaSave, FaTimes, FaArrowLeft, FaStar, FaCalendar } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import userService from '../services/userService';
 import tmdbService from '../services/tmdbService';
 import axios from 'axios'; // Added axios import
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [user, setUser] = useState(null);
   const [likedMovies, setLikedMovies] = useState([]);
   const [userComments, setUserComments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('profile');
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Added state for modal
-  const [commentToDelete, setCommentToDelete] = useState(null); // Added state for comment to delete
-  const [deleting, setDeleting] = useState(false); // Added state for deletion process
-  const [deletingCommentId, setDeletingCommentId] = useState(null); // Added state for animating comment deletion
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  // Profil düzenleme için state
-  const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({
+  const [error, setError] = useState('');
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingPhoto, setEditingPhoto] = useState(false);
+  const [profileData, setProfileData] = useState({
     username: '',
-    firstName: '',
-    lastName: '',
     email: '',
-    photo: ''
+    favoriteGenres: []
   });
+  const [newPhoto, setNewPhoto] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
+  const [deletingCommentId, setDeletingCommentId] = useState(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [photoEditMode, setPhotoEditMode] = useState(false);
   const [photoInput, setPhotoInput] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   // userData değişince formu doldur
   useEffect(() => {
-    if (userData) {
-      setFormData({
-        username: userData.username || '',
-        firstName: userData.firstName || '',
-        lastName: userData.lastName || '',
-        email: userData.email || '',
-        photo: userData.photo || ''
+    if (user) {
+      setProfileData({
+        username: user.username || '',
+        email: user.email || '',
+        favoriteGenres: user.favoriteGenres || []
       });
     }
-  }, [userData]);
+  }, [user]);
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleProfileSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const updated = await userService.updateProfile(formData);
-      setUserData(updated);
-      setEditMode(false);
+      const updated = await userService.updateProfile(profileData);
+      setUser(updated);
+      setEditingProfile(false);
     } catch (err) {
       alert('Profil güncellenemedi: ' + err.message);
     } finally {
@@ -68,14 +68,14 @@ const UserProfile = () => {
 
   // Fotoğraf güncelleme işlemi
   const handlePhotoEdit = () => {
-    setPhotoInput(userData?.photo || '');
+    setPhotoInput(user?.photo || '');
     setPhotoEditMode(true);
   };
   const handlePhotoSave = async (e) => {
     e.preventDefault();
     try {
       const updated = await userService.updateProfile({ photo: photoInput });
-      setUserData(updated);
+      setUser(updated);
       setPhotoEditMode(false);
     } catch (err) {
       alert('Fotoğraf güncellenemedi: ' + err.message);
@@ -83,7 +83,7 @@ const UserProfile = () => {
   };
 
   // API base URL for production
-  const API_BASE = process.env.REACT_APP_API_URL || '/api';
+  // const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
   useEffect(() => {
     console.log('UserProfile component mounted');
@@ -159,14 +159,14 @@ const UserProfile = () => {
           })
         );
 
-        setUserData(profileData);
+        setUser(profileData);
         setLikedMovies(likedMoviesWithDetails);
         setUserComments(userCommentsWithTitles);
         console.log('Loaded user comments:', userCommentsWithTitles);
       } catch (apiError) {
         console.log('API calls failed, using mock data:', apiError);
         // Fallback to mock data for testing
-        setUserData({
+        setUser({
           username: 'testuser',
           email: 'test@example.com',
           firstName: 'Test',
@@ -215,9 +215,64 @@ const UserProfile = () => {
   };
 
   const handleDeleteComment = (comment, index) => {
-    console.log('Deleting comment:', comment, 'at index:', index);
     setCommentToDelete({ ...comment, index });
     setShowDeleteModal(true);
+  };
+
+  const handleEditComment = (e, comment) => {
+    e.stopPropagation();
+    setEditingCommentId(comment.id || comment._id);
+    setEditingCommentContent(comment.content);
+  };
+
+  const handleSaveComment = async (e, comment) => {
+    e.stopPropagation();
+    
+    if (!editingCommentContent.trim()) {
+      alert('Yorum içeriği boş olamaz!');
+      return;
+    }
+
+    try {
+      const commentId = comment.id || comment._id;
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/comments/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ content: editingCommentContent })
+      });
+
+      if (response.ok) {
+        const updatedComment = await response.json();
+        
+        // Yorumları güncelle
+        setUserComments(prev => 
+          prev.map(c => 
+            (c.id || c._id) === commentId 
+              ? { ...c, content: editingCommentContent }
+              : c
+          )
+        );
+        
+        setEditingCommentId(null);
+        setEditingCommentContent('');
+        alert('Yorum başarıyla güncellendi!');
+      } else {
+        const error = await response.json();
+        alert('Yorum güncellenirken hata oluştu: ' + error.message);
+      }
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      alert('Yorum güncellenirken hata oluştu!');
+    }
+  };
+
+  const handleCancelEdit = (e) => {
+    e.stopPropagation();
+    setEditingCommentId(null);
+    setEditingCommentContent('');
   };
 
   const confirmDeleteComment = async () => {
@@ -278,10 +333,10 @@ const UserProfile = () => {
     <div className="space-y-6">
       <div className="bg-gray-800/50 backdrop-blur-md rounded-xl p-6 border border-gray-700/50 relative">
         {/* Sağ üstte genel düzenle butonu */}
-        {!editMode && (
+        {!editingProfile && (
           <button
             className="absolute top-4 right-4 bg-pink-700 hover:bg-pink-800 text-white p-2 rounded-full shadow transition-all duration-200 flex items-center justify-center"
-            onClick={() => setEditMode(true)}
+            onClick={() => setEditingProfile(true)}
             title={t('Profili Düzenle')}
           >
             <FaEdit className="text-lg" />
@@ -289,21 +344,21 @@ const UserProfile = () => {
         )}
         <div className="flex items-center space-x-4 mb-6 relative">
           <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center overflow-hidden relative">
-            {editMode ? (
-              formData.photo ? (
-                <img src={formData.photo} alt="Profil" className="w-full h-full object-cover" />
+            {editingProfile ? (
+              profileData.photo ? (
+                <img src={profileData.photo} alt="Profil" className="w-full h-full object-cover" />
               ) : (
                 <FaUser className="text-3xl text-white" />
               )
             ) : (
-              userData?.photo ? (
-                <img src={userData.photo} alt="Profil" className="w-full h-full object-cover" />
+              user?.photo ? (
+                <img src={user.photo} alt="Profil" className="w-full h-full object-cover" />
               ) : (
                 <FaUser className="text-3xl text-white" />
               )
             )}
             {/* Fotoğrafın üzerinde ayrı düzenle butonu */}
-            {!editMode && (
+            {!editingProfile && (
               <button
                 className="absolute bottom-1 right-1 bg-gray-900/80 hover:bg-blue-600 text-white p-1 rounded-full shadow transition-all duration-200 flex items-center justify-center border border-white border-opacity-20"
                 onClick={handlePhotoEdit}
@@ -314,7 +369,7 @@ const UserProfile = () => {
             )}
           </div>
           {/* Fotoğraf düzenleme alanı (modal gibi) */}
-          {photoEditMode && !editMode && (
+          {photoEditMode && !editingProfile && (
             <div className="absolute left-24 top-0 bg-gray-900 border border-gray-700 rounded-lg p-4 z-20 shadow-xl flex flex-col items-start">
               <form onSubmit={handlePhotoSave} className="flex flex-col space-y-2">
                 <input
@@ -332,12 +387,12 @@ const UserProfile = () => {
             </div>
           )}
           <div>
-            {editMode ? (
+            {editingProfile ? (
               <form onSubmit={handleProfileSave} className="space-y-3">
                 <input
                   type="text"
                   name="username"
-                  value={formData.username}
+                  value={profileData.username}
                   onChange={handleEditChange}
                   placeholder={t('Kullanıcı Adı')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 mb-1 shadow-sm"
@@ -349,7 +404,7 @@ const UserProfile = () => {
                   <input
                     type="text"
                     name="firstName"
-                    value={formData.firstName}
+                    value={user?.firstName || ''}
                     onChange={handleEditChange}
                     placeholder={t('Ad')}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
@@ -360,7 +415,7 @@ const UserProfile = () => {
                   <input
                     type="text"
                     name="lastName"
-                    value={formData.lastName}
+                    value={user?.lastName || ''}
                     onChange={handleEditChange}
                     placeholder={t('Soyad')}
                     className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-normal font-sans placeholder-gray-400 shadow-sm"
@@ -372,7 +427,7 @@ const UserProfile = () => {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={profileData.email}
                   onChange={handleEditChange}
                   placeholder={t('Email')}
                   className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-light font-sans placeholder-gray-400 shadow-sm"
@@ -382,39 +437,39 @@ const UserProfile = () => {
                 />
                 <div className="flex space-x-2 mt-2 items-center">
                   <button type="submit" className="flex-1 h-10 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-sm" disabled={saving}>{saving ? t('Kaydediliyor...') : t('Kaydet')}</button>
-                  <button type="button" className="flex-1 h-10 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all shadow-sm" onClick={() => setEditMode(false)}>{t('İptal')}</button>
+                  <button type="button" className="flex-1 h-10 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all shadow-sm" onClick={() => setEditingProfile(false)}>{t('İptal')}</button>
                 </div>
               </form>
             ) : (
               <>
                 <h2 className="text-2xl font-light font-sans text-white">
-                  {userData?.firstName && userData?.lastName 
-                    ? `${userData.firstName} ${userData.lastName}`
-                    : userData?.username || 'User'
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}`
+                    : user?.username || 'User'
                   }
                 </h2>
-                <p className="text-pink-700 font-normal font-sans">@{userData?.username}</p>
-                <p className="text-gray-300 font-light font-sans">{userData?.email}</p>
+                <p className="text-pink-700 font-normal font-sans">@{user?.username}</p>
+                <p className="text-gray-300 font-light font-sans">{user?.email}</p>
               </>
             )}
             <p className="text-sm text-gray-300 flex items-center mt-1">
               <FaCalendar className="mr-1" />
-              {t('Member since')} {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : t('Recently')}
+              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : t('Recently')}
             </p>
           </div>
         </div>
         {/* Şehir ve doğum yılı kartları aynı kalacak */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {userData?.city && (
+          {user?.city && (
             <div className="bg-gray-700/30 rounded-lg p-4">
               <h3 className="text-gray-300 text-sm font-medium">{t('City')}</h3>
-              <p className="text-white text-lg">{userData.city}</p>
+              <p className="text-white text-lg">{user.city}</p>
             </div>
           )}
-          {userData?.birthYear && (
+          {user?.birthYear && (
             <div className="bg-gray-700/30 rounded-lg p-4">
               <h3 className="text-gray-300 text-sm font-medium">{t('Birth Year')}</h3>
-              <p className="text-white text-lg">{userData.birthYear}</p>
+              <p className="text-white text-lg">{user.birthYear}</p>
             </div>
           )}
         </div>
@@ -517,6 +572,7 @@ const UserProfile = () => {
           {userComments.map((comment, index) => {
             const commentId = comment.id || comment._id;
             const isDeleting = deletingCommentId === commentId;
+            const isEditing = editingCommentId === commentId;
             
             return (
               <div 
@@ -525,8 +581,8 @@ const UserProfile = () => {
                   isDeleting 
                     ? 'opacity-0 scale-95 -translate-y-2 pointer-events-none' 
                     : 'opacity-100 scale-100 translate-y-0'
-                } cursor-pointer`}
-                onClick={() => navigate(`/movie/${comment.movieId}`)}
+                } ${isEditing ? 'border-purple-500/50' : 'cursor-pointer'}`}
+                onClick={() => !isEditing && navigate(`/movie/${comment.movieId}`)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -542,22 +598,61 @@ const UserProfile = () => {
                         <span className="text-yellow-500 text-sm font-medium">{comment.rating}</span>
                       </div>
                     )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteComment(comment, index);
-                      }}
-                      className={`p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 ${
-                        isDeleting ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                      title={t('Delete comment')}
-                      disabled={isDeleting}
-                    >
-                      <FaTrash className="text-sm" />
-                    </button>
+                    {isEditing ? (
+                      <>
+                        <button
+                          onClick={(e) => handleSaveComment(e, comment)}
+                          className="p-2 text-green-400 hover:text-green-300 hover:bg-green-500/10 rounded-lg transition-all duration-200"
+                          title={t('Save comment')}
+                        >
+                          <FaSave className="text-sm" />
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10 rounded-lg transition-all duration-200"
+                          title={t('Cancel edit')}
+                        >
+                          <FaTimes className="text-sm" />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={(e) => handleEditComment(e, comment)}
+                          className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all duration-200"
+                          title={t('Edit comment')}
+                        >
+                          <FaEdit className="text-sm" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteComment(comment, index);
+                          }}
+                          className={`p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 ${
+                            isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          title={t('Delete comment')}
+                          disabled={isDeleting}
+                        >
+                          <FaTrash className="text-sm" />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
-                <p className="text-gray-300">{comment.content}</p>
+                {isEditing ? (
+                  <textarea
+                    value={editingCommentContent}
+                    onChange={(e) => setEditingCommentContent(e.target.value)}
+                    className="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500/50 resize-none"
+                    rows="3"
+                    placeholder="Yorumunuzu düzenleyin..."
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <p className="text-gray-300">{comment.content}</p>
+                )}
               </div>
             );
           })}

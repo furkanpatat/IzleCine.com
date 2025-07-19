@@ -34,6 +34,12 @@ exports.register = async (req, res) => {
     // Generate token for the newly registered user
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
 
+    // JWT Token'ı konsola logla
+    console.log('🔐 [JWT TOKEN] Generated token for registration:', token);
+    console.log('🔐 [JWT TOKEN] Token length:', token.length);
+    console.log('🔐 [JWT TOKEN] User ID in token:', user._id);
+    console.log('🔐 [JWT TOKEN] User role in token:', user.role || 'user');
+
     const response = {
       message: 'Registration successful!',
       token,
@@ -63,6 +69,11 @@ exports.login = async (req, res) => {
       const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secretkey', {
         expiresIn: '1d'
       });
+
+      // Admin JWT Token'ı konsola logla
+      console.log('🔐 [JWT TOKEN] Generated admin token:', token);
+      console.log('🔐 [JWT TOKEN] Admin token length:', token.length);
+      console.log('🔐 [JWT TOKEN] Admin role in token: admin');
 
       return res.json({
         token,
@@ -97,6 +108,12 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'secretkey', {
       expiresIn: '1d'
     });
+
+    // JWT Token'ı konsola logla
+    console.log('🔐 [JWT TOKEN] Generated token:', token);
+    console.log('🔐 [JWT TOKEN] Token length:', token.length);
+    console.log('🔐 [JWT TOKEN] User ID in token:', user._id);
+    console.log('🔐 [JWT TOKEN] User role in token:', user.role || 'user');
 
     return res.json({
       token,
@@ -457,6 +474,31 @@ exports.addLikedMovie = async (req, res) => {
     res.json(user.likedMovies);
   } catch (err) {
     console.error('Add liked movie error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Remove liked movie
+exports.removeLikedMovie = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    if (!movieId) {
+      return res.status(400).json({ message: 'movieId is required.' });
+    }
+    const userId = req.user.userId;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { likedMovies: { movieId } } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json(user.likedMovies || []);
+  } catch (err) {
+    console.error('Remove liked movie error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };

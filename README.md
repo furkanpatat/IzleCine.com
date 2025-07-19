@@ -10,6 +10,8 @@
   - `PORT`: Server port (Render otomatik ayarlar)
   - `EMAIL_USER`: Email service user
   - `EMAIL_PASS`: Email service password
+  - `TMDB_ACCESS_TOKEN`: TMDB API access token
+  - `REDIS_URL`: Redis connection string
 
 ### Frontend (Render.com)
 - **URL:** https://movieapp-frontend-ih7l.onrender.com
@@ -36,6 +38,15 @@ npm install
 npm start
 ```
 
+### Redis Setup (Local)
+```bash
+# Docker ile Redis başlatma
+docker run -d --name redis -p 6379:6379 redis:7-alpine
+
+# Veya Docker Compose ile tüm servisleri başlatma
+docker-compose up -d
+```
+
 ## 📝 Environment Variables
 
 ### Backend (.env)
@@ -45,6 +56,8 @@ JWT_SECRET=supersecretkey
 PORT=5002
 EMAIL_USER=aytenmmmcoskun@gmail.com
 EMAIL_PASS=fsiyponpixyjtqqd
+TMDB_ACCESS_TOKEN=your_tmdb_access_token_here
+REDIS_URL=redis://localhost:6379
 ```
 
 ### Frontend (.env)
@@ -59,11 +72,13 @@ REACT_APP_API_URL=https://backend-2ikj.onrender.com/api
    - Added `start` script to package.json
    - Updated CORS configuration for production domains
    - Fixed main entry point
+   - **Added Redis integration for category caching**
 
 2. **Frontend:**
    - Removed proxy configuration
    - Updated all API calls to use environment variables
    - Added production API URL configuration
+   - **Updated category service to use Redis-cached data**
 
 ## 🌐 API Endpoints
 
@@ -71,6 +86,7 @@ REACT_APP_API_URL=https://backend-2ikj.onrender.com/api
 - **Comments:** `/api/comments`
 - **Ratings:** `/api/ratings`
 - **Admin:** `/api/admin`
+- **Categories:** `/api/categories` (Redis cached)
 
 ## 📱 Features
 
@@ -79,6 +95,25 @@ REACT_APP_API_URL=https://backend-2ikj.onrender.com/api
 - User comments and ratings
 - Admin panel for user management
 - Multi-language support (Turkish/English)
+- **Redis-powered category caching for improved performance**
+
+## 🔄 Redis Integration
+
+### Category Caching
+- **Popular Movies:** `/api/categories/popular`
+- **Trending Movies:** `/api/categories/trending`
+- **Genre Movies:** `/api/categories/genre/:genreId`
+- **All Categories:** `/api/categories/all`
+
+### Cache Management
+- **Cache Duration:** 1 hour for individual categories, 30 minutes for all categories
+- **Admin Cache Clear:** Available in admin dashboard
+- **Automatic Fallback:** Falls back to TMDB API if Redis is unavailable
+
+### Performance Benefits
+- **Faster Response Times:** Cached data returns instantly
+- **Reduced API Calls:** Fewer requests to TMDB API
+- **Better User Experience:** Smoother category navigation
 
 **Proje Tanımı:**  İzleCine.com, film severler için bir eleştiri ve öneri platformudur. Kullanıcılar, en yeni filmleri keşfederken,kullanıcıların kişilsel yorumlarını görebilir, film önerileri sayesinde izleyecekleri yeni yapımlara karar verebilirler. Sitemizde yer alan detaylı film incelemeleri, kullanıcı yorumları ve puanlama sistemi, ziyaretçilere film seçme konusunda yardımcı olur. Ayrıca, kullanıcılar izledikleri filmleri derecelendirip, kendi yorumlarını paylaşarak topluluğumuza katkıda bulunabilirler. izleseMi.com olarak, kaliteli ve güvenilir içerik sunarak, film severlerin doğru film seçimlerini yapmalarına yardımcı olmayı hedefliyoruz. Filmlerle ilgili güncel haberler ile sinema dünyasına dair her şey bir arada!
 
@@ -122,5 +157,7 @@ Node.js, Express.js ve MongoDB ile hazırlanmış backend projesi bu dizinde yer
   - controllers/
   - models/
   - routes/
+  - utils/
+    - redis.js (Redis cache utilities)
   - server.js
   - .env

@@ -1,11 +1,10 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaImage, FaHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaImage, FaHeart, FaRegHeart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, removeFromFavorites } from '../store/izleCine';
 import userService from '../services/userService';
 import LoginPromptModal from './LoginPromptModal';
-import FavoriteButton from './FavoriteButton';
 
 const MovieRow = ({ title, movies = [] }) => {
   const navigate = useNavigate();
@@ -58,13 +57,16 @@ const MovieRow = ({ title, movies = [] }) => {
 
     try {
       if (favorites.some(fav => fav.id === movie.id)) {
-        dispatch(removeFromFavorites(movie.id));
+        // Database'den kaldır
         await userService.removeLikedMovie(movie.id);
+        dispatch(removeFromFavorites(movie.id));
       } else {
-        dispatch(addToFavorites(movie));
+        // Database'e ekle
         await userService.addLikedMovie(movie.id);
+        dispatch(addToFavorites(movie));
       }
     } catch (err) {
+      console.error('Favori işlemi hatası:', err);
       alert('Favori işlemi sırasında bir hata oluştu!');
     }
   }, [favorites, dispatch]);
@@ -171,8 +173,19 @@ const MovieRow = ({ title, movies = [] }) => {
                           <span className="text-yellow-400">★</span>
                           <span className="ml-1 text-white font-medium">{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
                         </div>
-                        {/* Favori butonu (localStorage tabanlı) */}
-                        <FavoriteButton movie={movie} />
+                        {/* Favori butonu (giriş kontrolü ile) */}
+                        <button
+                          onClick={(e) => handleFavoriteClick(e, movie)}
+                          className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                            favorites.some(fav => fav.id === movie.id) 
+                              ? 'bg-red-500 text-white' 
+                              : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                          }`}
+                          aria-label={favorites.some(fav => fav.id === movie.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                          title={favorites.some(fav => fav.id === movie.id) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                        >
+                          {favorites.some(fav => fav.id === movie.id) ? <FaHeart size={22} /> : <FaRegHeart size={22} />}
+                        </button>
                       </div>
                     </div>
                   </div>

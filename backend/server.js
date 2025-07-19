@@ -11,7 +11,9 @@ const ratingRoutes = require('./routes/ratingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const movieRoutes = require('./routes/movieRoutes'); // ✅ yeni eklendi
+const categoryRoutes = require('./routes/categoryRoutes'); // ✅ kategori route'ları eklendi
 const { connectRabbit } = require('./utils/rabbit');
+const { connectRedis } = require('./utils/redis'); // ✅ Redis bağlantısı eklendi
 const movieController = require('./controllers/movieController');
 
 const app = express();
@@ -68,6 +70,7 @@ app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/movies', movieRoutes); // ✅ yeni route tanımı
+app.use('/api/categories', categoryRoutes); // ✅ kategori route'ları eklendi
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -88,6 +91,14 @@ console.log('MONGO_URI:', process.env.MONGO_URI ? 'SET' : 'NOT SET');
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('MongoDB connected successfully');
+
+    // Redis bağlantısı dene ama hata olursa uygulamayı durdurma
+    try {
+      await connectRedis();
+      console.log('Redis connected successfully');
+    } catch (err) {
+      console.warn('⚠️ Redis connection failed, continuing without it:', err.message);
+    }
 
     // RabbitMQ bağlantısı dene ama hata olursa uygulamayı durdurma
     try {

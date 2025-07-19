@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Film, Users, Plus, Trash2, BarChart2, User, FileText, Settings, MessageSquare, Shield } from 'lucide-react';
+import { Film, Users, Plus, Trash2, BarChart2, User, FileText, Settings, MessageSquare, Shield, RefreshCw } from 'lucide-react';
+import categoryService from '../../services/categoryService';
 
 // JWT decode helper
 function parseJwt(token) {
@@ -13,6 +14,7 @@ function parseJwt(token) {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [isClearingCache, setIsClearingCache] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -26,6 +28,19 @@ const Dashboard = () => {
       return;
     }
   }, [navigate]);
+
+  const handleClearCache = async () => {
+    try {
+      setIsClearingCache(true);
+      await categoryService.clearCategoryCache();
+      alert('Kategori cache\'i başarıyla temizlendi!');
+    } catch (error) {
+      console.error('Cache temizleme hatası:', error);
+      alert('Cache temizleme sırasında hata oluştu!');
+    } finally {
+      setIsClearingCache(false);
+    }
+  };
 
   const cards = [
     {
@@ -88,7 +103,21 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+        <button
+          onClick={handleClearCache}
+          disabled={isClearingCache}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+            isClearingCache 
+              ? 'bg-gray-500 cursor-not-allowed' 
+              : 'bg-orange-600 hover:bg-orange-700 hover:scale-105'
+          } text-white shadow-lg`}
+        >
+          <RefreshCw className={`w-5 h-5 ${isClearingCache ? 'animate-spin' : ''}`} />
+          {isClearingCache ? 'Temizleniyor...' : 'Cache Temizle'}
+        </button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card) => {
           const Icon = card.icon;

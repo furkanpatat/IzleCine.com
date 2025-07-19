@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaHeart, FaImage } from 'react-icons/fa';
+import userService from '../services/userService';
+import tmdbService from '../services/tmdbService';
 
 const GENRE_MAP = {
   28: 'Aksiyon', 12: 'Macera', 16: 'Animasyon', 35: 'Komedi', 80: 'Suç', 99: 'Belgesel',
@@ -12,18 +14,86 @@ const GENRE_MAP = {
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [imageErrors, setImageErrors] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const favs = JSON.parse(localStorage.getItem('favoriteMovies') || '[]');
-    setFavorites(favs);
+    const loadFavorites = async () => {
+      try {
+        setLoading(true);
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem('token');
+        
+        if (user && token) {
+          // Database'den liked movies'i yükle
+          const likedMovies = await userService.getLikedMovies();
+          
+          // TMDB'den film detaylarını al
+          const movieDetails = await Promise.all(
+            likedMovies.map(async (liked) => {
+              try {
+                const movieData = await tmdbService.getMovieDetails(liked.movieId);
+                return {
+                  id: liked.movieId,
+                  title: movieData.title,
+                  poster_path: movieData.poster_path,
+                  release_date: movieData.release_date,
+                  vote_average: movieData.vote_average,
+                  genre_ids: movieData.genres?.map(g => g.id) || [],
+                  likedAt: liked.likedAt
+                };
+              } catch (error) {
+                console.error(`Error fetching movie ${liked.movieId}:`, error);
+                return null;
+              }
+            })
+          );
+          
+          // Null değerleri filtrele
+          const validMovies = movieDetails.filter(movie => movie !== null);
+          setFavorites(validMovies);
+        } else {
+          // Giriş yapmamış kullanıcılar için localStorage
+          const localFavorites = JSON.parse(localStorage.getItem('favoriteMovies') || '[]');
+          setFavorites(localFavorites);
+        }
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        setError('Favoriler yüklenirken hata oluştu');
+        // Hata durumunda localStorage'dan yükle
+        const localFavorites = JSON.parse(localStorage.getItem('favoriteMovies') || '[]');
+        setFavorites(localFavorites);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFavorites();
   }, []);
 
-  const handleRemoveFavorite = (e, movieId) => {
+  const handleRemoveFavorite = async (e, movieId) => {
     e.stopPropagation();
-    const updated = favorites.filter(fav => fav.id !== movieId);
-    setFavorites(updated);
-    localStorage.setItem('favoriteMovies', JSON.stringify(updated));
+    
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
+      
+      if (user && token) {
+        // Database'den kaldır
+        await userService.removeLikedMovie(movieId);
+      }
+      
+      // State'den kaldır
+      const updated = favorites.filter(fav => fav.id !== movieId);
+      setFavorites(updated);
+      
+      // localStorage'ı da güncelle
+      localStorage.setItem('favoriteMovies', JSON.stringify(updated));
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+      alert('Favori kaldırılırken hata oluştu!');
+    }
   };
 
   const handleMovieClick = (movieId) => {
@@ -33,6 +103,29 @@ const FavoritesPage = () => {
   const handleImageError = (movieId) => {
     setImageErrors(prev => ({ ...prev, [movieId]: true }));
   };
+
+  if (loading) {
+    return (
+      <div className="bg-gray-900 text-white flex items-center justify-center py-20">
+        <div className="text-center">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-gray-400">Favoriler yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 text-white flex items-center justify-center py-20">
+        <div className="text-center">
+          <FaHeart className="text-6xl text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Hata</h2>
+          <p className="text-gray-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (favorites.length === 0) {
     return (
@@ -49,7 +142,7 @@ const FavoritesPage = () => {
   return (
     <div className="bg-gray-900 text-white py-8 min-h-screen">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">Favori Filmlerim</h1>
+        <h1 className="text-3xl font-bold mb-8">Favori Filmlerim ({favorites.length})</h1>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {favorites.map((movie) => (
             <div

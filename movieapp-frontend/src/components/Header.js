@@ -6,7 +6,7 @@ import { IoSearch, IoSearchOutline } from "react-icons/io5";
 import { navigation } from '../contants/navigation';
 import { RiStarSmileFill } from "react-icons/ri";
 import ProfileDropdown from './ProfileDropdown';
-import tmdbService from '../services/tmdbService';
+import categoryService from '../services/categoryService'; // ✅ Redis service'i eklendi
 import MovieRow from './MovieRow';
 import { useTranslation } from 'react-i18next';
 import { useRef } from 'react';
@@ -21,11 +21,11 @@ const Header = (props) => {
   const { t } = useTranslation();
 
   const CATEGORY_CONFIG = useMemo(() => [
-    { key: 'popular', label: t('Popüler'), fetch: () => tmdbService.getPopularMovies() },
-    { key: 'trending', label: t('Trend'), fetch: () => tmdbService.getTrendingMovies() },
-    { key: 'action', label: t('Aksiyon'), fetch: () => tmdbService.getMoviesByGenre(28) },
-    { key: 'comedy', label: t('Komedi'), fetch: () => tmdbService.getMoviesByGenre(35) },
-    { key: 'drama', label: t('Drama'), fetch: () => tmdbService.getMoviesByGenre(18) },
+    { key: 'popular', label: t('Popüler'), fetch: () => categoryService.getPopularMovies() },
+    { key: 'trending', label: t('Trend'), fetch: () => categoryService.getTrendingMovies() },
+    { key: 'action', label: t('Aksiyon'), fetch: () => categoryService.getMoviesByGenre(28) },
+    { key: 'comedy', label: t('Komedi'), fetch: () => categoryService.getMoviesByGenre(35) },
+    { key: 'drama', label: t('Drama'), fetch: () => categoryService.getMoviesByGenre(18) },
   ], [t]);
 
   // JWT decode helper (kopya, diğer admin sayfalarındakiyle aynı)

@@ -15,6 +15,7 @@ const optionalAuth = (req, res, next) => {
 router.post('/', commentController.addComment); // /api/comments
 router.post('/:id/report', auth, commentController.reportComment); // Yorumu raporla
 router.get('/:movieId', optionalAuth, commentController.getCommentsByMovie); // /api/comments/:movieId
+router.put('/:id', auth, commentController.updateComment); // Yorumu güncelle
 router.delete('/:id', auth, commentController.deleteComment);
 router.post('/:id/like', auth, (req, res) => commentController.voteComment({ ...req, params: { ...req.params, type: 'like' } }, res));
 router.post('/:id/dislike', auth, (req, res) => commentController.voteComment({ ...req, params: { ...req.params, type: 'dislike' } }, res));

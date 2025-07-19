@@ -29,6 +29,7 @@ router.patch('/profile', auth, userController.updateProfile); // /api/users/prof
 // Liked movies routes
 router.get('/liked-movies', auth, userController.getLikedMovies); // /api/users/liked-movies
 router.post('/liked-movies', auth, userController.addLikedMovie); // /api/users/liked-movies
+router.delete('/liked-movies/:movieId', auth, userController.removeLikedMovie); // /api/users/liked-movies/:movieId
 
 // Comments routes
 router.get('/comments', auth, userController.getUserComments); // /api/users/comments

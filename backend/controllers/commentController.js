@@ -79,6 +79,46 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
+exports.updateComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = req.user.userId; // JWT'den gelen kullanıcı ID'si
+
+    if (!content || content.trim().length === 0) {
+      return res.status(400).json({ message: 'Yorum içeriği boş olamaz.' });
+    }
+
+    // Yorumu bul ve kullanıcının kendi yorumu olup olmadığını kontrol et
+    const comment = await Comment.findById(id);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Yorum bulunamadı.' });
+    }
+
+    // Kullanıcının kendi yorumu mu kontrol et
+    if (comment.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'Bu yorumu düzenleme yetkiniz yok.' });
+    }
+
+    // Yorumu güncelle
+    comment.content = content.trim();
+    comment.updatedAt = new Date();
+    await comment.save();
+
+    // Güncellenmiş yorumu populate ederek döndür
+    const updatedComment = await Comment.findById(id).populate('userId', 'username profileImage');
+
+    res.json({ 
+      message: 'Yorum başarıyla güncellendi.',
+      comment: updatedComment
+    });
+  } catch (err) {
+    console.error('Update comment error:', err);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
+};
+
 exports.getCommentStats = async (req, res) => {
   try {
     const totalReviews = await Comment.countDocuments();
