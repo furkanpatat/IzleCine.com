@@ -2,7 +2,7 @@
 
 **10.İzleme Listesi Oluşturma:** Kullanıcıların izlemek istedikleri filmleri kaydedebilmelerini sağlayan bir özelliktir. Bu gereksinim, kullanıcının beğendiği veya daha sonra izlemeyi düşündüğü filmleri bir listeye eklemesine imkân tanır. İzleme listesi, kullanıcının kendi tercihlerine göre düzenleyebileceği ve yönetebileceği kişisel bir film arşivi işlevi görür.
 
-**14.Film Düzenleme:** Admin kullanıcıların mevcut filmleri güncellemesine olanak tanır. Bu gereksinim, film başlığı, açıklaması, oyuncu kadrosu, yapım yılı, süresi, kategorisi ve poster gibi bilgilerin düzenlenmesini içerir. Film bilgileri zaman içinde değişebileceği için, bu özelliğin kullanımı içerik yönetimi açısından önemlidir.
+**15.Kullanıcı yorum düzenleme** --> Kullanıcının eski yorumunu değiştirebilmesi.
 
 **20.Kategoriler:** Filmlerin belirli türlere göre sınıflandırılmasını sağlar. Bu gereksinim, kullanıcıların belirli bir türdeki filmleri kolayca keşfetmelerine yardımcı olur. Aksiyon, komedi, dram, bilim kurgu gibi farklı kategoriler altında filmleri listeleyerek arama sürecini daha etkili hale getirir.
 
