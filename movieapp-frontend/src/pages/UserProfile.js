@@ -7,7 +7,7 @@ import userService from '../services/userService';
 import tmdbService from '../services/tmdbService';
 import axios from 'axios'; // Added axios import
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
 const UserProfile = () => {
   const { t } = useTranslation();

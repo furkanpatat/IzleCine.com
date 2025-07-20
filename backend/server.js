@@ -24,6 +24,7 @@ const corsOptions = {
   origin: [
     'https://movieapp-frontend-ih7l.onrender.com',
     'https://izlecine.com',
+    'https://www.izlecine.com',
     'http://localhost:3000' // for development
   ],
   credentials: true,

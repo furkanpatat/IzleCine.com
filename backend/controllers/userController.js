@@ -227,7 +227,8 @@ exports.forgotPassword = async (req, res) => {
     console.log('Şifre sıfırlama tokeni oluştu')
 
     // Şifre sıfırlama linkini oluştur
-    const resetLink = `http://localhost:3000/password-reset?token=${resetToken}`;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetLink = `${frontendUrl}/password-reset?token=${resetToken}`;
 
     // E-posta gönderme işlemini kuyruğa ekle
     const mailData = {
