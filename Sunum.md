@@ -2,7 +2,8 @@
 **Video Linki:**  
 [https://youtu.be/3w6ZHSdf-Hg](https://youtu.be/3w6ZHSdf-Hg)
 ### Burak Sayan Sunum
-**Video Linki:**  
+**Video Linki:** 
+https://www.youtube.com/watch?v=GCKHlfyGSQY
 []()
 ### Furkan Patat Sunum
 **Video Linki:**  
