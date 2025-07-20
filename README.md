@@ -6,7 +6,7 @@
 
 **Referans Uygulama:** [IMDb](https://www.imdb.com/)
 
-**Uygulama Adresi:** [izlecine.vercel.app](https://www.izlecine.com/)
+**Uygulama Adresi:** [izlecine.com](https://www.izlecine.com/)
 
 **Grup Adı:** fivebytes
 
