@@ -40,7 +40,7 @@
   - `REACT_APP_ACCESS_TOKEN`: TMDB API access token
 
 ### Domain
-- **Production Domain:** https://izlecine.com (henüz bağlanmadı)
+- **Production Domain:** www.izlecine.com
 
 ## 🛠️ Local Development
 
